@@ -40,13 +40,26 @@ infoConst <- function(
       print(table(gene[[col]]))
       cat("\n")
     }
-    # tad <- fread(tadf, header = FALSE)
-    # setnames(tad, c("chr", "start", "end"))
-    # setkeyv(tad, c("chr", "start", "end"))
-    # tad[, c("tadid") := seq_len(nrow(tad))]
-    # gene[, c("tadid") := as.integer(NA)]
-    # dic <- foverlaps(gene, tad, nomatch = 0, which = TRUE)
-    # gene[dic$xid, c("tadid") := tad[["tadid"]][dic$yid]]
+    tad <- fread(tadf, header = FALSE)
+    setnames(tad, c("chr", "start", "end"))
+    setkeyv(tad, c("chr", "start", "end"))
+    tad[, c("mstart", "mend") := list(as.integer(start - floor((start - shift(end, 1L, type="lag"))/2)),
+      as.integer(end + ceiling((shift(start, 1L, type = "lead") - end)/2))), by = "chr"]
+    tad[is.na(mstart), `:=`(mstart = start)]
+    tad[is.na(mend), `:=`(mend = end)]
+    tad[, `:=`(start = NULL, end = NULL)]
+    setnames(tad, c("mstart", "mend"), c("start", "end"))
+    fwrite(tad, file = gsub(".bed", "_nogap.bed", tadf), quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+    setkeyv(tad, c("chr", "start", "end"))
+    # filter gene and tad based on common chr
+    tad <- tad[chr %in% gene[["chr"]]]
+    gene <- gene[chr %in% tad[["chr"]]]
+    tad[, c("tadid") := seq_len(nrow(tad))]
+    gene[, c("tadid") := as.integer(NA)]
+    dic <- foverlaps(gene, tad, nomatch = 0, which = TRUE)
+    dic <- unique(dic[, list(nxid = unique(xid), nyid = yid[1]),  by = "xid"][, c("nxid", "nyid"), with = FALSE])
+    setnames(dic, c("nxid", "nyid"), c("xid", "yid"))
+    gene[dic$xid, c("tadid") := tad[["tadid"]][dic$yid]]
     info.obj <- new("info", gene = gene)
 }
 

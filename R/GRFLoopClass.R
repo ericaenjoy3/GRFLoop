@@ -67,15 +67,15 @@ setClass(
     if (any(!c("chr", "start", "end") %in% key(object@gene))) {
       return("The gene slot must be keyed on 'chr', 'start' and 'end' columns.")
     }
-    # if (!is.null(object@tad) && nrow(object@tad) < 1) {
-    #   return("No tad information was given.")
-    # }
-    # if (!is.null(object@tad) && any(!colnames(object@tad) %in% c("chr", "start", "end", "tadid"))) {
-    #   return("Column names of the hash slot do not match to 'chr', 'start', 'end' and 'tadid'.")
-    # }
-    # if (!is.null(object@tad) && any(!c("chr", "start", "end") %in% key(object@tad))) {
-    #   return("The tad slot must be keyed on 'chr', 'start' and 'end' columns.")
-    # }
+    if (!is.null(object@tad) && nrow(object@tad) < 1) {
+      return("No tad information was given.")
+    }
+    if (!is.null(object@tad) && any(!colnames(object@tad) %in% c("chr", "start", "end", "tadid"))) {
+      return("Column names of the hash slot do not match to 'chr', 'start', 'end' and 'tadid'.")
+    }
+    if (!is.null(object@tad) && any(!c("chr", "start", "end") %in% key(object@tad))) {
+      return("The tad slot must be keyed on 'chr', 'start' and 'end' columns.")
+    }
     return(TRUE)
   }
 )
