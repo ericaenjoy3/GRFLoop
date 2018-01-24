@@ -6,6 +6,27 @@ setGeneric(name = "rmNonVarRNA",
   }
 )
 
+#' @export infoFilter
+setGeneric(name = "infoFilter",
+  def = function(loop.obj, fet.obj, info.obj){
+    standardGeneric("infoFilter")
+  }
+)
+
+#' @export ProteinCodingInfo
+setGeneric(name = "ProteinCodingInfo",
+  def = function(info.obj){
+    standardGeneric("ProteinCodingInfo")
+  }
+)
+
+#' @export TPMInfo
+setGeneric(name = "TPMInfo",
+  def = function(info.obj){
+    standardGeneric("TPMInfo")
+  }
+)
+
 #' @export quantRm
 setGeneric(name = "quantRm",
   def = function(loop.obj, fet.obj, dedup){
@@ -48,13 +69,6 @@ setGeneric(name = "conPlot",
   }
 )
 
-#' @export coordShulf
-setGeneric(name = "coordShulf",
-  def = function(coord, info.obj, dout, nshulf, ncon){
-    standardGeneric("coordShulf")
-  }
-)
-
 #' @export gene2direction
 setGeneric(name = "gene2direction",
   def = function(gene_list, info.obj){
@@ -62,9 +76,30 @@ setGeneric(name = "gene2direction",
   }
 )
 
-#' @export gene2direction
+#' @export coordShulf
+setGeneric(name = "coordShulf",
+  def = function(coord, info.obj, dout, nshulf, nmin, nmax){
+    standardGeneric("coordShulf")
+  }
+)
+
+#' @export inTADShulf
+setGeneric(name = "inTADShulf",
+  def = function(gene_list, info.obj){
+    standardGeneric("inTADShulf")
+  }
+)
+
+#' @export TADshipPlot
+setGeneric(name = "TADshipPlot",
+  def = function(gene_list_list, info.obj, nms, pdffout){
+    standardGeneric("TADshipPlot")
+  }
+)
+
+#' @export shufPlot
 setGeneric(name = "shufPlot",
-  def = function(loop.obj, info.obj, ncon, dout, pdffout){
+  def = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf){
     standardGeneric("shufPlot")
   }
 )

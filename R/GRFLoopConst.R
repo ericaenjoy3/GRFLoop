@@ -21,28 +21,34 @@ loopConst <- function(loop_f, score_col) {
 infoConst <- function(
   genef = path.expand("~/athena/Gencode/mm10/annotation/gencode.vM6.annotation.gene.bed"),
   fcf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/Daf_DiffAna_OrderFlip.xls"),
+  tpmf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/TPM_rd_merge.txt"),
   tadf = path.expand("~/athena/HIC/HIC_seq/APP/TAD_mm10.bed")) {
     # gene slot
     stopifnot(all(file.exists(c(genef))))
     gene <- fread(genef, header = FALSE)
     setnames(gene, c("chr", "start", "end", "gene"))
-    setkeyv(gene, c("chr", "start", "end"))
+    setkeyv(gene, c("gene"))
+    gene <- gene[which(chr %in% paste0("chr", c(1:19)))]
     gene[, c("type") := gsub("[^|]+\\|[^|]+\\|([^|]+)", "\\1", gene)]
+    # add DEG columns to gene data.table
     fc <- fread(fcf, header = TRUE)
     fc[, c("gene") := paste(gid, gname, gtype, sep = "|")]
     col_nm <- colnames(fc)[grep("^DEG", colnames(fc))]
+    ridx <- fc[["gene"]] %in% gene[["gene"]]
+    fc <- fc[ridx]
     for (col in col_nm) {
       nfc <- fc[fc[[col]] != "NDiff"]
-      idx <- chmatch(nfc[["gene"]], gene[["gene"]])
-      stopifnot(all(!is.na(idx)))
-      gene[idx, c(col) := nfc[[col]]]
+      gene[nfc[["gene"]], c(col) := nfc[[col]]]
       message(col)
       print(table(gene[[col]]))
       cat("\n")
     }
+    setkeyv(gene, c("chr", "start", "end"))
+    # add tadid column to gene data.table
     tad <- fread(tadf, header = FALSE)
     setnames(tad, c("chr", "start", "end"))
     setkeyv(tad, c("chr", "start", "end"))
+    tad <- tad[chr %in% paste0("chr", c(1:19))]
     tad[, c("mstart", "mend") := list(as.integer(start - floor((start - shift(end, 1L, type="lag"))/2)),
       as.integer(end + ceiling((shift(start, 1L, type = "lead") - end)/2))), by = "chr"]
     tad[is.na(mstart), `:=`(mstart = start)]
@@ -60,7 +66,18 @@ infoConst <- function(
     dic <- unique(dic[, list(nxid = unique(xid), nyid = yid[1]),  by = "xid"][, c("nxid", "nyid"), with = FALSE])
     setnames(dic, c("nxid", "nyid"), c("xid", "yid"))
     gene[dic$xid, c("tadid") := tad[["tadid"]][dic$yid]]
-    info.obj <- new("info", gene = gene)
+    setkeyv(gene, "gene")
+    # add TPM columns to gene data.table
+    tpm <- SepTPMCnt(tpmf)$tpm.grp
+    tpm <- data.table(gene = rownames(tpm), tpm, key = "gene")
+    gid <- gene[["gene"]]
+    tpm <- tpm[gid, nomatch = 0]
+    setnames(tpm, colnames(tpm)[colnames(tpm) != "gene"], paste0("tpm_", colnames(tpm)[colnames(tpm) != "gene"]))
+    stopifnot(identical(tpm[,gene], gene[,gene]))
+    gene <- data.table(gene, tpm[, -grep("gene", colnames(tpm)), with = FALSE])
+    setkeyv(gene, c("chr", "start", "end"))
+    info.obj <- new("info", gene = gene, tad = tad)
+    return(info.obj)
 }
 
 fetConst <- function(fet_fs, small = 0.05) {

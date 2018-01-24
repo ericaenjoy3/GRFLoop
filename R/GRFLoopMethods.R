@@ -1,4 +1,5 @@
 #' @include GRFLoopClass.R GRFLoopGeneric.R
+#' @rdname rmNonVarRNA-methods
 setMethod(f = "rmNonVarRNA",
   signature = c("loop", "fet"),
   definition = function(loop.obj, fet.obj) {
@@ -27,6 +28,58 @@ setMethod(f = "rmNonVarRNA",
     }))
     validObject(fet.obj)
     return(list(loop.obj = loop.obj, fet.obj = fet.obj))
+  }
+)
+
+#' @rdname infoFilter-methods
+setMethod(f = "infoFilter",
+  signature = c("loop", "fet", "info"),
+  definition = function(loop.obj, fet.obj, info.obj) {
+    idx <- loop.obj@loop[["PromGene"]] %in% info.obj@gene[["gene"]]
+    if (all(idx)) {
+      return(list(loop.obj = loop.obj, fet.obj = fet.obj))
+    }
+    message(sum(!idx), " loops (including duplicated) filtered out in kptAutosome.")
+    # update fet.obj
+    stopifnot(length(idx) <= nrow(fet.obj@dat_list[[1]]))
+    fet.obj@dat_list <- lapply(fet.obj@dat_list, function(dat)dat[idx])
+    validObject(fet.obj)
+    # update loop.obj
+    stopifnot(length(unique(loop.obj@loop[["loop"]][!idx])) <= length(E(loop.obj@g)))
+    loop.obj@g <- delete.edges(loop.obj@g, which(as_ids(E(loop.obj@g)) %in% unique(loop.obj@loop[["loop"]][!idx])))
+    loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
+    validObject(loop.obj)
+    return(list(loop.obj = loop.obj, fet.obj = fet.obj))
+  }
+)
+
+#' @rdname ProteinCodingInfo-methods
+setMethod(f = "ProteinCodingInfo",
+  signature = c("info"),
+  definition = function(info.obj) {
+    # genes of protein coding
+    gid <- info.obj@gene[type == "protein_coding", gene]
+    # update info.obj
+    message(sum(!info.obj@gene[, gene] %in% gid), " non-protein-coding genes were filtered.")
+    info.obj@gene <- info.obj@gene[gene %in% gid]
+    validObject(info.obj)
+    return(info.obj = info.obj)
+  }
+)
+
+#' @rdname TPMInfo-methods
+setMethod(f = "TPMInfo",
+  signature = c("info"),
+  definition = function(info.obj) {
+    # genes with TPM >= 1 at any stage during reprogramming
+    col_nm <- colnames(info.obj@gene)[grep("^tpm", colnames(info.obj@gene))]
+    idx <- info.obj@gene[, apply(.SD, 1, function(vec)any(vec>1)), .SDcols = col_nm]
+    stopifnot(all(!idx))
+    # update info.obj
+    message(sum(!idx), " genes that did not reach TPM > 1 at any stage of reprogramming were filtered.")
+    info.obj@gene <- info.obj@gene[idx]
+    validObject(info.obj)
+    return(info.obj = info.obj)
   }
 )
 
@@ -121,9 +174,9 @@ setMethod(f = "ceilFet",
 #' @rdname coordShulf-methods
 setMethod(f = "coordShulf",
   signature = c("data.table", "info"),
-  definition = function(coord, info.obj, dout, nshulf, ncon){
+  definition = function(coord, info.obj, dout, nshulf, nmin, nmax){
     stopifnot(file.exists(dout))
-    genomef <- "/home/liuyiyua/athena/Gencode/mm10/sequence/chrNameLengthKnownChr.genome"
+    genomef <- "/home/liuyiyua/athena/Gencode/mm10/sequence/autosome.genome"
     exclf <- path.expand("~/athena/blacklist/mm10-blacklist.bed")
     nd = file.path(dout, "tmp")
     dir.create(nd, showWarnings = FALSE, recursive = TRUE)
@@ -150,9 +203,24 @@ setMethod(f = "coordShulf",
       }
     }
     unlink(nd, recursive=TRUE)
-    idx <- sapply(genep_list, length) >= ncon
+    idx <- sapply(genep_list, length) >= nmin & sapply(genep_list, length) <= nmax
     stopifnot(sum(idx) > 0)
     genep_list <- genep_list[idx]
+    return(genep_list)
+  }
+)
+
+#' @rdname inTADShulf-methods
+setMethod(f = "inTADShulf",
+  signature = c("list", "info"),
+  definition = function(gene_list, info.obj){
+    genep_list <- lapply(seq_along(gene_list), function(j){
+      gid <- gene_list[[j]]
+      tads <- unique(info.obj@gene[gene %in% gid, tadid])
+      set.seed(j)
+      rand_gid <- info.obj@gene[tadid %in% tads & !gene %in% gid, sample(gene, size = length(gid), replace = FALSE)]
+      return(rand_gid)
+    })
     return(genep_list)
   }
 )

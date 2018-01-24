@@ -8,6 +8,8 @@ ord <- c("RNA", "KLF4", "ATAC", "H3K27AC", "YY1")
 order_method <- "quant"
 score_col <- 10
 info.obj <- infoConst()
+info.obj <- ProteinCodingInfo(info.obj)
+info.obj <- TPMInfo(info.obj)
 for (i in seq_along(enhs)) {
   enhfs <- rev(dir(file.path(root, enhs[i]), "*Enh_heatmap.mat", recur = TRUE, full = TRUE))
   promfs <- rev(dir(file.path(root, enhs[i]), "*Prom_heatmap.mat", recur = TRUE, full = TRUE))
@@ -55,8 +57,12 @@ for (i in seq_along(enhs)) {
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
   }
   if (tolower(OP) == "connect") {
+    message("infoFilter")
+    obj.list <- infoFilter(loop.obj, fet.obj, info.obj)
+    loop.obj <- obj.list[["loop.obj"]]
+    fet.obj <- obj.list[["fet.obj"]]
     # conPlot(loop.obj, fet.obj, dout = root)
     shufPlot(loop.obj, info.obj, ncon = 4 , dout = root,
-      pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_coregBox.pdf"))
+      pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_nmin", "_nmax", "_coregBox.pdf"))
   }
 }
