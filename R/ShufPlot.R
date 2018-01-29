@@ -1,4 +1,13 @@
 #' @include GRFLoopClass.R GRFLoopGeneric.R
+
+#' @export shufPlot
+setGeneric(name = "shufPlot",
+  def = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf){
+    standardGeneric("shufPlot")
+  }
+)
+
+#' @rdname shufPlot-methods
 setMethod(f = "shufPlot",
   signature = c("loop", "info"),
   definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf) {
