@@ -60,7 +60,7 @@ setMethod(f = "shufPlot",
       data.table(type = "Global Random", degp_pct),
       data.table(type = "In-TAD Random", degt_pct)), use.names = FALSE)
     # boxplot
-    theme_set(theme_grey(base_size=15))
+    theme_set(theme_grey(base_size = 15))
     p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = direction, y = value, fill = type)) +
       geom_boxplot(position = position_dodge(width = 0.9)) +
       labs(x = "", y = "%") +
