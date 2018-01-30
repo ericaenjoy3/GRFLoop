@@ -3,8 +3,8 @@
 libfs <- dir(path.expand("~/ComScripts/RPack/GRFLoop/R"), "*.R", recursive = TRUE, full.names = TRUE)
 idx <- grepl("class", libfs, ignore.case = TRUE)
 libfs <- libfs[c(which(idx), which(!idx))]
-for (f in libfs) {
-  message("source ", f)
+for (i in seq_along(libfs)) {
+  message("source file ", i, " ",libfs[i])
   source(f)
 }
 # OP either connect or heatmap
@@ -38,8 +38,8 @@ for (i in seq_along(enhs)) {
   fet.obj <- fetConst(fet_fs)
   if (tolower(OP) == "heatmap") {
     # quantile loops
-    message("quantRm")
-    obj.list <- quantRm(loop.obj, fet.obj, dedup = FALSE)
+    message("quantConRm")
+    obj.list <- quantConRm(loop.obj, fet.obj, vType = "Enh")
     loop.obj <- obj.list[["loop.obj"]]
     fet.obj <- obj.list[["fet.obj"]]
     # rm non variables looping
@@ -56,13 +56,13 @@ for (i in seq_along(enhs)) {
     message("ceilling")
     dat_list <- ceilFet(fet.obj)
     # heatmap
-    message("multiHeat")
-    multiHeat(loop.obj, dat_list[["fet.obj"]], dat_list[["rng_list"]],
+    message("multiHeatPlot")
+    multiHeatPlot(loop.obj, dat_list[["fet.obj"]], dat_list[["rng_list"]],
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_heatmap.pdf"),
       scheme = ifelse(order_method == "last_column", "wr", "br"))
     # violin plot
-    message("medianViolin")
-    medianViolin(loop.obj, fet.obj,
+    message("mViolinPlot")
+    mViolinPlot(loop.obj, fet.obj,
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
   }
   if (tolower(OP) == "connect") {

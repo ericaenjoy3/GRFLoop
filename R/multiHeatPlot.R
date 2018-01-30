@@ -1,14 +1,14 @@
 #' @include GRFLoopClass.R
 
-#' @export multiHeat
-setGeneric(name = "multiHeat",
+#' @export multiHeatPlot
+setGeneric(name = "multiHeatPlot",
   def = function(loop.obj, fet.obj, rng_list, pdffout, scheme = c("wr", "br")){
-    standardGeneric("multiHeat")
+    standardGeneric("multiHeatPlot")
   }
 )
 
-#' @rdname multiHeat-methods
-setMethod(f = "multiHeat",
+#' @rdname multiHeatPlot-methods
+setMethod(f = "multiHeatPlot",
   signature = c("loop", "fet"),
   definition = function(loop.obj, fet.obj, rng_list, pdffout, scheme = c("wr", "br")) {
     scheme <- match.arg(scheme)

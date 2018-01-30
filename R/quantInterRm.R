@@ -24,6 +24,7 @@ setMethod(f = "quantInterRm",
     loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
     # update loop slot of loop object
     kpt.idx <- which(loop.obj@loop[["loop"]] %in% c(bottom_loop, top_loop))
+    stopifnot(length(kpt.idx) %between% c(0, nrow(loop.obj@loop)))
     loop.obj@loop <- loop.obj@loop[kpt.idx, ]
     loop.obj@loop[["rowid"]] <- seq_len(nrow(loop.obj@loop))
     split <- rep(0, length(loop.obj@loop[["loop"]]))

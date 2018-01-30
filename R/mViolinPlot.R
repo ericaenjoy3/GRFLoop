@@ -1,14 +1,14 @@
 #' @include GRFLoopClass.R
 
-#' @export medianViolin
-setGeneric(name = "medianViolin",
+#' @export mViolinViolin
+setGeneric(name = "mViolinPlot",
   def = function(loop.obj, fet.obj, pdffout){
-    standardGeneric("medianViolin")
+    standardGeneric("mViolinPlot")
   }
 )
 
-#' @rdname medianViolin-methods
-setMethod(f = "medianViolin",
+#' @rdname mViolinPlot-methods
+setMethod(f = "mViolinPlot",
   signature = c("loop", "fet"),
   definition = function(loop.obj, fet.obj, pdffout){
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])

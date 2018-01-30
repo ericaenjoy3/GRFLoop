@@ -14,7 +14,7 @@ setMethod(f = "TPMInfo",
     # genes with TPM >= 1 at any stage during reprogramming
     col_nm <- colnames(info.obj@gene)[grep("^tpm", colnames(info.obj@gene))]
     idx <- info.obj@gene[, apply(.SD, 1, function(vec)any(vec>1)), .SDcols = col_nm]
-    stopifnot(all(!idx))
+    stopifnot(all(!idx) == FALSE)
     # update info.obj
     message(sum(!idx), " genes that did not reach TPM > 1 at any stage of reprogramming were filtered.")
     info.obj@gene <- info.obj@gene[idx]
