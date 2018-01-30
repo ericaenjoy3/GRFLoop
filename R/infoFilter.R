@@ -21,7 +21,7 @@ setMethod(f = "infoFilter",
     loop.obj@loop <- loop.obj@loop[idx]
     loop.obj@g <- delete.edges(loop.obj@g, which(!gsub("\\|", "_", as_ids(E(loop.obj@g))) %in% unique(loop.obj@loop[["loop"]])))
     loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
-    if (is.null(loop.obj@split)) {
+    if (!is.null(loop.obj@split)) {
       loop.obj@split <- factor(loop.obj@split[idx], levels = unique(loop.obj@split[idx]))
     }
     validObject(loop.obj)    
