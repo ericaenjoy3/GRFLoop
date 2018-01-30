@@ -1,14 +1,14 @@
 #' @include GRFLoopClass.R
 
-#' @export quantRm
-setGeneric(name = "quantRm",
+#' @export quantInterRm
+setGeneric(name = "quantInterRm",
   def = function(loop.obj, fet.obj, dedup){
-    standardGeneric("quantRm")
+    standardGeneric("quantInterRm")
   }
 )
 
-#' @rdname quantRm-methods
-setMethod(f = "quantRm",
+#' @rdname quantInterRm-methods
+setMethod(f = "quantInterRm",
   signature = c("loop", "fet", "logical"),
   definition = function(loop.obj, fet.obj, dedup){
     score <- E(loop.obj@g)$score

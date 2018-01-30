@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # OP either connect or heatmap
-OP <- "connect"
+OP <- "heatmap"
 enhs <- c("SuperEnh", "NormalEnh") #
 root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP"
 ord <- c("RNA", "KLF4", "ATAC", "H3K27AC", "YY1")
@@ -49,10 +49,12 @@ for (i in seq_along(enhs)) {
     message("ceilling")
     dat_list <- ceilFet(fet.obj)
     # heatmap
+    message("multiHeat")
     multiHeat(loop.obj, dat_list[["fet.obj"]], dat_list[["rng_list"]],
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_heatmap.pdf"),
       scheme = ifelse(order_method == "last_column", "wr", "br"))
     # violin plot
+    message("medianViolin")
     medianViolin(loop.obj, fet.obj,
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
   }
