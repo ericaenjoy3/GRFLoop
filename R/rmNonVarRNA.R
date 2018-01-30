@@ -13,12 +13,12 @@ setMethod(f = "rmNonVarRNA",
   definition = function(loop.obj, fet.obj) {
     idx <- grep("RNA", fet.obj@hash[["sms"]], ignore.case = TRUE)[1]
     kpt.idx <- which(apply(fet.obj@dat_list[[idx]], 1, var) > 0)
-    stopifnot(length(kpt.idx) < nrow(fet.obj@dat_list[[idx]]))
+    stopifnot(length(kpt.idx) <= nrow(fet.obj@dat_list[[idx]]))
     # update dat_list slot of fet class
     # update loop slot of loop class
     # update g slot of loop class
     # update split slot of loop class
-    if (length(kpt.idx) > 0) {
+    if (between(length(kpt.idx), c(0, nrow(fet.obj@dat_list[[idx]])), incbounds = FALSE)) {
       fet.obj@dat_list <- lapply(fet.obj@dat_list, function(dat)dat[kpt.idx,])
       validObject(fet.obj)
       loop.obj@loop <- loop.obj@loop[kpt.idx,]
