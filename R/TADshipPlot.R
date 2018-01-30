@@ -32,7 +32,7 @@ setMethod(f = "TADshipPlot",
     tadhom <- rbindlist(lapply(seq_along(tadhom_list), function(j)data.table(nms = nms[j], tadhom = tadhom_list[[j]])))
     p1 <- ggbarplot(tadnum, x = "tadnum", y = "N", fill = "nms", color = "white", palette = "jco", rotate = TRUE,
       position = position_dodge(0.9), xlab = "TADs per Hub", ylab = "Counts", legend.title = "", ggtheme = theme_minimal())
-    cmp <- data.table(nms, 2))
+    cmp <- data.table(combn(nms, 2))
     p2 <- ggboxplot(tadhom, x = "nms", y = "tadhom", color = "nms", palette = "jco", add = "jitter",
       xlab = "", ylab = "TAD Homogeneity per Hub (%)", legend.title = "") +
       stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")

@@ -1,5 +1,12 @@
 #!/usr/bin/env Rscript
 
+libfs <- dir(path.expand("~/ComScripts/RPack/GRFLoop/R"), "*.R", recursive = TRUE, full.names = TRUE)
+idx <- grepl("class", libfs, ignore.case = TRUE)
+libfs <- libfs[c(which(idx), which(!idx))]
+for (f in libfs) {
+  message("source ", f)
+  source(f)
+}
 # OP either connect or heatmap
 OP <- "heatmap"
 enhs <- c("SuperEnh", "NormalEnh") #
