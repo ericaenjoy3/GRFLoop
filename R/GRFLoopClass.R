@@ -43,6 +43,9 @@ setClass(
     if (any(!E(object@g)$loop %in% object@loop[["loop"]])) {
       return("The loop attribute of the edges of the g slot does not match to the loop column in the loop slot.")
     }
+    if (length(E(object@g)) != length(unique(object@loop[["loop"]])) {
+      return("The number of edges must equal to the number of unique loops in loop slot.")
+    }
     if (!is.null(object@split) && any(is.na(object@split))) {
       return("The split slot can not contain NA.")
     }

@@ -39,8 +39,8 @@ setMethod(f = "quantConRm",
     loop.obj@loop[["rowid"]] <- seq_len(nrow(loop.obj@loop))
     split <- rep(0, length(loop.obj@loop[["loop"]]))
     split[loop.obj@loop[["loop"]] %in% top_loop] <- 1
-    message(sum(split ==0), "bottom loops")
-     message(sum(split ==1), "top loops")   
+    message(sum(split ==0), " bottom loops")
+     message(sum(split ==1), " top loops")   
     loop.obj@split <- factor(split, levels = unique(split))
     validObject(loop.obj)
     # update dat_list slot of fet object
