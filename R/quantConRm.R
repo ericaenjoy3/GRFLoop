@@ -10,7 +10,8 @@ setGeneric(name = "quantConRm",
 #' @rdname quantInterRm-methods
 setMethod(f = "quantConRm",
   signature = c("loop", "fet"),
-  definition = function(loop.obj, fet.obj, vType){
+  definition = function(loop.obj, fet.obj, vType = c("Prom", "Enh")){
+  	vType <- match.arg(vType)
   	stopifnot(vType %in% unique(V(loop.obj@g)$type))
   	# incident edges of a particular vertex type
     ve <- V(loop.obj@g)$name[V(loop.obj@g)$type == vType]
