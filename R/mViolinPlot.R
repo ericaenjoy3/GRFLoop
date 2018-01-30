@@ -28,15 +28,23 @@ setMethod(f = "mViolinPlot",
     dat[, c("variable") := gsub("DAY", "D", variable)]
     dat[, c("variable") := factor(gsub(".*(MEF|D3|D6|D9|ESC).*", "\\1", variable), levels = lel)]
     ndat <- subset(dat, dat[["variable"]] == "ESC")
-    theme_set(theme_grey(base_size=15))
-    p1 <- ggplot(ndat, aes(x = variable, y = value, fill = split)) +
-    geom_violin(position = position_dodge(width = 0.9)) +
-    geom_boxplot(width = 0.1, position = position_dodge(width = 0.9)) +
-    facet_grid(sms ~ grps, scale = "free") +
-    labs(x = "", y = "") +
-    theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"),
-      legend.position = "top",
-      axis.text.x = element_text(angle = 90, hjust = 1))
+    # plot
+    # theme_set(theme_grey(base_size=15))
+    # p1 <- ggplot(ndat, aes(x = variable, y = value, fill = split)) +
+    # geom_violin(position = position_dodge(width = 0.9)) +
+    # geom_boxplot(width = 0.1, position = position_dodge(width = 0.9)) +
+    # facet_grid(sms ~ grps, scale = "free") +
+    # labs(x = "", y = "") +
+    # theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"),
+    #   legend.position = "top",
+    #   axis.text.x = element_text(angle = 90, hjust = 1))
+    # alternative plot
+    cmp <- data.table(combn(unique(ndat[["split"]]), 2))
+    p1 <- ggviolin(ndat, x = "split", y = "value", fill = "split", 
+      add = "boxplot", add.params = list(fill = "white"), 
+      facet.by = c("sms", "grps"), xlab = "", ylab = "", legend.title = "")+
+    stat_compare_means(comparisons = cmp)
+    p1 <- facet(p1, scales = "free", facet.by = c("sms", "grps"))
     ggsave(filename = pdffout, p1)
   }
 )
