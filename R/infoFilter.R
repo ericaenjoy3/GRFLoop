@@ -15,7 +15,7 @@ setMethod(f = "infoFilter",
     if (all(idx)) {
       return(list(loop.obj = loop.obj, fet.obj = fet.obj))
     }
-    message(sum(!idx), " loops (including duplicated) filtered out in kptAutosome.")
+    message(sum(!idx), " loops (including duplicated) filtered out in infoFilter.")
     # update fet.obj
     stopifnot(length(idx) <= nrow(fet.obj@dat_list[[1]]))
     fet.obj@dat_list <- lapply(fet.obj@dat_list, function(dat)dat[idx])

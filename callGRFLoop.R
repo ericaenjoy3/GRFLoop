@@ -36,15 +36,19 @@ for (i in seq_along(enhs)) {
   message("constructing loop and fet objects")
   loop.obj <- loopConst(loop_f, score_col)
   fet.obj <- fetConst(fet_fs)
+  message("infoFilter")
+  obj.list <- infoFilter(loop.obj, fet.obj, info.obj)
+  loop.obj <- obj.list[["loop.obj"]]
+  fet.obj <- obj.list[["fet.obj"]]
   if (tolower(OP) == "heatmap") {
-    # quantile loops
-    message("quantConRm")
-    obj.list <- quantConRm(loop.obj, fet.obj, vType = "Enh")
-    loop.obj <- obj.list[["loop.obj"]]
-    fet.obj <- obj.list[["fet.obj"]]
     # rm non variables looping
     message("rmNonVarRNA")
     obj.list <- rmNonVarRNA(loop.obj, fet.obj)
+    loop.obj <- obj.list[["loop.obj"]]
+    fet.obj <- obj.list[["fet.obj"]]    
+    # quantile loops
+    message("quantConRm")
+    obj.list <- quantConRm(loop.obj, fet.obj, vType = "Enh")
     loop.obj <- obj.list[["loop.obj"]]
     fet.obj <- obj.list[["fet.obj"]]
     # re-order loops
@@ -66,10 +70,6 @@ for (i in seq_along(enhs)) {
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
   }
   if (tolower(OP) == "connect") {
-    message("infoFilter")
-    obj.list <- infoFilter(loop.obj, fet.obj, info.obj)
-    loop.obj <- obj.list[["loop.obj"]]
-    fet.obj <- obj.list[["fet.obj"]]
     # conPlot(loop.obj, fet.obj, dout = root)
     shufPlot(loop.obj, info.obj, ncon = 4 , dout = root,
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_nmin", "_nmax", "_coregBox.pdf"))

@@ -17,7 +17,8 @@ setMethod(f = "quantConRm",
     ve <- V(loop.obj@g)$name[V(loop.obj@g)$type == vType]
     ed <- incident_edges(loop.obj@g, ve)
     ed_num <- sapply(ed, length)
-    thresh <- as.numeric(quantile(ed_num, probs = c(0.25, 0.75)))
+    thresh <- as.numeric(quantile(ed_num, probs = c(0.30, 0.90)))
+    message("top thresh: ", thresh[2], "; bottom thresh:", thresh[1])
     stopifnot(!identical(thresh[1], thresh[2]))
     bottom_loop <- unlist(lapply(ed[ed_num <= thresh[1]], function(e){
     	vec<-gsub("\\|", "_", as_ids(e)); 
@@ -38,6 +39,8 @@ setMethod(f = "quantConRm",
     loop.obj@loop[["rowid"]] <- seq_len(nrow(loop.obj@loop))
     split <- rep(0, length(loop.obj@loop[["loop"]]))
     split[loop.obj@loop[["loop"]] %in% top_loop] <- 1
+    message(sum(split ==0), "bottom loops")
+     message(sum(split ==1), "top loops")   
     loop.obj@split <- factor(split, levels = unique(split))
     validObject(loop.obj)
     # update dat_list slot of fet object
