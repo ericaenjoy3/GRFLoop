@@ -8,7 +8,7 @@ for (j in seq_along(libfs)) {
   source(libfs[j])
 }
 # OP either connect or heatmap
-OP <- "heatmap"
+OP <- "connect"
 enhs <- c("SuperEnh", "NormalEnh") #
 root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP"
 ord <- c("RNA", "KLF4", "ATAC", "H3K27AC", "YY1")
