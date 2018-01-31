@@ -22,7 +22,7 @@ infoConst <- function(
   genef = path.expand("~/athena/Gencode/mm10/annotation/gencode.vM6.annotation.gene.bed"),
   fcf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/Daf_DiffAna_OrderFlip.xls"),
   tpmf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/TPM_rd_merge.txt"),
-  tadf = path.expand("~/athena/HIC/HIC_seq/APP/TAD_mm10.bed")) {
+  tadf = path.expand("~/athena/HIC/HIC_seq/APP/TAD_mm10.bed"), p_val = 0.01, fc_num = 1.5) {
     # gene slot
     stopifnot(all(file.exists(c(genef))))
     gene <- fread(genef, header = FALSE)
@@ -34,6 +34,13 @@ infoConst <- function(
     fc <- fread(fcf, header = TRUE)
     fc[, c("gene") := paste(gid, gname, gtype, sep = "|")]
     col_nm <- colnames(fc)[grep("^DEG", colnames(fc))]
+    for (j in grep("^DEG", colnames(fc))) {
+      set(fc, 1:nrow(fc), j, "NDiff")
+      up_idx <- which(fc[[j-3]] > fc_num & fc[[j-2]] < p_val)
+      dn_idx <- which(fc[[j-3]] < -fc_num & fc[[j-2]] < p_val)
+      set(fc, up_idx, j, "Up")
+      set(fc, dn_idx, j, "Down")    
+    }
     ridx <- fc[["gene"]] %in% gene[["gene"]]
     fc <- fc[ridx]
     for (col in col_nm) {

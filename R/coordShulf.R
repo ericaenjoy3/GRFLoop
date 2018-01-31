@@ -34,7 +34,7 @@ setMethod(f = "coordShulf",
     dic <- foverlaps(coordp, info.obj@gene, nomatch = 0, which = TRUE)
     genep_list <- split(info.obj@gene[dic[["yid"]]][["gene"]], dic$xid)
     for (j in seq_along(nrow(coordp))) {
-      if (!j %in% names(gene_list)) {
+      if (!j %in% names(genep_list)) {
         genep_list[[j]] <- NA
       }
     }

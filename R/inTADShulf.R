@@ -15,7 +15,11 @@ setMethod(f = "inTADShulf",
       gid <- gene_list[[j]]
       tads <- unique(info.obj@gene[gene %in% gid, tadid])
       set.seed(j)
-      rand_gid <- info.obj@gene[tadid %in% tads & !gene %in% gid, sample(gene, size = length(gid), replace = FALSE)]
+      if (nrow(info.obj@gene[tadid %in% tads & !gene %in% gid]) < length(gid)) {
+        rand_gid <- info.obj@gene[tadid %in% tads, sample(gene, size = length(gid), replace = FALSE)]
+      } else {
+        rand_gid <- info.obj@gene[tadid %in% tads & !gene %in% gid, sample(gene, size = length(gid), replace = FALSE)]
+      }  
       return(rand_gid)
     })
     return(genep_list)

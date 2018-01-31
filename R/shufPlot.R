@@ -59,13 +59,24 @@ setMethod(f = "shufPlot",
     dat <- rbindlist(list(data.table(type = "Genuine", deg_pct),
       data.table(type = "Global Random", degp_pct),
       data.table(type = "In-TAD Random", degt_pct)), use.names = FALSE)
+    browser()
     # boxplot
     theme_set(theme_grey(base_size = 15))
-    p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = direction, y = value, fill = type)) +
-      geom_boxplot(position = position_dodge(width = 0.9)) +
-      labs(x = "", y = "%") +
-      theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"),
-        legend.position = "top")
+    if (nmin != nmax) {
+      p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = direction, y = value, fill = type)) +
+        geom_boxplot(position = position_dodge(width = 0.9)) +
+        labs(x = "", y = "%") +
+        theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"),
+          legend.position = "top")
+    } else {
+      dat <- dat[, N := .N, by = .(type, direction, variable, value)] %>% unique()
+      dat[, pct :=  100*N/sum(N), by = .(type, direction, variable)]
+      p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = value, y = pct, fill = type)) +
+        geom_bar(stat="identity") +
+        labs(x = "", y = "%") +
+        theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"),
+          legend.position = "top") + facet_grid(direction ~ .)
+    }
     ggsave(coregBoxpdf, p1)
   }
 )
