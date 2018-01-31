@@ -27,7 +27,9 @@ infoConst <- function(
   genef = path.expand("~/athena/Gencode/mm10/annotation/gencode.vM6.annotation.gene.bed"),
   fcf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/Daf_DiffAna_OrderFlip.xls"),
   tpmf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/TPM_rd_merge.txt"),
-  tadf = path.expand("~/athena/HIC/HIC_seq/APP/TAD_mm10.bed"), p_val = 0.01, fc_num = 1.5) {
+  tadf = path.expand("~/athena/HIC/HIC_seq/APP/TAD_mm10.bed"), 
+  p_val = 0.01, fc_num = 1.5,
+  gcor = TRUE) {
     # gene slot
     stopifnot(all(file.exists(c(genef))))
     gene <- fread(genef, header = FALSE)

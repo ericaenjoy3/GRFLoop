@@ -23,6 +23,7 @@
 inlibs <- c("data.table", "RColorBrewer", "ggplot2", "ComplexHeatmap", "circlize", "igraph", "multiplot", "gtools", "RNA", "ggpubr")
 sapply(inlibs, library, character.only = TRUE)
 setOldClass("igraph")
+
 setClassUnion("FactorOrNULL", c("factor", "NULL"))
 setClass(
   Class = "loop",
@@ -58,9 +59,10 @@ setClass(
 
 # ginfo includes info for all genes.
 setClassUnion("datatableOrNULL", c("data.table", "NULL"))
+setClassUnion("igraphOrNULL", c("igraph", "NULL"))
 setClass(
   Class = "info",
-  representation = representation(gene = "data.table", tad = "datatableOrNULL"),
+  representation = representation(gene = "data.table", tad = "datatableOrNULL", g = "igraph"),
   validity=function(object) {
     if (nrow(object@gene) < 1) {
       return("No gene information was given.")
@@ -80,6 +82,12 @@ setClass(
     if (!is.null(object@tad) && any(!c("chr", "start", "end") %in% key(object@tad))) {
       return("The tad slot must be keyed on 'chr', 'start' and 'end' columns.")
     }
+    if (!is.null(object@g) && length(E(object@g)) < 1) {
+      return("No edge in the g slot.")
+    }
+    if (!is.null(object@g) && length(V(object@g)) < 1) {
+      return("No vertices in the g slot.")
+    }    
     return(TRUE)
   }
 )
