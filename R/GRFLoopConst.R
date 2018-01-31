@@ -1,15 +1,20 @@
 loopConst <- function(loop_f, score_col) {
   dat <- fread(loop_f, header = TRUE)
-  score_nm <- colnames(dat)[score_col]
-  dat <- dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd", "PromGene", score_nm), with = FALSE]
-  setnames(dat, score_nm, "score")
+  if (!is.null(score_col)) {
+    score_nm <- colnames(dat)[score_col]
+    nscore_nm <- "score"
+    setnames(dat, score_nm, nscore_nm)
+  } else {
+    nscore_nm <- NULL
+  }
+  dat <- dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd", "PromGene", nscore_nm), with = FALSE]
   dat[, c("Prom") := paste0(PromChr, ":", PromStart, "-", PromEnd)]
   dat[, c("Enh") := paste0(EnhChr, ":", EnhStart, "-", EnhEnd)]
   dat[, c("rowid") := seq_len(nrow(dat))]
   dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd") := NULL]
-  dat <- dat[, c("Prom", "Enh", "PromGene", "score", "rowid"), with = FALSE]
+  dat <- dat[, c("Prom", "Enh", "PromGene", nscore_nm, "rowid"), with = FALSE]
   dat[, c("loop") := paste0(Prom, "_", Enh)]
-  e_dat <- unique(dat[, c("Prom", "Enh", "loop", "score"), with = FALSE])
+  e_dat <- unique(dat[, c("Prom", "Enh", "loop", nscore_nm), with = FALSE])
   v_dat <- unique(rbind(data.frame(V = dat$Prom, type = "Prom"),
     data.frame(V = dat$Enh, type = "Enh")))
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)

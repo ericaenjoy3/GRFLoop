@@ -32,3 +32,24 @@ setMethod(f = "infoFilter",
     return(list(loop.obj = loop.obj, fet.obj = fet.obj))
   }
 )
+
+setMethod(f = "infoFilter",
+  signature = c("loop", "missing", "info"),
+  definition = function(loop.obj, fet.obj, info.obj) {
+    idx <- loop.obj@loop[["PromGene"]] %in% info.obj@gene[["gene"]]
+    if (all(idx)) {
+      return(list(loop.obj = loop.obj))
+    }
+    message(sum(!idx), " loops (including duplicated) filtered out in infoFilter.")
+    # update loop.obj
+    stopifnot(length(unique(loop.obj@loop[["loop"]][!idx])) <= length(E(loop.obj@g)))    
+    loop.obj@loop <- loop.obj@loop[idx]
+    loop.obj@g <- delete.edges(loop.obj@g, which(!gsub("\\|", "_", as_ids(E(loop.obj@g))) %in% unique(loop.obj@loop[["loop"]])))
+    loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
+    if (!is.null(loop.obj@split)) {
+      loop.obj@split <- factor(loop.obj@split[idx], levels = unique(loop.obj@split[idx]))
+    }
+    validObject(loop.obj)
+    return(list(loop.obj = loop.obj))
+  }
+)

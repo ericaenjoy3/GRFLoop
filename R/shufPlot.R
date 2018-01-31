@@ -11,6 +11,7 @@ setGeneric(name = "shufPlot",
 setMethod(f = "shufPlot",
   signature = c("loop", "info"),
   definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf) {
+    dir.create(dout, showWarnings = FALSE, recursive = TRUE)
     # dedup loop in the loop slot of loop.obj
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
     loop_hash <- loop.obj@loop[kpt.idx]

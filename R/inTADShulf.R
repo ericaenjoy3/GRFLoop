@@ -11,6 +11,7 @@ setGeneric(name = "inTADShulf",
 setMethod(f = "inTADShulf",
   signature = c("list", "info"),
   definition = function(gene_list, info.obj){
+    message("beginning inTADShulf")
     genep_list <- lapply(seq_along(gene_list), function(j){
       gid <- gene_list[[j]]
       tads <- unique(info.obj@gene[gene %in% gid, tadid])
@@ -26,6 +27,7 @@ setMethod(f = "inTADShulf",
       }  
       return(rand_gid)
     })
+    message("completing inTADShulf")
     return(genep_list)
   }
 )

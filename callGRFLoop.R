@@ -71,7 +71,8 @@ for (i in seq_along(enhs)) {
   }
   if (tolower(OP) == "connect") {
     # conPlot(loop.obj, fet.obj, dout = root)
-    for (k in 2:4) {
+    for (k in 4) {
+    	message("i ", i, " k ", k)
     	shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
     		tadStatpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_tadStats.pdf")),
     		coregBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")))
