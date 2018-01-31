@@ -18,7 +18,7 @@ setMethod(f = "rmNonVarRNA",
     # update loop slot of loop class
     # update g slot of loop class
     # update split slot of loop class
-    if (between(length(kpt.idx), c(0, nrow(fet.obj@dat_list[[idx]])), incbounds = FALSE)) {
+    if (length(kpt.idx) > 0 & length(kpt.idx) < nrow(fet.obj@dat_list[[idx]])) {
       fet.obj@dat_list <- lapply(fet.obj@dat_list, function(dat)dat[kpt.idx,])
       validObject(fet.obj)
       loop.obj@loop <- loop.obj@loop[kpt.idx,]
