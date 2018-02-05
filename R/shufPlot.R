@@ -2,7 +2,7 @@
 
 #' @export shufPlot
 setGeneric(name = "shufPlot",
-  def = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf){
+  def = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf){
     standardGeneric("shufPlot")
   }
 )
@@ -10,7 +10,7 @@ setGeneric(name = "shufPlot",
 #' @rdname shufPlot-methods
 setMethod(f = "shufPlot",
   signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf) {
+  shufPlot = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf) {
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
     # dedup loop in the loop slot of loop.obj
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
@@ -54,6 +54,7 @@ setMethod(f = "shufPlot",
     genet_list <- inTADShulf(gene_list, info.obj)
     degt_pct_list <- gene2direction(genet_list, info.obj) # use gene2direction
     degt_pct <- melt(rbindlist(degt_pct_list), id.vars = "direction")
+    browser()
     # TADshipPlot
     TADshipPlot(list(gene_list, genep_list, genet_list), info.obj,
       nms = c("Genuine", "Global Random", "In-TAD Random"), pdffout = tadStatpdf)

@@ -17,6 +17,6 @@ setMethod(f = "geneCor",
   	gcor_mat <- dcast(melt(info.obj@gene[, c("gene", col_nm), with = FALSE], id.vars = "gene"), variable ~ gene)[, !"variable"] %>% cor(method = "spearman") 
     info.obj@gcor <- gcor_mat
     validObject(info.obj)
-    return(list(info.obj = info.obj))
+    return(info.obj = info.obj)
   }
 )

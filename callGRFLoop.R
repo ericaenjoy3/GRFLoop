@@ -70,14 +70,14 @@ for (i in seq_along(enhs)) {
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
   }
   if (tolower(OP) == "connect") {
-    obj.list <- geneCor(info.obj)
-    info.obj <- obj.list[["info.obj"]]
+    info.obj <- geneCor(info.obj)
     # conPlot(loop.obj, fet.obj, dout = root)
     for (k in 4) {
     	message("i ", i, " k ", k)
     	shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
     		tadStatpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_tadStats.pdf")),
-    		coregBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")))
-	}
+    		coregBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")),
+        gcorBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")))
+	  }
   }
 }
