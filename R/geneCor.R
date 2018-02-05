@@ -14,6 +14,9 @@ setMethod(f = "geneCor",
   	col_nm <- colnames(info.obj@gene)[grep("tpm_", colnames(info.obj@gene))]
   	stopifnot(length(col_nm) > 1) 
   	stopifnot(all(info.obj@gene[, apply(.SD, 1, var), .SDcols = col_nm] > 0)) 
-  	gcor_dat <- dcast(melt(info.obj@gene[, c("gene", col_nm), with = FALSE], id.vars = "gene"), variable ~ gene)[, !"variable"] %>% cor(method = "spearman")
+  	gcor_mat <- dcast(melt(info.obj@gene[, c("gene", col_nm), with = FALSE], id.vars = "gene"), variable ~ gene)[, !"variable"] %>% cor(method = "spearman") 
+    e_dat <- data.table(gid = rownames(gcor_mat), gcor_mat) %>% melt()
+    setnames(e_dat, c("v1", "v2", "coref"))
+
   }
 )
