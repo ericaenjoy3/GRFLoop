@@ -77,7 +77,8 @@ for (i in seq_along(enhs)) {
     	shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
     		tadStatpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_tadStats.pdf")),
     		coregBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")),
-        gcorBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")))
+        gcorBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")), 
+        uniqueLoopGene = TRUE)
 	  }
   }
 }
