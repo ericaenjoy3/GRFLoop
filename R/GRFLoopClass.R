@@ -60,9 +60,10 @@ setClass(
 # ginfo includes info for all genes.
 setClassUnion("datatableOrNULL", c("data.table", "NULL"))
 setClassUnion("igraphOrNULL", c("igraph", "NULL"))
+setClassUnion("matrixOrNULL", c("matrix", "NULL"))
 setClass(
   Class = "info",
-  representation = representation(gene = "data.table", tad = "datatableOrNULL", gcor = "matrix"),
+  representation = representation(gene = "data.table", tad = "datatableOrNULL", gcor = "matrixOrNULL"),
   validity=function(object) {
     if (nrow(object@gene) < 1) {
       return("No gene information was given.")
