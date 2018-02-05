@@ -62,7 +62,7 @@ setClassUnion("datatableOrNULL", c("data.table", "NULL"))
 setClassUnion("igraphOrNULL", c("igraph", "NULL"))
 setClass(
   Class = "info",
-  representation = representation(gene = "data.table", tad = "datatableOrNULL", g = "igraph"),
+  representation = representation(gene = "data.table", tad = "datatableOrNULL", gcor = "matrix"),
   validity=function(object) {
     if (nrow(object@gene) < 1) {
       return("No gene information was given.")
@@ -82,12 +82,15 @@ setClass(
     if (!is.null(object@tad) && any(!c("chr", "start", "end") %in% key(object@tad))) {
       return("The tad slot must be keyed on 'chr', 'start' and 'end' columns.")
     }
-    if (!is.null(object@g) && length(E(object@g)) < 1) {
-      return("No edge in the g slot.")
+    if (!is.null(object@gcor) && class(object@gcor) != "matrix") {
+      return("gcor slot must be matrix.")
     }
-    if (!is.null(object@g) && length(V(object@g)) < 1) {
-      return("No vertices in the g slot.")
+    if (!is.null(object@gcor) && dim(object@gcor)[1] != dim(object@gcor)[2]) {
+      return("gcor slot matrix must be with identical dimensions.")
     }    
+    if (!is.null(object@gcor) && class(object@gcor[,1]) != "numeric") {
+      return("gcor slot matrix must be in the numeric class.")
+    }
     return(TRUE)
   }
 )

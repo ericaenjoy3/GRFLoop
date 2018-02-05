@@ -70,6 +70,8 @@ for (i in seq_along(enhs)) {
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
   }
   if (tolower(OP) == "connect") {
+    obj.list <- geneCor(info.obj)
+    info.obj <- obj.list[["info.obj"]]
     # conPlot(loop.obj, fet.obj, dout = root)
     for (k in 4) {
     	message("i ", i, " k ", k)
