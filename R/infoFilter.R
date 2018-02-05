@@ -19,6 +19,7 @@ setMethod(f = "infoFilter",
     # update loop.obj
     stopifnot(length(unique(loop.obj@loop[["loop"]][!idx])) <= length(E(loop.obj@g)))    
     loop.obj@loop <- loop.obj@loop[idx]
+    loop.obj@loop[["rowid"]] <- 1:nrow(loop.obj@loop)
     loop.obj@g <- delete.edges(loop.obj@g, which(!gsub("\\|", "_", as_ids(E(loop.obj@g))) %in% unique(loop.obj@loop[["loop"]])))
     loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
     if (!is.null(loop.obj@split)) {

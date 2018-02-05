@@ -7,8 +7,8 @@ for (j in seq_along(libfs)) {
   message("source file ", j, " ",libfs[j])
   source(libfs[j])
 }
-# OP either connect or heatmap
-OP <- "connect"
+# OP either connect, heatmap, or promgene
+OP <- "promgene"
 enhs <- c("SuperEnh", "NormalEnh") #
 root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP"
 ord <- c("RNA", "KLF4", "ATAC", "H3K27AC", "YY1")
@@ -42,10 +42,10 @@ for (i in seq_along(enhs)) {
   fet.obj <- obj.list[["fet.obj"]]
   if (tolower(OP) == "heatmap") {
     # rm non variables looping
-    message("rmNonVarRNA")
-    obj.list <- rmNonVarRNA(loop.obj, fet.obj)
+    message("rmNonVarRNA scale_row")
+    obj.list <- rmNonVarRNA(loop.obj, fet.obj, scale_row = TRUE)
     loop.obj <- obj.list[["loop.obj"]]
-    fet.obj <- obj.list[["fet.obj"]]    
+    fet.obj <- obj.list[["fet.obj"]]
     # quantile loops
     message("quantConRm")
     obj.list <- quantConRm(loop.obj, fet.obj, vType = "Enh")
@@ -68,6 +68,14 @@ for (i in seq_along(enhs)) {
     message("mViolinPlot")
     mViolinPlot(loop.obj, fet.obj,
       pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
+  }
+  if (tolower(OP) == "promgene") {
+    # rm non variables looping
+    message("rmNonVarRNA scale_all")
+    obj.list <- rmNonVarRNA(loop.obj, fet.obj, scale_all = TRUE)
+    loop.obj <- obj.list[["loop.obj"]]
+    fet.obj <- obj.list[["fet.obj"]]
+
   }
   if (tolower(OP) == "connect") {
     info.obj <- geneCor(info.obj)

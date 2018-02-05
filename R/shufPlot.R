@@ -11,27 +11,11 @@ setGeneric(name = "shufPlot",
 setMethod(f = "shufPlot",
   signature = c("loop", "info"),
   definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf, uniqueLoopGene) {
+
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
-    # dedup loop in the loop slot of loop.obj
-    kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
-    loop_hash <- loop.obj@loop[kpt.idx]
-    setkeyv(loop_hash, "loop")
-    # identify incident loop
-    ve <- V(loop.obj@g)$name[V(loop.obj@g)$type == "Enh"]
-    ed <- incident_edges(loop.obj@g, ve)
-    idx <- sapply(ed, length) >= nmin & sapply(ed, length) <= nmax
-    # extract PromGene from loop slot of loop.obj
-    gene_list <- lapply(ed[idx], function(es, loop_hash){
-      lp <- gsub("|", "_", as_ids(es), fixed = TRUE)
-      gs <- loop_hash[lp][["PromGene"]]
-      stopifnot(all(!is.na(gs)))
-      return(gs)
-    }, loop_hash = loop_hash)
-    if (uniqueLoopGene) {
-      gene_list <- unique(gene_list)
-    }
-    idx <- which(sapply(gene_list, function(vec)length(unique(vec))) >= nmin)
-    gene_list <- gene_list[idx]
+
+    gene_list <- geneListProc(loop.obj, info.obj, nmin, nmax, type = "Enh", uniqueLoopGene = uniqueLoopGene)
+    
     # deg labels
     deg_pct_list <- gene2direction(gene_list, info.obj) # use gene2direction
     deg_pct <- melt(rbindlist(deg_pct_list), id.vars = "direction")

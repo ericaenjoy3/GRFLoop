@@ -11,10 +11,11 @@ loopConst <- function(loop_f, score_col) {
   dat[, c("Prom") := paste0(PromChr, ":", PromStart, "-", PromEnd)]
   dat[, c("Enh") := paste0(EnhChr, ":", EnhStart, "-", EnhEnd)]
   dat[, c("rowid") := seq_len(nrow(dat))]
+  dat[, c("dist") := ifelse(EnhChr == PromChr, abs(EnhEnd - PromEnd), NA)]
   dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd") := NULL]
-  dat <- dat[, c("Prom", "Enh", "PromGene", nscore_nm, "rowid"), with = FALSE]
+  dat <- dat[, c("Prom", "Enh", "PromGene", "dist", nscore_nm, "rowid"), with = FALSE]
   dat[, c("loop") := paste0(Prom, "_", Enh)]
-  e_dat <- unique(dat[, c("Prom", "Enh", "loop", nscore_nm), with = FALSE])
+  e_dat <- unique(dat[, c("Prom", "Enh", "loop", "dist", nscore_nm), with = FALSE])
   v_dat <- unique(rbind(data.frame(V = dat$Prom, type = "Prom"),
     data.frame(V = dat$Enh, type = "Enh")))
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
