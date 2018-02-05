@@ -30,6 +30,8 @@ setMethod(f = "shufPlot",
     if (uniqueLoopGene) {
       gene_list <- unique(gene_list)
     }
+    idx <- which(sapply(gene_list, function(vec)length(unique(vec))) >= nmin)
+    gene_list <- gene_list[idx]
     # deg labels
     deg_pct_list <- gene2direction(gene_list, info.obj) # use gene2direction
     deg_pct <- melt(rbindlist(deg_pct_list), id.vars = "direction")
