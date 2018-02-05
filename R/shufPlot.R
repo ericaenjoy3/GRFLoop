@@ -10,7 +10,7 @@ setGeneric(name = "shufPlot",
 #' @rdname shufPlot-methods
 setMethod(f = "shufPlot",
   signature = c("loop", "info"),
-  shufPlot = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf) {
+  definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf) {
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
     # dedup loop in the loop slot of loop.obj
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
@@ -61,7 +61,7 @@ setMethod(f = "shufPlot",
     dat <- rbindlist(list(data.table(type = "Genuine", deg_pct),
       data.table(type = "Global Random", degp_pct),
       data.table(type = "In-TAD Random", degt_pct)), use.names = FALSE)
-    # boxplot
+    # boxplot of co-regulation labels
     theme_set(theme_grey(base_size = 15))
     if (nmin != nmax) {
       p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = direction, y = value, fill = type)) +
@@ -83,6 +83,10 @@ setMethod(f = "shufPlot",
         geom_text(aes(label = N), hjust = 0.5, vjust = -0.5, size = 4, position = position_dodge(width = 0.9))
     }
     ggsave(coregBoxpdf, p1)
+    # correlation coefficients
+    gene_cor <- gene2pairwiseCor(gene_list, info.obj)
+    genep_cor <- gene2pairwiseCor(genep_list, info.obj)
+    genet_cor <- gene2pairwiseCor(genet_list, info.obj)
   }
 )
 
