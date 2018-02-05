@@ -33,10 +33,12 @@ setMethod(f = "linePlot",
     rna_ldat <- melt(rna_dat, id.vars = "grp")
 
     plot_dat <- rna_ldat[, list(
+      .SD[,.N],
       sapply(.SD, function(x){mean(x)}),
       sapply(.SD, function(x){mean(x) + sd(x)/sqrt(length(x))}),
       sapply(.SD, function(x){mean(x) - sd(x)/sqrt(length(x))})), by = c("grp", "variable")]
-    setnames(plot_dat, paste0("V", 1:3), c("mean", "upside", "dnside"))
+    setnames(plot_dat, paste0("V", 1:4), c("N", "mean", "upside", "dnside"))
+    plot_dat[, c("grp") := paste(grp, "(", N, ")")]
 
     # ggline(rna_ldat, x = "variable", y = "value", color = "variable", palette = "jco", add = "median_iqr", facet.by = "grp")
     theme_set(theme_grey(base_size=15))
@@ -44,7 +46,7 @@ setMethod(f = "linePlot",
     geom_line(aes(color = factor(grp))) +
     facet_grid(.~grp) +
     geom_ribbon(data = plot_dat, aes(ymin = dnside, ymax = upside), fill = "grey70", alpha = 0.4) +
-    labs(x = "", y = "Z score") +
+    labs(x = "", y = "Z scores") +
     coord_cartesian(ylim = c(-1, 1)) + 
     theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"), legend.position = "top")
 

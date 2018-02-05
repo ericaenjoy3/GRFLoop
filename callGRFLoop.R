@@ -20,7 +20,7 @@ info.obj <- TPMInfo(info.obj)
 for (i in seq_along(enhs)) {
   enhfs <- rev(dir(file.path(root, enhs[i]), "*Enh_heatmap.mat", recur = TRUE, full = TRUE))
   promfs <- rev(dir(file.path(root, enhs[i]), "*Prom_heatmap.mat", recur = TRUE, full = TRUE))
-  if (OP == "heatmap") {
+  if (OP %in% c("heatmap", "promgene")) {
     enhfs <- enhfs[grepl("/(RNA|ATAC|KLF4|H3K27AC|YY1)/", enhfs, ignore.case = TRUE)]
     promfs <- promfs[grepl("/(RNA|ATAC|KLF4|H3K27AC|YY1)/", promfs, ignore.case = TRUE)]
     names(enhfs) <- basename(dirname(enhfs))
@@ -82,13 +82,13 @@ for (i in seq_along(enhs)) {
   if (tolower(OP) == "connect") {
     info.obj <- geneCor(info.obj)
     # conPlot(loop.obj, fet.obj, dout = root)
-    for (k in 2:4) {
-    	message("i ", i, " k ", k)
-    	shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
-    		tadStatpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_tadStats.pdf")),
-    		coregBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")),
-        gcorBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_gcorBox.pdf")), 
-        uniqueLoopGene = TRUE)
-	  }
+   #  for (k in 2:4) {
+   #  	message("i ", i, " k ", k)
+   #  	shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
+   #  		tadStatpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_tadStats.pdf")),
+   #  		coregBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_coregBox.pdf")),
+   #      gcorBoxpdf = file.path(root, enhs[i], paste0(enhs[i], "_nmin", k, "_nmax", k, "_gcorBox.pdf")), 
+   #      uniqueLoopGene = TRUE)
+	  # }
   }
 }
