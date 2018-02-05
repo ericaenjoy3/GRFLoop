@@ -75,7 +75,9 @@ for (i in seq_along(enhs)) {
     obj.list <- rmNonVarRNA(loop.obj, fet.obj, scale_all = TRUE)
     loop.obj <- obj.list[["loop.obj"]]
     fet.obj <- obj.list[["fet.obj"]]
-
+    message("linePlot")
+    linePlot(loop.obj, info.obj, fet.obj, linepdf = file.path(root, enhs[i], paste0(enhs[i], "_linePlot.pdf")),
+       uniqueLoopGene = TRUE)
   }
   if (tolower(OP) == "connect") {
     info.obj <- geneCor(info.obj)
