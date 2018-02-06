@@ -20,16 +20,16 @@ info.obj <- TPMInfo(info.obj)
 for (i in seq_along(enhs)) {
   enhfs <- rev(dir(file.path(root, enhs[i]), "*Enh_heatmap.mat", recur = TRUE, full = TRUE))
   promfs <- rev(dir(file.path(root, enhs[i]), "*Prom_heatmap.mat", recur = TRUE, full = TRUE))
-  if (OP %in% c("heatmap", "promgene")) {
-    enhfs <- enhfs[grepl("/(RNA|ATAC|KLF4|H3K27AC|YY1)/", enhfs, ignore.case = TRUE)]
-    promfs <- promfs[grepl("/(RNA|ATAC|KLF4|H3K27AC|YY1)/", promfs, ignore.case = TRUE)]
-    names(enhfs) <- basename(dirname(enhfs))
-    names(promfs) <- basename(dirname(promfs))
-    stopifnot(all(names(enhfs) %in% ord))
-    stopifnot(all(names(promfs) %in% ord))
-    enhfs <- enhfs[ord]
-    promfs <- promfs[ord]
-  }
+  # if (OP %in% c("heatmap", "promgene")) {
+  #   enhfs <- enhfs[grepl("/(RNA|ATAC|KLF4|H3K27AC|YY1)/", enhfs, ignore.case = TRUE)]
+  #   promfs <- promfs[grepl("/(RNA|ATAC|KLF4|H3K27AC|YY1)/", promfs, ignore.case = TRUE)]
+  #   names(enhfs) <- basename(dirname(enhfs))
+  #   names(promfs) <- basename(dirname(promfs))
+  #   stopifnot(all(names(enhfs) %in% ord))
+  #   stopifnot(all(names(promfs) %in% ord))
+  #   enhfs <- enhfs[ord]
+  #   promfs <- promfs[ord]
+  # }
   fet_fs <- c(enhfs, promfs)
   loop_f <- dir(file.path(root, "doc"), paste0("*", enhs[i], "_H3K27AC_ESC.txt"), recur = TRUE, full = TRUE)
   # constructing loop and fet objects
