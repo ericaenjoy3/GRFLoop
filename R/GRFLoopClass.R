@@ -20,7 +20,7 @@
 #' @description Store cluster sets in a bed object.
 #' @slot igraph data.frame object
 #' @exportClass fet
-inlibs <- c("data.table", "RColorBrewer", "ggplot2", "ComplexHeatmap", "circlize", "igraph", "multiplot", "gtools", "RNA", "ggpubr")
+inlibs <- c("data.table", "RColorBrewer", "ggplot2", "ComplexHeatmap", "circlize", "igraph", "multiplot", "gtools", "RNA", "ggpubr", "gridExtra")
 sapply(inlibs, library, character.only = TRUE)
 setOldClass("igraph")
 

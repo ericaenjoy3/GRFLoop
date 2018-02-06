@@ -10,7 +10,8 @@ setGeneric(name = "mViolinPlot",
 #' @rdname mViolinPlot-methods
 setMethod(f = "mViolinPlot",
   signature = c("loop", "fet"),
-  definition = function(loop.obj, fet.obj, pdffout){
+  definition = function(loop.obj, fet.obj, dout){
+    dir.create(dout, showWarnings = FALSE, recursive = TRUE)
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
     # fetures
     dat <- rbindlist(
@@ -40,11 +41,17 @@ setMethod(f = "mViolinPlot",
     #   axis.text.x = element_text(angle = 90, hjust = 1))
     # alternative plot
     cmp <- data.table(combn(unique(ndat[["split"]]), 2))
-    p1 <- ggviolin(ndat, x = "split", y = "value", fill = "split", 
+    ndat_list <- split(ndat, ndat[["sms"]])
+    plist <- lapply(seq_along(ndat_list), function(j, ndat_list, dout) {
+      pdffout <- file.path(dout, paste0(names(dat_list)[j], "_medianViolin.pdf"))
+      p1 <- ggviolin(ndat_list[[j]], x = "split", y = "value", fill = "split", 
       add = "boxplot", add.params = list(fill = "white"), 
-      facet.by = c("sms", "grps"), xlab = "", ylab = "", legend.title = "")+
-    stat_compare_means(comparisons = cmp)
-    p1 <- facet(p1, scales = "free", facet.by = c("sms", "grps"))
-    ggsave(filename = pdffout, p1)
+      facet.by = c("sms", "grps"), xlab = "", ylab = "", 
+      legend.title = "", title = names(ndat_list)[j]) +
+      stat_compare_means(comparisons = cmp)
+      p1 <- facet(p1, scales = "free", facet.by = c("grps"))
+      ggsave(filename = pdffout, p1)
+      return(p1)
+    })   
   }
 )

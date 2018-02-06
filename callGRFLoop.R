@@ -8,7 +8,7 @@ for (j in seq_along(libfs)) {
   source(libfs[j])
 }
 # OP either connect, heatmap, or promgene
-OP <- "promgene"
+OP <- "heatmap"
 enhs <- c("SuperEnh", "NormalEnh") #
 root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP"
 ord <- c("RNA", "KLF4", "ATAC", "H3K27AC", "YY1")
@@ -76,7 +76,7 @@ for (i in seq_along(enhs)) {
     loop.obj <- obj.list[["loop.obj"]]
     fet.obj <- obj.list[["fet.obj"]]
     message("linePlot")
-    linePlot(loop.obj, info.obj, fet.obj, linepdf = file.path(root, enhs[i], paste0(enhs[i], "_linePlot.pdf")),
+    linePlot(loop.obj, info.obj, fet.obj, linepdf = file.path(root, enhs[i], paste0(enhs[i], "LinkedProm_linePlot.pdf")),
        uniqueLoopGene = TRUE)
   }
   if (tolower(OP) == "connect") {
