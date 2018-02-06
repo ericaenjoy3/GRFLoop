@@ -67,7 +67,7 @@ for (i in seq_along(enhs)) {
     # violin plot
     message("mViolinPlot")
     mViolinPlot(loop.obj, fet.obj,
-      pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_medianViolin.pdf"))
+      dout = file.path(root, enhs[i], "mViolinPlot"))
   }
   if (tolower(OP) == "promgene") {
     # rm non variables looping

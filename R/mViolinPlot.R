@@ -52,6 +52,6 @@ setMethod(f = "mViolinPlot",
       p1 <- facet(p1, scales = "free", facet.by = c("grps"))
       ggsave(filename = pdffout, p1)
       return(p1)
-    })   
+    }, ndat_list = ndat_list, dout = dout)   
   }
 )
