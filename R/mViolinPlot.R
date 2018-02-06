@@ -43,7 +43,7 @@ setMethod(f = "mViolinPlot",
     cmp <- data.table(combn(unique(ndat[["split"]]), 2))
     ndat_list <- split(ndat, ndat[["sms"]])
     plist <- lapply(seq_along(ndat_list), function(j, ndat_list, dout) {
-      pdffout <- file.path(dout, paste0(names(dat_list)[j], "_medianViolin.pdf"))
+      pdffout <- file.path(dout, paste0(names(ndat_list)[j], "_medianViolin.pdf"))
       p1 <- ggviolin(ndat_list[[j]], x = "split", y = "value", fill = "split", 
       add = "boxplot", add.params = list(fill = "white"), 
       facet.by = c("sms", "grps"), xlab = "", ylab = "", 

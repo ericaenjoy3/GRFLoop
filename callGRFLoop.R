@@ -60,10 +60,10 @@ for (i in seq_along(enhs)) {
     message("ceilling")
     dat_list <- ceilFet(fet.obj)
     # heatmap
-    message("multiHeatPlot")
-    multiHeatPlot(loop.obj, dat_list[["fet.obj"]], dat_list[["rng_list"]],
-      pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_heatmap.pdf"),
-      scheme = ifelse(order_method == "last_column", "wr", "br"))
+    # message("multiHeatPlot")
+    # multiHeatPlot(loop.obj, dat_list[["fet.obj"]], dat_list[["rng_list"]],
+    #   pdffout = paste0(root, "/", enhs[i], "/", enhs[i], "_", order_method, "_heatmap.pdf"),
+    #   scheme = ifelse(order_method == "last_column", "wr", "br"))
     # violin plot
     message("mViolinPlot")
     mViolinPlot(loop.obj, fet.obj,
