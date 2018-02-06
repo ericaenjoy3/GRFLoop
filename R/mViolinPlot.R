@@ -2,7 +2,7 @@
 
 #' @export mViolinViolin
 setGeneric(name = "mViolinPlot",
-  def = function(loop.obj, fet.obj, pdffout){
+  def = function(loop.obj, fet.obj, dout){
     standardGeneric("mViolinPlot")
   }
 )
