@@ -1,4 +1,7 @@
 loopConst <- function(loop_f, score_col) {
+  # g slot: edge: etype, dist, score, cluster
+  # g slot: vertex: name, vtype and gene
+  # loop slot: data.table of loop and rowid 
   dat <- fread(loop_f, header = TRUE)
   if (!is.null(score_col)) {
     score_nm <- colnames(dat)[score_col]
@@ -7,17 +10,21 @@ loopConst <- function(loop_f, score_col) {
   } else {
     nscore_nm <- NULL
   }
+  browser()
+  # filter columns
   dat <- dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd", "PromGene", nscore_nm), with = FALSE]
   dat[, c("Prom") := paste0(PromChr, ":", PromStart, "-", PromEnd)]
   dat[, c("Enh") := paste0(EnhChr, ":", EnhStart, "-", EnhEnd)]
   dat[, c("rowid") := seq_len(nrow(dat))]
   dat[, c("dist") := ifelse(EnhChr == PromChr, abs(EnhEnd - PromEnd), NA)]
   dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd") := NULL]
+  # filter columns
   dat <- dat[, c("Prom", "Enh", "PromGene", "dist", nscore_nm, "rowid"), with = FALSE]
-  dat[, c("loop") := paste0(Prom, "_", Enh)]
-  e_dat <- unique(dat[, c("Prom", "Enh", "loop", "dist", nscore_nm), with = FALSE])
-  v_dat <- unique(rbind(data.frame(V = dat$Prom, type = "Prom"),
-    data.frame(V = dat$Enh, type = "Enh")))
+  dat[, c("loop", "etype") := list(paste0(Prom, "|", Enh), "Prom|Enh")]
+  # filter columns
+  e_dat <- unique(dat[, c("Prom", "Enh", "etype", "dist", nscore_nm), with = FALSE])
+  v_dat <- unique(rbind(data.frame(V = dat[["Prom"]], vtype = "Prom"),
+    data.frame(V = dat$Enh, vtype = "Enh")))
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
   loop_slot <- dat[, c("loop", "PromGene", "rowid"), with = FALSE]
   loop.obj <- new("loop", g = g, loop = loop_slot)
