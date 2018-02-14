@@ -1,9 +1,5 @@
 #!/usr/bin/env Rscript
 
-libfs <- c("data.table", "tidyverse", "igraph", "ggplot2", "argparse")
-sapply(libfs, library, character.only = TRUE)
-options(scipen = 999)
-
 ###
 # Processing H3K27AC Hi-ChIP Interaction Data
 # Filters:
@@ -12,19 +8,32 @@ options(scipen = 999)
 # (3) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping by overlaps with K27ac specified.
 ###
 
+libfs <- c("data.table", "tidyverse", "igraph", "RJSONIO", "ggplot2", "argparse")
+sapply(libfs, library, character.only = TRUE)
+options(scipen = 999)
+
 parser <- ArgumentParser()
-parser$add_argument("--fin", type = "character", required = TRUE,
+parser$add_argument("--hichip", type = "character", required = FALSE,
   help = "A query loop file with columns being locus 1 and 2, genes 1 and 2 and optional columns.")
-parser$add_argument("--chipf", type = "character", required = TRUE,
+parser$add_argument("--vchip", type = "character", required = FALSE,
   help = "h3k27ac chip file to determine enhancers.")
+parser$add_argument("--echip", type = "character", required = FALSE,
+  help = "enhancers coordinate file to overlap anhcors for determining enhancers.")
 parser$add_argument("--intsec", action="store_true",
   help = "anchors overlapped by multiple chipf to be called enhancers.")
-parser$add_argument("--bedout", type = "character", required = TRUE,
+parser$add_argument("--bedout", type = "character", required = FALSE,
   help = "Output bed-like file of interactions.")
+parser$add_argument("--json", type = "character", required = FALSE,
+  help = "json configuration file.")
 args <- parser$parse_args()
+
+if (!"json" %in% names(args)) {
+	args <- c(args["intsec"], fromJSON(args[["json"]]))
+}
+stopifnot(all(c("hichip", "vchip", "bedout") %in% names(args)))
 attach(args)
 
-dat <- fread(fin, header = TRUE, sep = "\t", na.strings="N/A")
+dat <- fread(hichip, header = TRUE, sep = "\t", na.strings="N/A")
 setnames(dat, colnames(dat)[1:4], c("loc1", "loc2", "gene1", "gene2"))
 dat <- dat %>% separate(
 	loc1, c("loc1Chr", "loc1Start", "loc1End"), sep = "[:-]", remove = TRUE, convert = TRUE) %>% separate(
@@ -58,37 +67,42 @@ dat <- dat %>%
 dat[, loop := paste0(loc1Chr, ":", loc1Start, "-", loc1End, "_", loc2Chr, ":", loc2Start, "-", loc2End)]
 
 # (4) Filter by at least one of the two anchor overlapped by H3K27AC ChIP-seq
-chip_list <- lapply(seq_along(chipf), function(j){
-	chip <- fread(chipf[j], header = FALSE)[, 1:3] %>%
-		setnames(c("chr", "start", "end"))
-	chip[, start := start + 1]
-	setkeyv(chip, colnames(chip))
-	return(chip)
-}) 
+anchorOlap <- function(dat, fs) {
+	chip_list <- lapply(seq_along(fs), function(j){
+		chip <- fread(fs[j], header = FALSE)[, 1:3] %>%
+			setnames(c("chr", "start", "end"))
+		chip[, start := start + 1]
+		setkeyv(chip, colnames(chip))
+		return(chip)
+	})
+	matchloc_list <- lapply(chip_list, function(chip){
+		setkeyv(dat, c("loc1Chr", "loc1Start", "loc1End"))
+		matchLoc1Loop <- dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop]
+		setkeyv(dat, c("loc2Chr", "loc2Start", "loc2End"))
+		matchLoc2Loop <- dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop]
+		return(list(matchLoc1Loop = matchLoc1Loop, matchLoc2Loop = matchLoc2Loop)) 
+	})
+	return(matchloc_list)
+}
 
-matchloc_list <- lapply(chip_list, function(chip){
-	setkeyv(dat, c("loc1Chr", "loc1Start", "loc1End"))
-	matchLoc1Loop <- dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop]
-	setkeyv(dat, c("loc2Chr", "loc2Start", "loc2End"))
-	matchLoc2Loop <- dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop]
-	return(list(matchLoc1Loop = matchLoc1Loop, matchLoc2Loop = matchLoc2Loop)) 
-})
-matchloc <- unlist(matchloc_list, use.names = FALSE)
+vmatchloc_list <- anchorOlap(dat, vchip)
+matchloc <- unlist(vmatchloc_list, use.names = FALSE)
 dat <- dat[loop %in% matchloc]
 
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping
-matchloc_spec <- if (intsec & length(matchloc_list) > 1) {
-	func <-ifelse(intsec & length(matchloc_list) >1, "intersect", "union")
-	message(func, " on matchloc_list")
-	maxlen <- max(sapply(matchloc_list, length))
-	lapply(seq(maxlen),function(i) Reduce(func,lapply(matchloc, "[[", i))) %>% 
+ematchloc_list <- anchorOlap(dat, echip)
+matchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
+	func <-ifelse(intsec & length(ematchloc_list) >1, "intersect", "union")
+	message(func, " on ematchloc_list")
+	maxlen <- max(sapply(ematchloc_list, length))
+	lapply(seq(maxlen),function(i) Reduce(func,lapply(ematchloc, "[[", i))) %>% 
 		unlist()
 } else {
-	matchloc_list[[1]]
+	ematchloc_list[[1]]
 }
 
-dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ifelse(loop %in% matchloc_spec[[1]], "Enh", NA)),
-	ifelse(!is.na(gene2), "Prom", ifelse(loop %in% matchloc_spec[[2]], "Enh", NA)))] %>%
+dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ifelse(loop %in% ematchloc_spec[[1]], "Enh", NA)),
+	ifelse(!is.na(gene2), "Prom", ifelse(loop %in% ematchloc_spec[[2]], "Enh", NA)))] %>%
 	subset(subset = !(is.na(loc1type) | is.na(loc2type)))
 
 dat[loc1type == "Enh" & loc2type == "Prom", 
