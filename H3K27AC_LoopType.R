@@ -91,6 +91,7 @@ vmatchloc_list <- anchorOlap(dat, vchip)
 matchloc <- unlist(vmatchloc_list, use.names = FALSE)
 dat <- dat[loop %in% matchloc]
 
+save(list=ls(), file = "test.rdat")
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping
 if ("echip" %in% names(args)) {
 	ematchloc_list <- anchorOlap(dat, echip)
