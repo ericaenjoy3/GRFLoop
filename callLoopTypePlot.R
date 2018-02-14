@@ -7,7 +7,7 @@ for (j in seq_along(libfs)) {
   message("source file ", j, " ",libfs[j])
   source(libfs[j])
 }
-libary(argparse)
+library(argparse)
 
 parser <- ArgumentParser()
 parser$add_argument("--hichip", type = "character", required = FALSE,
