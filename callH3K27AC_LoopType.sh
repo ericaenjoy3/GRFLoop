@@ -4,7 +4,8 @@ SDR=~/athena/ComScripts/RPack/GRFLoop
 DIN=~/athena/Andreas_H3K27AC_HICHIP/doc
 vchip=()
 
-for type in MEF; do 
+sm_grp=(ESC MEF)
+for type in ${sm_grp[@]}; do 
 	vchip+=(~/athena/CHIP/CHIP_seq/MergeRep/mergepeak/ReProgram/H3K27AC_${type}/H3K27AC_${type}_common.bed)
 done
 
@@ -24,7 +25,7 @@ done
 # --bedout $DIN/${sm}_H3K27AC_10KB_LoopType.txt"
 # eval $cmd
 
-sm=MEF
+sm=CONSTANT
 cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --hichip $DIN/Spec_H3K27AC_${sm}.txt \
 --vchip ${vchip[@]} \

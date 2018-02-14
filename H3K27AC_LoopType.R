@@ -15,7 +15,7 @@ options(scipen = 999)
 parser <- ArgumentParser()
 parser$add_argument("--hichip", type = "character", required = FALSE,
   help = "A query loop file with columns being locus 1 and 2, genes 1 and 2 and optional columns.")
-parser$add_argument("--vchip", type = "character", required = FALSE,
+parser$add_argument("--vchip", type = "character", nargs='+', required = FALSE,
   help = "h3k27ac chip file to determine enhancers.")
 parser$add_argument("--echip", type = "character", required = FALSE,
   help = "enhancers coordinate file to overlap anhcors for determining enhancers.")
