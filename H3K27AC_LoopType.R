@@ -8,7 +8,7 @@
 # (3) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping by overlaps with K27ac specified.
 ###
 
-libfs <- c("data.table", "tidyverse", "igraph", "RJSONIO", "ggplot2", "argparse")
+libfs <- c("data.table", "tidyverse", "gtools", "igraph", "RJSONIO", "ggplot2", "argparse")
 sapply(libfs, library, character.only = TRUE)
 options(scipen = 999)
 
@@ -114,7 +114,9 @@ dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ife
 dat[loc1type == "Enh" & loc2type == "Prom", 
 	c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type") := 
 	.(loc2Chr, loc2Start, loc2End, loc1Chr, loc1Start, loc2End, gene2, gene1, loc2type, loc1type)]
-fwrite(dat[, c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")], 
+dat <- dat[, c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")]
+dat[, `:=`(loc1Start=loc1Start-1, loc2Start=loc2Start-1)]
+fwrite(dat, 
 	file = bedout, 
 	sep = "\t", 
 	row.names = FALSE,
