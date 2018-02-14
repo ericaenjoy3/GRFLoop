@@ -15,3 +15,10 @@ parser$add_argument("--hichip", type = "character", required = FALSE,
 parser$add_argument("--pdffout", type = "character", required = FALSE,
   help = "Loop type bar plots.")
 args <- parser$parse_args()
+attach(args)
+
+
+message("constructing loop and fet objects")
+loop.obj <- loopConst(hichip)
+loopTypePlot(loop.obj, pdffout)
+message("done with plotting")
