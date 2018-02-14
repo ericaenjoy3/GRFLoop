@@ -91,7 +91,7 @@ dat <- dat[loop %in% matchloc]
 
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping
 ematchloc_list <- anchorOlap(dat, echip)
-matchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
+ematchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
 	func <-ifelse(intsec & length(ematchloc_list) >1, "intersect", "union")
 	message(func, " on ematchloc_list")
 	maxlen <- max(sapply(ematchloc_list, length))
