@@ -19,6 +19,6 @@ attach(args)
 
 
 message("constructing loop and fet objects")
-loop.obj <- loopConst(hichip)
+loop.obj <- loopConst(hichip, score_col = NULL)
 loopTypePlot(loop.obj, pdffout)
 message("done with plotting")
