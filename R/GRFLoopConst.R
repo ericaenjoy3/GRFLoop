@@ -27,8 +27,8 @@ loopConst <- function(loop_f, score_col) {
   dat[, c("loop", "etype") := list(paste0(loc1, "|", loc2), paste0(loc1type, "|", loc2type))]
   # filter columns
   e_dat <- unique(dat[, c("loc1", "loc2", "loop", "etype", "dist", nscore_nm, cluster_nm), with = FALSE])
-  v_dat <- unique(rbind(data.frame(name = dat[["loc1"]], vtype = dat[["loc1type"]]),
-    data.frame(name = dat[["loc2"]], vtype = dat[["loc2type"]])))
+  v_dat <- rbind(data.table(name = dat[["loc1"]], vtype = dat[["loc1type"]]),
+    data.table(name = dat[["loc2"]], vtype = dat[["loc2type"]])) %>% unique()
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
   loop_slot <- dat[, c("loop", "gene1", "gene2", "rowid"), with = FALSE]
   loop.obj <- new("loop", g = g, loop = loop_slot)
