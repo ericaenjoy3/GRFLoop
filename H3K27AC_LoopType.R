@@ -90,7 +90,11 @@ matchloc <- unlist(vmatchloc_list, use.names = FALSE)
 dat <- dat[loop %in% matchloc]
 
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping
-ematchloc_list <- anchorOlap(dat, echip)
+if ("echip" %in% names(args)) {
+	ematchloc_list <- anchorOlap(dat, echip)
+} else {
+	ematchloc_list <- vmatchloc_list
+}
 ematchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
 	func <-ifelse(intsec & length(ematchloc_list) >1, "intersect", "union")
 	message(func, " on ematchloc_list")
