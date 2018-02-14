@@ -9,12 +9,13 @@ for type in ESC; do
 done
 
 sm=ESC
+enh_type=Normal
 cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --hichip $DIN/${sm}_H3K27AC.txt \
 --vchip ${chipf[@]} \
---bedout $DIN/${sm}_H3K27AC_10KB_Super_LoopType.txt \
---echip ~/athena/CHIP/PubData/Whyte/doc/Whyte-SuperEnhGencodeEnh.bed"
-eval $cmd
+--bedout $DIN/${sm}_H3K27AC_10KB_${enh_type}_LoopType.txt \
+--echip ~/athena/CHIP/PubData/Whyte/doc/Whyte-${enh_type}EnhGencodeEnh.bed"
+echo $cmd
 
 sm=ESC
 cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \

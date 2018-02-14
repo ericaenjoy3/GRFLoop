@@ -1,7 +1,7 @@
 loopConst <- function(loop_f, score_col) {
   # g slot: edge: etype, dist, score, cluster
-  # g slot: vertex: name, vtype and gene
-  # loop slot: data.table of loop and rowid 
+  # g slot: vertex: name, vtype
+  # loop slot: data.table of loop, gene1, gene2 and rowid 
   dat <- fread(loop_f, header = TRUE)
   if (!is.null(score_col)) {
     score_nm <- colnames(dat)[score_col]
@@ -10,23 +10,27 @@ loopConst <- function(loop_f, score_col) {
   } else {
     nscore_nm <- NULL
   }
-  browser()
+  cluster_nm <- if (any(grepl("cluster", colnames(dat)))) {
+    "cluster"
+  } else {
+    NULL
+  }
   # filter columns
-  dat <- dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd", "PromGene", nscore_nm), with = FALSE]
-  dat[, c("Prom") := paste0(PromChr, ":", PromStart, "-", PromEnd)]
-  dat[, c("Enh") := paste0(EnhChr, ":", EnhStart, "-", EnhEnd)]
+  mCols <- c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")
+  setnames(dat, colnames(dat)[1 : length(mCols)], mCols)
+  dat <- dat[, c(mCols, nscore_nm), with = FALSE]
+  dat[, c("loc1") := paste0(loc1Chr, ":", loc1Start, "-", loc1End)]
+  dat[, c("loc2") := paste0(loc2Chr, ":", loc2Start, "-", loc2End)]
   dat[, c("rowid") := seq_len(nrow(dat))]
-  dat[, c("dist") := ifelse(EnhChr == PromChr, abs(EnhEnd - PromEnd), NA)]
-  dat[, c("PromChr", "PromStart", "PromEnd", "EnhChr", "EnhStart", "EnhEnd") := NULL]
+  dat[, c("dist") := ifelse(loc1Chr == loc2Chr, abs(loc2End - loc1End), NA)]
   # filter columns
-  dat <- dat[, c("Prom", "Enh", "PromGene", "dist", nscore_nm, "rowid"), with = FALSE]
-  dat[, c("loop", "etype") := list(paste0(Prom, "|", Enh), "Prom|Enh")]
+  dat[, c("loop", "etype") := list(paste0(loc1, "|", loc2), paste0(loc1type, "|", loc2type))]
   # filter columns
-  e_dat <- unique(dat[, c("Prom", "Enh", "etype", "dist", nscore_nm), with = FALSE])
-  v_dat <- unique(rbind(data.frame(V = dat[["Prom"]], vtype = "Prom"),
-    data.frame(V = dat$Enh, vtype = "Enh")))
+  e_dat <- unique(dat[, c("loc1", "loc2", "loop", "etype", "dist", nscore_nm, cluster_nm), with = FALSE])
+  v_dat <- unique(rbind(data.frame(name = dat[["loc1"]], vtype = dat[["loc1type"]]),
+    data.frame(name = dat[["loc2"]], vtype = dat[["loc2type"]])))
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
-  loop_slot <- dat[, c("loop", "PromGene", "rowid"), with = FALSE]
+  loop_slot <- dat[, c("loop", "gene1", "gene2", "rowid"), with = FALSE]
   loop.obj <- new("loop", g = g, loop = loop_slot)
   return(loop.obj)
 }

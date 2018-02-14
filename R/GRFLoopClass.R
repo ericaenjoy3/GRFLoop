@@ -32,8 +32,8 @@ setClass(
     if (nrow(object@loop) < 1) {
       return("No loop was given.")
     }
-    if (any(!colnames(object@loop) %in% c("loop", "rowid"))) {
-      return("Column names of the hash slot do not match to 'loop' and 'rowid'.")
+    if (any(!colnames(object@loop) %in% c("loop", "gene1", "gene2", "rowid"))) {
+      return("Column names of the hash slot do not match to 'loop', 'gene1', 'gene2' and 'rowid'.")
     }
     if (length(E(object@g)) < 1) {
       return("No edge in the g slot.")
@@ -41,13 +41,13 @@ setClass(
     if (length(V(object@g)) < 1) {
       return("No vertices in the g slot.")
     }
-    if (all(list.edge.attributes(object@g) %in% c("etype", "dist", "score", "cluster"))) {
-      return("The edge attribute of the g slot must be 'etype', 'dist', 'score', and 'cluster'.")
+    if (!all(list.edge.attributes(object@g) %in% c("loop", "etype", "dist", "score", "cluster"))) {
+      return("The edge attribute of the g slot must be 'loop', 'etype', 'dist' and/or 'score', 'cluster'.")
     }
-    if (all(list.vertex.attributes(object@g) %in% c("name", "vtype", "gene"))) {
-      return("The vertex attribute of the g slot must be 'name', 'vtype' and 'gene'.")
+    if (!all(list.vertex.attributes(object@g) %in% c("name", "vtype"))) {
+      return("The vertex attribute of the g slot must be 'name' and 'vtype'.")
     }
-    if (any(!as_ids(E(object@g)) %in% object@loop[["loop"]])) {
+    if (any(!E(object@g)$loop %in% object@loop[["loop"]])) {
       return("The loop attribute of the edges of the g slot does not match to the loop column in the loop slot.")
     }
     if (length(E(object@g)) != length(unique(object@loop[["loop"]]))) {
