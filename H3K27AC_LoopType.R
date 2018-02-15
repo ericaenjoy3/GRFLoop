@@ -63,7 +63,7 @@ dat <- dat %>%
 	merge(gencode, by.x = "gene2", by.y = "gname", all.x = TRUE, sort = FALSE) %>%
 	setnames("gid", "g2") %>%  
 	unique()
-dat <- dat[!(!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2))]
+dat <- dat[!((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2)))]
 set(dat, j = c("gene1", "gene2"), value = NULL)
 setnames(dat, c("g1", "g2"), c("gene1", "gene2"))
 dat[, loop := paste0(loc1Chr, ":", loc1Start, "-", loc1End, "_", loc2Chr, ":", loc2Start, "-", loc2End)]

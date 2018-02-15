@@ -10,13 +10,13 @@ for type in ${sm_grp[@]}; do
 done
 
 sm=ESC
-enh_type=Super
+enh_type=Normal
 cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --hichip $DIN/${sm}_H3K27AC.txt \
 --vchip ${vchip[@]} \
 --bedout $DIN/${sm}_H3K27AC_10KB_${enh_type}_LoopType.txt \
 --echip ~/athena/CHIP/PubData/Whyte/doc/Whyte-${enh_type}EnhGencodeEnh.bed"
-eval $cmd
+echo $cmd
 
 # sm=MEF
 # cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
