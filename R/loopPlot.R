@@ -36,7 +36,7 @@ setGeneric(name = "loopDistPlot",
 setMethod(f = "loopDistPlot",
   signature = c("loop"),
   definition = function(loop.obj, pdffout) {
-    if ("dist" %in% list.edge.attributes(object@g)) {
+    if ("dist" %in% list.edge.attributes(loop.obj@g)) {
       dat <- data.table(etype = E(loop.obj@g)$etype, dist = E(loop.obj@g)$dist, cluster = E(loop.obj@g)$cluster)
       cmp <- data.table(combn(unique(E(loop.obj@g)$cluster), 2))
       p1 <- ggviolin(dat, x = "cluster", y = "dist", fill = "cluster", 
