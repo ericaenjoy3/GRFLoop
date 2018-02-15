@@ -33,7 +33,7 @@ if (!"json" %in% names(args)) {
 stopifnot(all(c("hichip", "vchip", "bedout") %in% names(args)))
 attach(args)
 
-dat <- fread(hichip, header = TRUE, sep = "\t", na.strings="N/A")
+dat <- fread(hichip, header = TRUE, sep = "\t", na.strings=c("N/A", ""))
 setnames(dat, colnames(dat)[1:4], c("loc1", "loc2", "gene1", "gene2"))
 dat <- dat %>% separate(
 	loc1, c("loc1Chr", "loc1Start", "loc1End"), sep = "[:-]", remove = TRUE, convert = TRUE) %>% separate(
