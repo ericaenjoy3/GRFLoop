@@ -18,7 +18,7 @@ loopConst <- function(loop_f, score_col) {
   # filter columns
   mCols <- c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")
   setnames(dat, colnames(dat)[1 : length(mCols)], mCols)
-  dat <- dat[, c(mCols, nscore_nm), with = FALSE]
+  dat <- dat[, c(mCols, nscore_nm, cluster_nm), with = FALSE]
   dat[, c("loc1") := paste0(loc1Chr, ":", loc1Start, "-", loc1End)]
   dat[, c("loc2") := paste0(loc2Chr, ":", loc2Start, "-", loc2End)]
   dat[, c("rowid") := seq_len(nrow(dat))]
