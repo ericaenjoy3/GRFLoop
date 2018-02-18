@@ -9,7 +9,7 @@
 ###
 
 libfs <- c("data.table", "tidyverse", "gtools", "igraph", "RJSONIO", "ggplot2", "argparse")
-invisible(sapply(libfs, function(f)require(f, character.only = T)))
+invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, character.only = T))))
 options(scipen = 999)
 
 parser <- ArgumentParser()
