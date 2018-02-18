@@ -27,9 +27,7 @@ parser$add_argument("--json", type = "character", required = FALSE,
   help = "json configuration file.")
 args <- parser$parse_args()
 
-print(names(args))
-print(args[["json"]])
-if ("json" %in% names(args)) {
+if ("json" %in% names(args) & !is.null(args[["json"]])) {
 	args <- c(args["intsec"], fromJSON(args[["json"]]))
 }
 stopifnot(all(c("hichip", "vchip", "bedout") %in% names(args)))
