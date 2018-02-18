@@ -27,6 +27,8 @@ parser$add_argument("--json", type = "character", required = FALSE,
   help = "json configuration file.")
 args <- parser$parse_args()
 
+print(names(args))
+print(args[["json"]])
 if ("json" %in% names(args)) {
 	args <- c(args["intsec"], fromJSON(args[["json"]]))
 }
