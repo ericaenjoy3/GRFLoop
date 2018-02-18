@@ -38,7 +38,7 @@ setMethod(f = "loopDistPlot",
   definition = function(loop.obj, pdffout) {
     if (!is.null(E(loop.obj@g)$cluster)) {
       dat <- data.table(etype = E(loop.obj@g)$etype, dist = E(loop.obj@g)$dist, cluster = E(loop.obj@g)$cluster)
-      dat[, etype := factor(etype, levels = c("Enh|Enh", "Prom|Enh", "Prom|Prom"), ordered = TRUE)]
+      dat[, etype := factor(etype, levels = sort(unique(etype)), ordered = TRUE)]
       cmp <- data.table(combn(unique(E(loop.obj@g)$cluster), 2))
       p1 <- ggviolin(dat, x = "cluster", y = "dist", fill = "cluster", 
         add = "boxplot", add.params = list(fill = "white"),
