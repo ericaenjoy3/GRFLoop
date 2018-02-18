@@ -27,7 +27,7 @@ parser$add_argument("--json", type = "character", required = FALSE,
   help = "json configuration file.")
 args <- parser$parse_args()
 
-if (!"json" %in% names(args)) {
+if ("json" %in% names(args)) {
 	args <- c(args["intsec"], fromJSON(args[["json"]]))
 }
 stopifnot(all(c("hichip", "vchip", "bedout") %in% names(args)))
@@ -64,11 +64,15 @@ dat <- dat %>%
 	merge(gencode, by.x = "gene2", by.y = "gname", all.x = TRUE, sort = FALSE) %>%
 	setnames("gid", "g2") %>%  
 	unique()
-message(sum((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2))), "loops removed due to missing translation in gencode")
+
+dat[, loop := paste0(loc1Chr, ":", loc1Start, "-", loc1End, "_", loc2Chr, ":", loc2Start, "-", loc2End)]
+n_before <- dat[, length(unique(loop))]	
 dat <- dat[!((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2)))]
+n_after <- dat[, length(unique(loop))]	
+message(n_before - n_after, 
+	" loops removed due to missing translation in gencode")
 set(dat, j = c("gene1", "gene2"), value = NULL)
 setnames(dat, c("g1", "g2"), c("gene1", "gene2"))
-dat[, loop := paste0(loc1Chr, ":", loc1Start, "-", loc1End, "_", loc2Chr, ":", loc2Start, "-", loc2End)]
 
 # (4) Filter by at least one of the two anchor overlapped by H3K27AC ChIP-seq
 anchorOlap <- function(dat, fs) {
@@ -91,7 +95,7 @@ anchorOlap <- function(dat, fs) {
 
 vmatchloc_list <- anchorOlap(dat, vchip)
 matchloc <- unlist(vmatchloc_list, use.names = FALSE)
-message(sum(!loop %in% "matchloc"), " loops removed from chip peak overlapping at anchors.")
+message(dat[, sum(!loop %in% matchloc)], " loops removed from chip peak overlapping at anchors.")
 dat <- dat[loop %in% matchloc]
 
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping
@@ -110,11 +114,11 @@ ematchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
 	ematchloc_list[[1]]
 }
 
-dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ifelse(loop %in% ematchloc_spec[[1]], "Enh", NA)),
-	ifelse(!is.na(gene2), "Prom", ifelse(loop %in% ematchloc_spec[[2]], "Enh", NA)))] %>%
-	subset(subset = !(is.na(loc1type) | is.na(loc2type)))
+dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ifelse(loop %in% ematchloc_spec[[1]], "Enh", "Unknown")),
+	ifelse(!is.na(gene2), "Prom", ifelse(loop %in% ematchloc_spec[[2]], "Enh", "Unknown")))] 
+# %>% subset(subset = !(is.na(loc1type) | is.na(loc2type)))
 
-dat[loc1type == "Enh" & loc2type == "Prom", 
+dat[(loc1type == "Enh" & loc2type == "Prom") | (loc1type == "Unknown" & loc2type != "Unknown"), 
 	c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type") := 
 	.(loc2Chr, loc2Start, loc2End, loc1Chr, loc1Start, loc2End, gene2, gene1, loc2type, loc1type)]
 dat <- dat[, c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")]
