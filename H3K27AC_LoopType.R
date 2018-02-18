@@ -9,7 +9,7 @@
 ###
 
 libfs <- c("data.table", "tidyverse", "gtools", "igraph", "RJSONIO", "ggplot2", "argparse")
-sapply(libfs, library, character.only = TRUE)
+invisible(sapply(libfs, function(f)require(f, character.only = T)))
 options(scipen = 999)
 
 parser <- ArgumentParser()
@@ -44,6 +44,7 @@ stopifnot(all(dat[, loc1Chr == loc2Chr]))
 idx <- dat[loc1Chr == loc2Chr & loc1Start > loc2Start, which = TRUE]
 if (length(idx) > 0) {
 	dat <- dat[idx, c("loc1Start", "loc1End", "loc2Start", "loc2End", "gene1", "gene2") := .(loc2Start, loc2End, loc1Start, loc1End, gene2, gene1)] %>% unique()
+	message(length(idx), " duplicated loops removed.")
 }
 
 # (2) Gene1 and 2 contains observations with multiple delimited values, this separates the values and places each one in its own row.
@@ -63,6 +64,7 @@ dat <- dat %>%
 	merge(gencode, by.x = "gene2", by.y = "gname", all.x = TRUE, sort = FALSE) %>%
 	setnames("gid", "g2") %>%  
 	unique()
+message(sum((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2))), "loops removed due to missing translation in gencode")
 dat <- dat[!((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2)))]
 set(dat, j = c("gene1", "gene2"), value = NULL)
 setnames(dat, c("g1", "g2"), c("gene1", "gene2"))
@@ -89,6 +91,7 @@ anchorOlap <- function(dat, fs) {
 
 vmatchloc_list <- anchorOlap(dat, vchip)
 matchloc <- unlist(vmatchloc_list, use.names = FALSE)
+message(sum(!loop %in% "matchloc"), " loops removed from chip peak overlapping at anchors.")
 dat <- dat[loop %in% matchloc]
 
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping

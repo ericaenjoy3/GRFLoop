@@ -21,7 +21,7 @@
 #' @slot igraph data.frame object
 #' @exportClass fet
 inlibs <- c("data.table", "RColorBrewer", "ggplot2", "ComplexHeatmap", "circlize", "igraph", "multiplot", "gtools", "RNA", "ggpubr", "gridExtra")
-sapply(inlibs, library, character.only = TRUE)
+invisible(sapply(inlibs, require, character.only = TRUE))
 setOldClass("igraph")
 
 setClassUnion("FactorOrNULL", c("factor", "NULL"))
