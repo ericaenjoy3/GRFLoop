@@ -1,4 +1,4 @@
-loopConst <- function(loop_f, score_col) {
+loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
   # g slot: edge: etype, dist, score, cluster
   # g slot: vertex: name, vtype
   # loop slot: data.table of loop, gene1, gene2 and rowid 
@@ -25,6 +25,10 @@ loopConst <- function(loop_f, score_col) {
   dat[, c("dist") := ifelse(loc1Chr == loc2Chr, abs(loc2End - loc1End), NA)]
   # filter columns
   dat[, c("loop", "etype") := list(paste0(loc1, "|", loc2), paste0(loc1type, "|", loc2type))]
+  # filter 'Unknown' in loc1type or loc2type
+  if (filterUnknown) {
+    dat <- dat[loc1type != "Unknown" & loc2type != "Unknown"]
+  }
   # filter columns
   e_dat <- unique(dat[, c("loc1", "loc2", "loop", "etype", "dist", nscore_nm, cluster_nm), with = FALSE])
   v_dat <- rbind(data.table(name = dat[["loc1"]], vtype = dat[["loc1type"]]),
@@ -37,8 +41,8 @@ loopConst <- function(loop_f, score_col) {
 
 infoConst <- function(
   genef = path.expand("~/athena/Gencode/mm10/annotation/gencode.vM6.annotation.gene.bed"),
-  fcf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/Daf_DiffAna_OrderFlip.xls"),
-  tpmf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/hera/TPM_rd_merge.txt"),
+  fcf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/salmon/Daf_DiffAna_OrderFlip.xls"),
+  tpmf = path.expand("~/athena/RNA/RNA_seq/DF5154_2017_08_25/salmon/TPM_rd_merge.txt"),
   tadf = path.expand("~/athena/HIC/HIC_seq/APP/TAD_mm10.bed"), 
   p_val = 0.01, fc_num = 1.5) {
     # gene slot

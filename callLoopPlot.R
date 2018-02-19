@@ -18,6 +18,8 @@ parser$add_argument("--loopType", action="store_true",
   help = "make loop type bar plots.")
 parser$add_argument("--loopDist", action="store_true",
   help = "make loop distance bar plots.")
+parser$add_argument("--conHub", action="store_true",
+  help = "make connectivity dot plots.")
 args <- parser$parse_args()
 attach(args)
 
@@ -34,6 +36,18 @@ if (loopDist) {
   message("loopDistPlot")
   loopDistPlot(loop.obj, pdffout)
   message("done with loopDistPlot")	
+}
+
+if (conHub) {
+  message("constructing info object")
+  info.obj <- infoConst()
+  message("filter info object by protein coding")  
+  info.obj <- ProteinCodingInfo(info.obj)
+  message("filter info object by TPM threshold")
+  info.obj <- TPMInfo(info.obj)
+  message("infoFilter")
+  obj.list <- infoFilter(loop.obj, fet.obj = NULL, info.obj = info.obj)
+  loop.obj <- obj.list[["loop.obj"]]
 }
 
 
