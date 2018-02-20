@@ -24,7 +24,7 @@ args <- parser$parse_args()
 attach(args)
 
 message("constructing loop and fet objects")
-loop.obj <- loopConst(hichip, score_col = NULL)
+loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType, FALSE, TRUE))
 
 if (loopType) {
 	message("loopTypePlot")
@@ -46,8 +46,10 @@ if (conHub) {
   message("filter info object by TPM threshold")
   info.obj <- TPMInfo(info.obj)
   message("infoFilter")
-  obj.list <- infoFilter(loop.obj, fet.obj = NULL, info.obj = info.obj)
+  obj.list <- infoFilter(loop.obj, info.obj = info.obj)
   loop.obj <- obj.list[["loop.obj"]]
+  hubPlot(loop.obj, pdffout, minSampling = FALSE, PromEnh = FALSE)
+  hubPlot(loop.obj, gsub(".pdf", "_minSampled.pdf", pdffout), minSampling = TRUE, PromEnh = FALSE)  
 }
 
 

@@ -50,6 +50,7 @@ setMethod(f = "loopDistPlot",
     } else {
       dat <- data.table(etype = E(loop.obj@g)$etype, dist = E(loop.obj@g)$dist)
       dat[, etype := factor(etype, levels = c("Enh|Enh", "Prom|Enh", "Prom|Prom"), ordered = TRUE)]
+      dat[, dist := log2(dist/1000)]
       cmp <- data.table(combn(unique(E(loop.obj@g)$etype), 2))
       p1 <- ggviolin(dat, x = "etype", y = "dist", fill = "etype", 
         add = "boxplot", add.params = list(fill = "white"),
@@ -63,7 +64,7 @@ setMethod(f = "loopDistPlot",
 
 #' @export hubPlot
 setGeneric(name = "hubPlot",
-  def = function(loop.obj, pdffout, PromEnh = FALSE){
+  def = function(loop.obj, pdffout, minSampling = TRUE, PromEnh = FALSE){
     standardGeneric("hubPlot")
   }
 )
@@ -71,17 +72,28 @@ setGeneric(name = "hubPlot",
 #' @rdname hubPlot-methods
 setMethod(f = "hubPlot",
   signature = c("loop"),
-  definition = function(loop.obj, pdffout, PromEnh) {
+  definition = function(loop.obj, pdffout, minSampling, PromEnh) {
     if (PromEnh) {
       message("PromEnh option hasn't been desgined")
     } else if (!is.null(E(loop.obj@g)$cluster)) {
-      for (type in nique(E(loop.obj@g)$cluster)) {
+      dat_list <- lapply(unique(E(loop.obj@g)$cluster), function(type) {
         g <- loop.obj@g
-        loop.obj@g <- delete.edges(g, which(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])))
+        g <- subgraph.edges(g, E(g)[E(g)$cluster %in% type])
+        return(data.table(degree = igraph::degree(g), cluster = type))
+      })
+      dat <- rbindlist(dat_list, use.names = FALSE)
+      if (minSampling) {
+        sampling_size <- dat[, .N, by = cluster][, min(N)]
+        dat <- dat[, sample(degree, sampling_size), by = cluster]
+        setnames(dat, "V1", "degree")
       }
+      cmp <- data.table(combn(dat[, unique(cluster)], 2))
+      p1 <- ggerrorplot(dat, x = "cluster", y = "degree", color = "cluster", palette = "jco", binwidth=0.02, add="jitter", 
+        xlab = "", ylab = "Connectivity", legend.title = "") +
+      stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
+      ggsave(pdffout, p1)
     } else {
-      ve <- V(loop.obj@g)$name
-      ed <- incident_edges(loop.obj@g, ve)
+      message("Non-cluster version of hubPlot hasn't set up.")
     }
   }
 )

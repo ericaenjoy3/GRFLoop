@@ -120,7 +120,7 @@ dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ife
 
 dat[(loc1type == "Enh" & loc2type == "Prom") | (loc1type == "Unknown" & loc2type != "Unknown"), 
 	c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type") := 
-	.(loc2Chr, loc2Start, loc2End, loc1Chr, loc1Start, loc2End, gene2, gene1, loc2type, loc1type)]
+	.(loc2Chr, loc2Start, loc2End, loc1Chr, loc1Start, loc1End, gene2, gene1, loc2type, loc1type)]
 dat <- dat[, c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")]
 dat[, `:=`(loc1Start=loc1Start-1, loc2Start=loc2Start-1)]
 fwrite(dat, 
