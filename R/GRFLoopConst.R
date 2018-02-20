@@ -1,8 +1,12 @@
 loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
   # g slot: edge: loop, etype, dist, score, cluster
   # g slot: vertex: name, vtype
-  # loop slot: data.table of loop, gene1, gene2 and rowid 
-  dat <- fread(loop_f, header = TRUE)
+  # loop slot: data.table of loop, gene1, gene2 and rowid
+  if (is.character(loop_f)) { 
+    dat <- fread(loop_f, header = TRUE)
+  } else if ("data.table" %in% class(loop_f)) {
+    dat <- loop_f
+  }
   if (!is.null(score_col)) {
     score_nm <- colnames(dat)[score_col]
     nscore_nm <- "score"

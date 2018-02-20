@@ -12,6 +12,8 @@ library(argparse)
 parser <- ArgumentParser()
 parser$add_argument("--hichip", type = "character", required = FALSE,
   help = "A query loop file with columns being locus 1 and 2, genes 1 and 2 and optional columns.")
+parser$add_argument("--splithichip", action="store_true",
+  help = "split hichip file based on cluster column.")
 parser$add_argument("--pdffout", type = "character", required = FALSE,
   help = "output pdf")
 parser$add_argument("--loopType", action="store_true",
@@ -23,22 +25,33 @@ parser$add_argument("--conHub", action="store_true",
 args <- parser$parse_args()
 attach(args)
 
-message("constructing loop and fet objects")
-loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType, FALSE, TRUE))
+if (length(hichip) == 1 & !splithichip) {
+  message("constructing loop and fet objects")
+  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType, FALSE, TRUE))
+}
+if (length(hichip) >1) {
+  loop.obj.list <- lapply(hichip, function(f)loopConst(f, score_col = NULL, filterUnknown = FALSE))
+}
+if (splithichip) {
+  dat <- fread(hichip, header = TRUE)
+  stopifnot("cluster" %in% colnames(dat))
+  dat_list <- split(dat, dat[["cluster"]])
+  loop.obj.list <- lapply(dat_list, function(dd)loopConst(dd, score_col = NULL, filterUnknown = FALSE))
+}
 
-if (loopType) {
+if (loopType & length(hichip) == 1 & !splithichip) {
 	message("loopTypePlot")
 	loopTypePlot(loop.obj, pdffout)
 	message("done with loopTypePlot")
 }
 
-if (loopDist) {
+if (loopDist & length(hichip) == 1 & !splithichip) {
   message("loopDistPlot")
   loopDistPlot(loop.obj, pdffout)
   message("done with loopDistPlot")	
 }
 
-if (conHub) {
+if (conHub & length(hichip) > 1) {
   message("constructing info object")
   info.obj <- infoConst()
   message("filter info object by protein coding")  
