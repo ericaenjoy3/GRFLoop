@@ -92,7 +92,7 @@ setMethod(f = "conPlot",
 # updated
 setMethod(f = "conPlot",
   signature = c("loop", "missing"),
-  definition = function(loop.obj, fet.obj, dout, prom){
+  definition = function(loop.obj, fet.obj, dout){
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
     # loop through promoter/enhancer vertices
     type <- c("Prom", "Enh")
