@@ -43,7 +43,7 @@ setMethod(f = "loopDistPlot",
       cmp <- data.table(combn(unique(E(loop.obj@g)$cluster), 2))
       p1 <- ggviolin(dat, x = "cluster", y = "dist", fill = "cluster", 
         add = "boxplot", add.params = list(fill = "white"),
-        xlab = "", ylab = "",
+        xlab = "", ylab = "log2(kb)",
         legend.title = "") +
         stat_compare_means(comparisons = cmp)
       p1 <- facet(p1, scales = "free", facet.by = c("etype"), ncol = 1, panel.labs.background = list(fill = "transparent"))
@@ -55,7 +55,7 @@ setMethod(f = "loopDistPlot",
       cmp <- data.table(combn(unique(E(loop.obj@g)$etype), 2))
       p1 <- ggviolin(dat, x = "etype", y = "dist", fill = "etype", 
         add = "boxplot", add.params = list(fill = "white"),
-        xlab = "", ylab = "",
+        xlab = "", ylab = "log2(kb)",
         legend.title = "") +
         stat_compare_means(comparisons = cmp)
       ggsave(filename = pdffout, p1)      

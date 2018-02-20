@@ -22,7 +22,7 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
   dat[, c("loc1") := paste0(loc1Chr, ":", loc1Start, "-", loc1End)]
   dat[, c("loc2") := paste0(loc2Chr, ":", loc2Start, "-", loc2End)]
   dat[, c("rowid") := seq_len(nrow(dat))]
-  dat[, c("dist") := ifelse(loc1Chr == loc2Chr, floor(abs((loc2End-loc2Start)/2 - (loc1End-loc1Start)/2)), NA)]
+  dat[, c("dist") := ifelse(loc1Chr == loc2Chr, floor(abs(loc2End-loc1End)), NA)]
   # filter columns
   dat[, c("loop", "etype") := list(paste0(loc1, "|", loc2), paste0(loc1type, "|", loc2type))]
   # filter 'Unknown' in loc1type or loc2type
