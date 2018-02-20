@@ -8,47 +8,45 @@ setGeneric(name = "infoFilter",
 )
 
 #' @rdname infoFilter-methods
+# updated
 setMethod(f = "infoFilter",
   signature = c("loop", "fet", "info"),
   definition = function(loop.obj, fet.obj, info.obj) {
-    idx <- loop.obj@loop[["PromGene"]] %in% info.obj@gene[["gene"]]
-    if (all(idx)) {
-      return(list(loop.obj = loop.obj, fet.obj = fet.obj))
-    }
-    message(sum(!idx), " loops (including duplicated) filtered out in infoFilter.")
-    # update loop.obj
-    stopifnot(length(unique(loop.obj@loop[["loop"]][!idx])) <= length(E(loop.obj@g)))    
-    loop.obj@loop <- loop.obj@loop[idx]
-    loop.obj@loop[["rowid"]] <- 1:nrow(loop.obj@loop)
-    loop.obj@g <- delete.edges(loop.obj@g, which(!gsub("\\|", "_", as_ids(E(loop.obj@g))) %in% unique(loop.obj@loop[["loop"]])))
-    loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
+    kpt_idx <- loop.obj@loop[, (gene1 %in% info.obj@gene[["gene"]] | gene1=="") & (gene2 %in% info.obj@gene[["gene"]] | gene2=="")]
+    # filter loop slot of loop object by gene1 and gene2 either empty or in gene slot of info object
+    loop.obj@loop <- loop.obj@loop[(gene1 %in% info.obj@gene[["gene"]] | gene1=="") & (gene2 %in% info.obj@gene[["gene"]] | gene2=="")]
+    loop.obj@loop[, rowid := 1:nrow(loop.obj@loop)]
+    # use filtered loops to subset edges of g slot
+    message("remove ", sum(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])), " edges")
+    loop.obj@g <- delete.edges(loop.obj@g, which(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])))
+    # update vertex of g slot
+    loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))    
     if (!is.null(loop.obj@split)) {
-      loop.obj@split <- factor(loop.obj@split[idx], levels = unique(loop.obj@split[idx]))
-    }
-    validObject(loop.obj)    
+      loop.obj@split <- factor(loop.obj@split[kpt_idx], levels = unique(loop.obj@split[kpt_idx]))
+    }   
     # update fet.obj
-    stopifnot(length(idx) <= nrow(fet.obj@dat_list[[1]]))
-    fet.obj@dat_list <- lapply(fet.obj@dat_list, function(dat)dat[idx])
+    stopifnot(sum(kpt_idx) <= nrow(fet.obj@dat_list[[1]]))
+    fet.obj@dat_list <- lapply(fet.obj@dat_list, function(dat)dat[kpt_idx])
     validObject(fet.obj)
     return(list(loop.obj = loop.obj, fet.obj = fet.obj))
   }
 )
 
+# updated
 setMethod(f = "infoFilter",
   signature = c("loop", "missing", "info"),
   definition = function(loop.obj, fet.obj, info.obj) {
-    idx <- loop.obj@loop[["PromGene"]] %in% info.obj@gene[["gene"]]
-    if (all(idx)) {
-      return(list(loop.obj = loop.obj))
-    }
-    message(sum(!idx), " loops (including duplicated) filtered out in infoFilter.")
-    # update loop.obj
-    stopifnot(length(unique(loop.obj@loop[["loop"]][!idx])) <= length(E(loop.obj@g)))    
-    loop.obj@loop <- loop.obj@loop[idx]
-    loop.obj@g <- delete.edges(loop.obj@g, which(!gsub("\\|", "_", as_ids(E(loop.obj@g))) %in% unique(loop.obj@loop[["loop"]])))
-    loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))
+    kpt_idx <- loop.obj@loop[, (gene1 %in% info.obj@gene[["gene"]] | gene1=="") & (gene2 %in% info.obj@gene[["gene"]] | gene2=="")]
+    # filter loop slot of loop object by gene1 and gene2 either empty or in gene slot of info object
+    loop.obj@loop <- loop.obj@loop[(gene1 %in% info.obj@gene[["gene"]] | gene1=="") & (gene2 %in% info.obj@gene[["gene"]] | gene2=="")]
+    loop.obj@loop[, rowid := 1:nrow(loop.obj@loop)]
+    # use filtered loops to subset edges of g slot
+    message("remove ", sum(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])), " edges")
+    loop.obj@g <- delete.edges(loop.obj@g, which(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])))
+    # update vertex of g slot
+    loop.obj@g <- delete.vertices(loop.obj@g, which(igraph::degree(loop.obj@g)<1))    
     if (!is.null(loop.obj@split)) {
-      loop.obj@split <- factor(loop.obj@split[idx], levels = unique(loop.obj@split[idx]))
+      loop.obj@split <- factor(loop.obj@split[kpt_idx], levels = unique(loop.obj@split[kpt_idx]))
     }
     validObject(loop.obj)
     return(list(loop.obj = loop.obj))

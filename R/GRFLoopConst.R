@@ -1,5 +1,5 @@
 loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
-  # g slot: edge: etype, dist, score, cluster
+  # g slot: edge: loop, etype, dist, score, cluster
   # g slot: vertex: name, vtype
   # loop slot: data.table of loop, gene1, gene2 and rowid 
   dat <- fread(loop_f, header = TRUE)

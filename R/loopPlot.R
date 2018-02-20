@@ -60,3 +60,28 @@ setMethod(f = "loopDistPlot",
     }
   }
 )
+
+#' @export hubPlot
+setGeneric(name = "hubPlot",
+  def = function(loop.obj, pdffout, PromEnh = FALSE){
+    standardGeneric("hubPlot")
+  }
+)
+
+#' @rdname hubPlot-methods
+setMethod(f = "hubPlot",
+  signature = c("loop"),
+  definition = function(loop.obj, pdffout, PromEnh) {
+    if (PromEnh) {
+      message("PromEnh option hasn't been desgined")
+    } else if (!is.null(E(loop.obj@g)$cluster)) {
+      for (type in nique(E(loop.obj@g)$cluster)) {
+        g <- loop.obj@g
+        loop.obj@g <- delete.edges(g, which(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])))
+      }
+    } else {
+      ve <- V(loop.obj@g)$name
+      ed <- incident_edges(loop.obj@g, ve)
+    }
+  }
+)

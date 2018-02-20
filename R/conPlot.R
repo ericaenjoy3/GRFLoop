@@ -8,12 +8,13 @@ setGeneric(name = "conPlot",
 )
 
 #' @rdname conPlot-methods
+# outdated
 setMethod(f = "conPlot",
   signature = c("loop", "fet"),
   definition = function(loop.obj, fet.obj, dout){
     # dedup loop in the loop slot of loop.obj
-    kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
-    loop_hash <- loop.obj@loop[kpt.idx]
+    kpt_idx <- !duplicated(loop.obj@loop[["loop"]])
+    loop_hash <- loop.obj@loop[kpt_idx]
     setkeyv(loop_hash, "loop")
     # loop through promoter/enhancer vertices
     type <- c("Prom", "Enh")
@@ -88,15 +89,11 @@ setMethod(f = "conPlot",
   }
 )
 
-
+# updated
 setMethod(f = "conPlot",
   signature = c("loop", "missing"),
-  definition = function(loop.obj, fet.obj, dout){
+  definition = function(loop.obj, fet.obj, dout, prom){
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
-    # dedup loop in the loop slot of loop.obj
-    kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
-    loop_hash <- loop.obj@loop[kpt.idx]
-    setkeyv(loop_hash, "loop")
     # loop through promoter/enhancer vertices
     type <- c("Prom", "Enh")
     for (j in seq_along(type)) {
