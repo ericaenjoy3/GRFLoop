@@ -63,38 +63,58 @@ setMethod(f = "loopDistPlot",
   }
 )
 
+# to be tested
 #' @export hubPlot
-setGeneric(name = "hubPlot",
-  def = function(loop.obj, pdffout, minSampling = TRUE, PromEnh = FALSE){
-    standardGeneric("hubPlot")
-  }
-)
-
 #' @rdname hubPlot-methods
-setMethod(f = "hubPlot",
-  signature = c("loop"),
-  definition = function(loop.obj, pdffout, minSampling, PromEnh) {
-    if (PromEnh) {
-      message("PromEnh option hasn't been desgined")
-    } else if (!is.null(E(loop.obj@g)$cluster)) {
-      dat_list <- lapply(unique(E(loop.obj@g)$cluster), function(type) {
-        g <- loop.obj@g
-        g <- subgraph.edges(g, E(g)[E(g)$cluster %in% type])
-        return(data.table(degree = igraph::degree(g), cluster = type))
-      })
-      dat <- rbindlist(dat_list, use.names = FALSE)
-      if (minSampling) {
-        sampling_size <- dat[, .N, by = cluster][, min(N)]
-        dat <- dat[, sample(degree, sampling_size), by = cluster]
-        setnames(dat, "V1", "degree")
-      }
-      cmp <- data.table(combn(dat[, unique(cluster)], 2))
-      p1 <- ggerrorplot(dat, x = "cluster", y = "degree", color = "cluster", palette = "jco", binwidth=0.02, add="jitter", 
-        xlab = "", ylab = "Connectivity", legend.title = "") +
-      stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
-      ggsave(pdffout, p1)
-    } else {
-      message("Non-cluster version of hubPlot hasn't set up.")
+hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE) {
+  if (subType) {
+    dat_list <- lapply(seq_along(loop.obj.list), function(i, loop.obj.list) {
+      g <- loop.obj.list[[i]]@g
+      type <- if (is.null(names(loop.obj.list))) {
+          stopifnot(!is.null(E(loop.obj.list[[i]]@g)$cluster))
+        } else {
+          names(loop.obj.list)[i]
+        }
+      nd_list <- lapply(unique(E(g)$etype), function(et, g, type) {
+        ng <- subgraph.edges(g, E(g)[E(g)$etype == et])
+        return(data.table(degree = igraph::degree(g), cluster = type, et = et))
+      }, g = g, type = type)
+      return(nd_list)
+    }, loop.obj.list = loop.obj.list)
+    dat <- rbindlist(lapply(dat_list, rbindlist, use.names = FALSE), use.names = FALSE)
+    if (minSampling) {
+      set.seed(888)
+      sampling_size <- dat[, .N, by = .(cluster, et)][, min(N)]
+      dat <- dat[, sample(degree, sampling_size), by = .(cluster, et)]
+      setnames(dat, "V1", "degree")
     }
+    cmp <- data.table(combn(dat[, unique(cluster)], 2))
+    p1 <- ggerrorplot(dat, x = "cluster", y = "degree", color = "cluster", palette = "jco", binwidth=0.02, add="jitter", 
+      xlab = "", ylab = "Connectivity", legend.title = "") +
+    stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
+    p1 <- facet(p1, scales = "free", facet.by = c("et"), ncol = 1, panel.labs.background = list(fill = "transparent"))
+    ggsave(pdffout, p1)     
+  } else {
+    dat_list <- lapply(seq_along(loop.obj.list), function(i, loop.obj.list) {
+      g <- loop.obj.list[[i]]@g
+      type <- if (is.null(names(loop.obj.list))) {
+          stopifnot(!is.null(E(loop.obj.list[[i]]@g)$cluster))
+        } else {
+          names(loop.obj.list)[i]
+        }
+      return(data.table(degree = igraph::degree(g), cluster = type))
+    }, loop.obj.list = loop.obj.list)
+    dat <- rbindlist(dat_list, use.names = FALSE)
+    if (minSampling) {
+      set.seed(888)
+      sampling_size <- dat[, .N, by = cluster][, min(N)]
+      dat <- dat[, sample(degree, sampling_size), by = cluster]
+      setnames(dat, "V1", "degree")
+    }
+    cmp <- data.table(combn(dat[, unique(cluster)], 2))
+    p1 <- ggerrorplot(dat, x = "cluster", y = "degree", color = "cluster", palette = "jco", binwidth=0.02, add="jitter", 
+      xlab = "", ylab = "Connectivity", legend.title = "") +
+    stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
+    ggsave(pdffout, p1)
   }
-)
+}

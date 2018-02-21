@@ -22,24 +22,24 @@ fs <- c("hichip", "vchip", "echip", "bedout")
 fs_list <- list()
 i <- 1
 repeat {
-	str <- readInput(prompt = paste0(fs[i], " file: "))
-	if (nchar(str) == 0) {
+	string <- readInput(prompt = paste0(fs[i], " file: "))
+	if (nchar(string) == 0) {
 		i <- i + 1
 		if (i > length(fs)) break
 	} else {
 		fs_list[[i]] <- if (length(fs_list) < i) {
-			structure(str, class = "character")
+			structure(string, class = "character")
 		} else {
-			c(fs_list[[i]], structure(str, class = "character"))
+			c(fs_list[[i]], structure(string, class = "character"))
 		}
 	}
 }
 names(fs_list) <- fs
 
 repeat {
-	str <- readInput(prompt = "output configuration: ")
-	if (nchar(str) > 0) {
-		fout = str
+	string <- readInput(prompt = "output configuration: ")
+	if (nchar(string) > 0) {
+		fout <- string
 		break
 	}
 }

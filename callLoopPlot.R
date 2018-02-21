@@ -31,6 +31,13 @@ if (length(hichip) == 1 & !splithichip) {
 }
 if (length(hichip) >1) {
   loop.obj.list <- lapply(hichip, function(f)loopConst(f, score_col = NULL, filterUnknown = FALSE))
+  cluster <- c()
+  for (i in seq_along(loop.obj.list)) {
+    string <- readInput(prompt = paste0("please enter", i, "th cluster name: "))
+    cluster <- c(cluster, string)
+  }
+  message("done with entering cluster names.")
+  names(loop.obj.list) <- cluster
 }
 if (splithichip) {
   dat <- fread(hichip, header = TRUE)
@@ -52,17 +59,10 @@ if (loopDist & length(hichip) == 1 & !splithichip) {
 }
 
 if (conHub & length(hichip) > 1) {
-  message("constructing info object")
-  info.obj <- infoConst()
-  message("filter info object by protein coding")  
-  info.obj <- ProteinCodingInfo(info.obj)
-  message("filter info object by TPM threshold")
-  info.obj <- TPMInfo(info.obj)
-  message("infoFilter")
-  obj.list <- infoFilter(loop.obj, info.obj = info.obj)
-  loop.obj <- obj.list[["loop.obj"]]
-  hubPlot(loop.obj, pdffout, minSampling = FALSE, PromEnh = FALSE)
-  hubPlot(loop.obj, gsub(".pdf", "_minSampled.pdf", pdffout), minSampling = TRUE, PromEnh = FALSE)  
+  hubPlot(loop.obj.list, pdffout, minSampling = FALSE, subType = FALSE)
+  hubPlot(loop.obj.list, gsub(".pdf", "_minSampled.pdf", pdffout), minSampling = TRUE, subType = FALSE)
+  hubPlot(loop.obj.list, gsub(".pdf", "_subType.pdf", pdffout), minSampling = FALSE, subType = TRUE)
+  hubPlot(loop.obj.list, gsub(".pdf", "_subType_minSampled.pdf", pdffout), minSampling = TRUE, subType = TRUE)  
 }
 
 
