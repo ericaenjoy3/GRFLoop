@@ -36,9 +36,9 @@ setMethod(f = "infoFilter",
 setMethod(f = "infoFilter",
   signature = c("loop", "missing", "info"),
   definition = function(loop.obj, fet.obj, info.obj) {
-    kpt_idx <- loop.obj@loop[, (gene1 %in% info.obj@gene[["gene"]] | gene1=="") & (gene2 %in% info.obj@gene[["gene"]] | gene2=="")]
+    kpt_idx <- loop.obj@loop[, (gene1 %in% info.obj@gene[["gene"]] | gene1=="" | is.na(gene1)) & (gene2 %in% info.obj@gene[["gene"]] | gene2=="" | is.na(gene2))]
     # filter loop slot of loop object by gene1 and gene2 either empty or in gene slot of info object
-    loop.obj@loop <- loop.obj@loop[(gene1 %in% info.obj@gene[["gene"]] | gene1=="") & (gene2 %in% info.obj@gene[["gene"]] | gene2=="")]
+    loop.obj@loop <- loop.obj@loop[kpt_idx]
     loop.obj@loop[, rowid := 1:nrow(loop.obj@loop)]
     # use filtered loops to subset edges of g slot
     message("remove ", sum(!E(loop.obj@g)$loop %in% unique(loop.obj@loop[["loop"]])), " edges")

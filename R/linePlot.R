@@ -13,7 +13,8 @@ setMethod(f = "linePlot",
   definition = function(loop.obj, info.obj, fet.obj, linepdf, uniqueLoopGene) {
 
     con_num <- 1:3
-    dat_list <- lapply(con_num, function(j)unlist(geneListProc(loop.obj, info.obj, nmin = j, nmax = j, type = "Prom", uniqueLoopGene = uniqueLoopGene)))
+
+    dat_list <- lapply(con_num, function(j)unlist(geneListProc(loop.obj, info.obj, nmin = j, nmax = j, type = "Enh", uniqueLoopGene = uniqueLoopGene)))
 
     row_dat <- loop.obj@loop[, .SD[1, c("rowid"), with = FALSE], by = PromGene]
     stopifnot(all(sapply(dat_list, function(vec)all(vec %in% row_dat[, PromGene]))))

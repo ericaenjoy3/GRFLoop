@@ -28,6 +28,7 @@ setMethod(f = "shufPlot",
       span <- end - start
       return(span)
     }, info.obj = info.obj)
+    
     # coordinate for max interval
     coord <- rbindlist(lapply(gene_list, function(gs, info.obj){
       idx <- chmatch(gs, info.obj@gene[["gene"]])
@@ -43,12 +44,14 @@ setMethod(f = "shufPlot",
     genet_list <- inTADShulf(gene_list, info.obj)
     degt_pct_list <- gene2direction(genet_list, info.obj) # use gene2direction
     degt_pct <- melt(rbindlist(degt_pct_list), id.vars = "direction")
+
     # TADshipPlot
     TADshipPlot(list(gene_list, genep_list, genet_list), info.obj,
       nms = c("Genuine", "Global Random", "In-TAD Random"), pdffout = tadStatpdf)
     dat <- rbindlist(list(data.table(type = "Genuine", deg_pct),
       data.table(type = "Global Random", degp_pct),
       data.table(type = "In-TAD Random", degt_pct)), use.names = FALSE)
+
     # boxplot of co-regulation labels
     theme_set(theme_grey(base_size = 15))
     if (nmin != nmax) {
@@ -71,6 +74,7 @@ setMethod(f = "shufPlot",
         geom_text(aes(label = N), hjust = 0.5, vjust = -0.5, size = 4, position = position_dodge(width = 0.9))
     }
     ggsave(coregBoxpdf, p1)
+
     # correlation coefficients
     gene_cor <- gene2pairwiseCor(gene_list, info.obj)
     genep_cor <- gene2pairwiseCor(genep_list, info.obj)

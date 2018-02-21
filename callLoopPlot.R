@@ -22,6 +22,8 @@ parser$add_argument("--loopDist", action="store_true",
   help = "make loop distance bar plots.")
 parser$add_argument("--conHub", action="store_true",
   help = "make connectivity dot plots.")
+parser$add_argument("--coreg", action="store_true",
+  help = "make co-regulation plots.")
 args <- parser$parse_args()
 attach(args)
 
@@ -29,6 +31,7 @@ if (length(hichip) == 1 & !splithichip) {
   message("constructing loop and fet objects")
   loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType, FALSE, TRUE))
 }
+
 if (length(hichip) >1) {
   loop.obj.list <- lapply(hichip, function(f)loopConst(f, score_col = NULL, filterUnknown = FALSE))
   cluster <- c()
@@ -39,6 +42,7 @@ if (length(hichip) >1) {
   message("done with entering cluster names.")
   names(loop.obj.list) <- cluster
 }
+
 if (splithichip) {
   dat <- fread(hichip, header = TRUE)
   stopifnot("cluster" %in% colnames(dat))
@@ -65,4 +69,12 @@ if (conHub & length(hichip) > 1) {
   hubPlot(loop.obj.list, gsub(".pdf", "_subType_minSampled.pdf", pdffout), minSampling = TRUE, subType = TRUE)  
 }
 
+if (coreg) {
+  info.obj <- infoConst()
+  info.obj <- ProteinCodingInfo(info.obj)
+  info.obj <- TPMInfo(info.obj)
+  obj.list <- infoFilter(loop.obj, fet.obj = NULL, info.obj = info.obj)
+  loop.obj <- obj.list[["loop.obj"]]
+  
+}
 
