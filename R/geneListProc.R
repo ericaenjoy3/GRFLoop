@@ -23,9 +23,6 @@ setMethod(f = "geneListProc",
 setMethod(f = "geneListProc",
   signature = c("loop", "info"),
   definition = function(loop.obj, info.obj, nmin, nmax, type, uniqueLoopGene) {
-    # subgraph based on vertex type
-    # incident edges counts per vertex
-    # genes
     # dedup loop in the loop slot of loop.obj
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
     loop_hash <- loop.obj@loop[kpt.idx]
@@ -37,8 +34,8 @@ setMethod(f = "geneListProc",
     idx <- sapply(ed, length) >= nmin & sapply(ed, length) <= nmax
     # extract PromGene from loop slot of loop.obj
     gene_list <- lapply(ed[idx], function(es, loop_hash){
-      lp <- gsub("|", "_", as_ids(es), fixed = TRUE)
-      gs <- loop_hash[lp][["gene1"]]
+      lp <- as_ids(es)
+      gs <- loop_hash[loop %in% lp, gene1]
       stopifnot(all(!is.na(gs)))
       return(gs)
     }, loop_hash = loop_hash)

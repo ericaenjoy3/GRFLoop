@@ -2,7 +2,7 @@
 
 #' @export linePlot
 setGeneric(name = "linePlot",
-  def = function(loop.obj, info.obj, fet.obj, linepdf, uniqueLoopGene = FALSE){
+  def = function(loop.obj, info.obj, linepdf, uniqueLoopGene = FALSE){
     standardGeneric("linePlot")
   }
 )
@@ -10,28 +10,31 @@ setGeneric(name = "linePlot",
 #' @rdname linePlot-methods
 setMethod(f = "linePlot",
   signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, fet.obj, linepdf, uniqueLoopGene) {
+  definition = function(loop.obj, info.obj, linepdf, uniqueLoopGene) {
 
     con_num <- 1:3
 
-    dat_list <- lapply(con_num, function(j)unlist(geneListProc(loop.obj, info.obj, nmin = j, nmax = j, type = "Enh", uniqueLoopGene = uniqueLoopGene)))
-
-    row_dat <- loop.obj@loop[, .SD[1, c("rowid"), with = FALSE], by = PromGene]
-    stopifnot(all(sapply(dat_list, function(vec)all(vec %in% row_dat[, PromGene]))))
-
-    idx <- grep("RNA", fet.obj@hash[["sms"]])[1]
-    rna_dat <- fet.obj@dat_list[[idx]]
+    enh_list <- lapply(con_num, function(j){
+      message(j);
+      unlist(geneListProc(loop.obj, info.obj, nmin = j, nmax = j, type = "Enh", uniqueLoopGene = uniqueLoopGene))
+      })
 
     rna_list <- lapply(dat_list, function(gid){
-        ridx <- row_dat[chmatch(gid, row_dat[,PromGene]), rowid]
-        dd <- rna_dat[ridx]
+        dd <- info.obj@gene[chmatch(gid, gene), grep("tpm", colnames(info.obj@gene)), with = FALSE]
         return(dd)
       })
 
     rna_dat <- rbindlist(lapply(seq_along(rna_list), function(j){
        data.table(grp = con_num[j], rna_list[[j]])
       }))
+    col_nm <- colnames(rna_dat)[grep("tpm", colnames(rna_dat))]
+    setnames(rna_dat, colnames(rna_dat), gsub("tpm_", "", colnames(rna_dat)))
     rna_ldat <- melt(rna_dat, id.vars = "grp")
+    rna_ldat[, variable := factor(variable, levels = c("MEF", "D3", "D6", "D9", "ESC"))]
+    # log2
+    rna_ldat[, ("value") := lapply(.SD, function(x)log2(x + 0.05)), .SD = "value"]
+    # z-score
+    # rna_ldat[, value := (value - mean(value))/sd(value), by = .(grp, variable)]
 
     plot_dat <- rna_ldat[, list(
       .SD[,.N],
@@ -43,15 +46,26 @@ setMethod(f = "linePlot",
 
     # ggline(rna_ldat, x = "variable", y = "value", color = "variable", palette = "jco", add = "median_iqr", facet.by = "grp")
     theme_set(theme_grey(base_size=15))
-    p1 <- ggplot(plot_dat, aes(x = variable, y = mean, group = 1)) + 
-    geom_line(aes(color = factor(grp))) +
-    facet_grid(.~grp) +
-    geom_ribbon(data = plot_dat, aes(ymin = dnside, ymax = upside), fill = "grey70", alpha = 0.4) +
-    labs(x = "", y = "Z scores") +
-    coord_cartesian(ylim = c(-1, 1)) + 
-    theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"), legend.position = "top")
 
-    ggsave(linepdf, p1)
+    # separate line plots per connectivity
+    p1 <- ggplot(plot_dat, aes(x = variable, y = mean, group = 1)) + 
+      geom_line(aes(color = factor(grp))) +
+      facet_grid(.~grp) +
+      geom_ribbon(data = plot_dat, aes(ymin = dnside, ymax = upside), fill = "grey70", alpha = 0.4) +
+      labs(x = "", y = "log2(TPM)") +
+      theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"), legend.position = "top")
+
+    # plot all lines of all connectivities in one
+    p2 <- ggplot(plot_dat, aes(x = variable, y = mean, group = grp)) + 
+      geom_line(aes(color = factor(grp))) +
+      geom_ribbon(data = plot_dat, aes(ymin = dnside, ymax = upside), fill = "grey70", alpha = 0.4) +
+      labs(x = "", y = "log2(TPM)") +
+      theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"), legend.position = "top")
+
+    # 
+    pdf(pdffout)
+    grid.arrange(p1, p2, ncol=2)
+    dev.off()
   }
 )
 
