@@ -85,7 +85,7 @@ setMethod(f = "linePlot",
 
     p3 <- ggboxplot(diff_ldat, x = "variable", y = "value", color = "variable", palette = "jco", xlab = "", 
       ylab = expression(paste(log[2],"(FC)")), legend.title = "")
-    p3 <- facet(p3, scales = "free", facet.by = c("grp")) + rotate_x_text(45)
+    p3 <- facet(p3, facet.by = c("grp")) + rotate_x_text(45)
 
     pdf(gsub(".pdf", "_FC.pdf", pdffout), width = 7*1.5)
     grid.arrange(p3, ncol = 1)
