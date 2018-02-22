@@ -70,11 +70,26 @@ if (conHub & length(hichip) > 1) {
 }
 
 if (coreg) {
+  root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/coreg"
   info.obj <- infoConst()
   info.obj <- ProteinCodingInfo(info.obj)
   info.obj <- TPMInfo(info.obj)
-  obj.list <- infoFilter(loop.obj, fet.obj = NULL, info.obj = info.obj)
+  obj.list <- infoFilter(loop.obj, info.obj = info.obj)
   loop.obj <- obj.list[["loop.obj"]]
-  
+  for (vtype in c("Prom", "Enh")) {
+    linePlot(loop.obj, info.obj, 
+      pdffout = file.path(root, 
+        gsub("PromEnh.txt", paste0(vtype, "_Line.pdf"), hichip)), 
+      vtype = vtype, uniqueLoopGene = TRUE)
+  }
+  for (k in 2:4) {
+    message("k ", k)
+    shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
+      tadStatpdf = file.path(root, paste0("Enh_nmin", k, "_nmax", k, "_tadStats.pdf")),
+      coregBoxpdf = file.path(root, paste0("En_nmin", k, "_nmax", k, "_coregBox.pdf")),
+      gcorBoxpdf = file.path(root, paste0("Enh_nmin", k, "_nmax", k, "_gcorBox.pdf")),
+      glabBarpdf = file.path(root, paste0("Enh_nmin", k, "_nmax", k, "_glabBar.pdf")),
+      uniqueLoopGene = TRUE)
+  }
 }
 

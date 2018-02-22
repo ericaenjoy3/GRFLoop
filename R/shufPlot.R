@@ -2,7 +2,7 @@
 
 #' @export shufPlot
 setGeneric(name = "shufPlot",
-  def = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf, uniqueLoopGene = FALSE){
+  def = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf, glabBarpdf, uniqueLoopGene = FALSE){
     standardGeneric("shufPlot")
   }
 )
@@ -10,7 +10,7 @@ setGeneric(name = "shufPlot",
 #' @rdname shufPlot-methods
 setMethod(f = "shufPlot",
   signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf, uniqueLoopGene) {
+  definition = function(loop.obj, info.obj, nmin, nmax, dout, tadStatpdf, coregBoxpdf, gcorBoxpdf, glabBarpdf, uniqueLoopGene) {
 
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
@@ -87,6 +87,25 @@ setMethod(f = "shufPlot",
       xlab = "", ylab = "Spearman Correlation", legend.title = "") +
       stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
     ggsave(gcorBoxpdf, p1)
+
+    # pariwise lab plots
+    gene_lab <- gene2pairwiseLab(gene_list, info.obj)
+    genep_lab <- gene2pairwiseLab(genep_list, info.obj)
+    genet_lab <- gene2pairwiseLab(genet_list, info.obj)
+    dat <- rbindlist(list(data.table(type = "Genuine", gene_lab),
+      data.table(type = "Global Random", genep_lab),
+      data.table(type = "In-TAD Random", genet_lab)), use.names = FALSE)
+    dat <- dat[, .N, by = .(type, gene_lab)]
+    dat[, pct := round(100*N/sum(N), digits = 2), by = type][, gene_lab := factor(gene_lab)]
+
+    theme_set(theme_grey(base_size=15))
+    p1 <- ggplot(dat, aes(x = type, y = pct, fill = gene_lab))+
+    geom_bar(stat = "identity") +
+    labs(x = "",y = "%") +
+    theme(legend.title = element_blank(),panel.spacing = unit(2, "lines"), legend.position = "top", 
+      axis.text.x = element_text(angle = 45, hjust = 1)) +
+      guides(fill = guide_legend(reverse = TRUE), colour = guide_legend(reverse = TRUE))
+    ggsave(glabBarpdf, p1)
   }
 )
 

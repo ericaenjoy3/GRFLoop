@@ -19,9 +19,9 @@ setMethod(f = "loopTypePlot",
 		labs(x = "",y = "Counts") +
 		theme(legend.title = element_blank(),panel.spacing = unit(2, "lines"), legend.position = "top", 
 			axis.text.x = element_text(angle = 45, hjust = 1)) +
-		guides(fill = guide_legend(reverse = TRUE), colour = guide_legend(reverse = TRUE))+
-		geom_text(aes(x = etype, y = N, label = Pct), hjust = 0.5, vjust = -0.5,size = 4, data = stats, inherit.aes = FALSE)
-	ggsave(pdffout, p1)
+		  guides(fill = guide_legend(reverse = TRUE), colour = guide_legend(reverse = TRUE))+
+		  geom_text(aes(x = etype, y = N, label = Pct), hjust = 0.5, vjust = -0.5,size = 4, data = stats, inherit.aes = FALSE)
+	  ggsave(pdffout, p1)
   }
 )
 

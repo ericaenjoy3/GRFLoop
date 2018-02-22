@@ -81,7 +81,7 @@ for (i in seq_along(enhs)) {
   }
   if (tolower(OP) == "connect") {
     info.obj <- geneCor(info.obj)
-    # conPlot(loop.obj, fet.obj, dout = root)
+   #  conPlot(loop.obj, fet.obj, dout = root)
    #  for (k in 2:4) {
    #  	message("i ", i, " k ", k)
    #  	shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
