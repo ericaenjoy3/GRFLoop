@@ -82,6 +82,7 @@ if (coreg) {
         gsub("PromEnh.txt", paste0(vtype, "_Line.pdf"), hichip)), 
       vtype = vtype, uniqueLoopGene = TRUE)
   }
+  info.obj <- geneCor(info.obj)
   for (k in 2:4) {
     message("k ", k)
     shufPlot(loop.obj, info.obj, nmin = k , nmax =k, dout = root,
