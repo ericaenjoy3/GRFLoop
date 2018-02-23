@@ -19,15 +19,6 @@ setMethod(f = "shufPlot",
     # deg labels
     deg_pct_list <- gene2direction(gene_list, info.obj) # use gene2direction
     deg_pct <- melt(rbindlist(deg_pct_list), id.vars = "direction")
-    # max interval for grouped gene
-    span_vec <- sapply(gene_list, function(gs, info.obj){
-      idx <- chmatch(gs, info.obj@gene[["gene"]])
-      stopifnot(all(!is.na(idx)))
-      start <- min(info.obj@gene[idx][["start"]])
-      end <- max(info.obj@gene[idx][["end"]])
-      span <- end - start
-      return(span)
-    }, info.obj = info.obj)
     
     # coordinate for max interval
     coord <- rbindlist(lapply(gene_list, function(gs, info.obj){

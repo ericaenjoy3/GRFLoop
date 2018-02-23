@@ -30,9 +30,9 @@ setMethod(f = "gene2pairwiseLab",
         vec <- dd[row_idmat[,j]][[ncol(dd)]]
         if (any(is.na(vec))) {
           return(0)
-        } else if (all(vec == "Up")) {
+        } else if (all(vec == "Up") | all(vec == "Down")) {
           return(1)
-        } else if (all(vec == "Down")) {
+        } else if (any(vec == "Up") & any(vec == "Down")) {
           return(-1)
         } else {
           return(0)
