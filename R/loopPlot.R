@@ -77,7 +77,7 @@ hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE)
         }
       nd_list <- lapply(unique(E(g)$etype), function(et, g, type) {
         ng <- subgraph.edges(g, E(g)[E(g)$etype == et])
-        return(data.table(degree = igraph::degree(g), cluster = type, et = et))
+        return(data.table(degree = igraph::degree(ng), cluster = type, et = et)) # degree from ng to g
       }, g = g, type = type)
       return(nd_list)
     }, loop.obj.list = loop.obj.list)

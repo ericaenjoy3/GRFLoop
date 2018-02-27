@@ -32,8 +32,8 @@ setClass(
     if (nrow(object@loop) < 1) {
       return("No loop was given.")
     }
-    if (any(!colnames(object@loop) %in% c("loop", "gene1", "gene2", "rowid"))) {
-      return("Column names of the hash slot do not match to 'loop', 'gene1', 'gene2' and 'rowid'.")
+    if (any(!colnames(object@loop) %in% c("loop", "loc1", "loc2", "gene1", "gene2", "rowid"))) {
+      return("Column names of the hash slot do not match to 'loop', 'loc1', 'loc2', 'gene1', 'gene2' and 'rowid'.")
     }
     if (length(E(object@g)) < 1) {
       return("No edge in the g slot.")
@@ -123,8 +123,8 @@ setClass(
     if (nrow(object@hash) != length(object@dat_list)) {
       return("The row number of the hash slot does not equal to the length of dat_list.")
     }
-    if (any(colnames(object@hash) != c("sms", "grps", "enhs", "grps_enhs"))) {
-      return("Column names of the hash slot do not match to 'sms', 'grps', 'enhs', 'grps_enhs'.")
+    if (any(colnames(object@hash) != c("chip", "loc"))) {
+      return("Column names of the hash slot do not match to 'chip', 'loc'.")
     }
     if (any(sapply(object@hash, class) != "factor")) {
       return("Columns of the hash slot of the object class must be of 'factor' class.")

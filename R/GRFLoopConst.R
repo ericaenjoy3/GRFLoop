@@ -38,7 +38,7 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
   v_dat <- rbind(data.table(name = dat[["loc1"]], vtype = dat[["loc1type"]]),
     data.table(name = dat[["loc2"]], vtype = dat[["loc2type"]])) %>% unique()
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
-  loop_slot <- dat[, c("loop", "gene1", "gene2", "rowid"), with = FALSE]
+  loop_slot <- dat[, c("loop", "loc1", "loc2", "gene1", "gene2", "rowid"), with = FALSE]
   loop.obj <- new("loop", g = g, loop = loop_slot)
   return(loop.obj)
 }
@@ -114,25 +114,19 @@ infoConst <- function(
 }
 
 fetConst <- function(fet_fs, small = 0.05) {
-  hash <- data.table(
-    sms = gsub("^[^_]+_([^_]+)_.*", "\\1", basename(fet_fs)),
-    grps = gsub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", basename(fet_fs)),
-    enhs = basename(dirname(dirname(fet_fs)))
-  )
-  hash[, c("grps_enhs") := paste(grps, enhs, sep = "_")]
-  lapply(seq_len(ncol(hash)), function(i){
-    hash[[i]] <<- factor(hash[[i]], levels = unique(hash[[i]]));
-    invisible(NULL)
-  })
-  dat_list <- lapply(seq_along(fet_fs), function(i, fet_fs, sms, small){
+  chip <- basename(dirname(fet_fs))
+  loc <- gsub(".+(Loc\\d).+", "\\1", basename(fet_fs))
+  hash <- data.table(chip = chip, loc = loc)
+  hash[, (colnames(hash)) := lapply(.SD, function(vec){factor(vec, levels = unique(vec))}) , .SDcols = colnames(hash)]
+  dat_list <- lapply(seq_along(fet_fs), function(i, fet_fs, chip, small){
     message("reading file ", fet_fs[i])
     dat <- fread(fet_fs[i], header = TRUE)
-    if (grepl("RNA", sms[i])) {
+    if (grepl("RNA", chip[i])) {
       dat[, c(colnames(dat)) := lapply(.SD, function(x){log2(x + small)}), .SDcols = colnames(dat)]
     }
     return(dat)
-  }, fet_fs = fet_fs, sms = hash[["sms"]], small = small)
-  names(dat_list) <- hash[["sms"]]
+  }, fet_fs = fet_fs, chip = hash[["chip"]], small = small)
+  names(dat_list) <- hash[["chip"]]
   fet.obj <- new("fet", dat_list = dat_list, hash = hash)
   return(fet.obj)
 }
