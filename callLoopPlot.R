@@ -29,14 +29,14 @@ attach(args)
 
 if (length(hichip) == 1 & !splithichip) {
   message("constructing loop and fet objects")
-  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType, FALSE, TRUE))
+  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE))
 }
 
 if (length(hichip) >1) {
   loop.obj.list <- lapply(hichip, function(f)loopConst(f, score_col = NULL, filterUnknown = FALSE))
   cluster <- c()
   for (i in seq_along(loop.obj.list)) {
-    string <- readInput(prompt = paste0("please enter", i, "th cluster name: "))
+    string <- readline(prompt = paste0("please enter", i, "th cluster name: "))
     cluster <- c(cluster, string)
   }
   message("done with entering cluster names.")
@@ -93,4 +93,5 @@ if (coreg) {
   #     uniqueLoopGene = TRUE)
   # }
 }
+
 

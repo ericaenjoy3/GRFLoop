@@ -2,7 +2,7 @@
 
 #' @export shufPlotMulti
 setGeneric(name = "shufPlotMulti",
-  def = function(loop.obj, info.obj, nmin, nmax, dout, glabBarpdf, uniqueLoopGene = FALSE){
+  def = function(loop.obj, info.obj, nmin, nmax, dout, pdffout, fout, uniqueLoopGene = FALSE){
     standardGeneric("shufPlotMulti")
   }
 )
@@ -10,7 +10,7 @@ setGeneric(name = "shufPlotMulti",
 #' @rdname shufPlotMulti-methods
 setMethod(f = "shufPlotMulti",
   signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, nmin, nmax, dout, glabBarpdf, uniqueLoopGene) {
+  definition = function(loop.obj, info.obj, nmin, nmax, dout, pdffout, fout, uniqueLoopGene) {
 
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
@@ -40,35 +40,57 @@ setMethod(f = "shufPlotMulti",
       message("permutations within TADs")      
       genet_list <- inTADShulf(gene_list, info.obj)
 
-      message("assigning gene_list, genep_list and genet_list to dat_list elements")  
+      message("assigning gene_list, genep_list and genet_list to dat_list elements\n")  
       dat_list[[length(dat_list)]][['gene_list']] <- gene_list
       dat_list[[length(dat_list)]][['genep_list']] <- genep_list
       dat_list[[length(dat_list)]][['genet_list']] <- genet_list
+      names(dat_list)[length(dat_list)] <- j
 
     }
 
-
-
-
-    # pariwise lab plots
-    if (!is.null(info.obj@gcor)) {
+    glab_list <- lapply(nmin:nmax, function(j){
+      message("processing ", j)
+      message("retrieve gene list")
+      idx <- which(names(dat_list) == j)
+      stopifnot(length(idx) == 1)
+      gene_list <- dat_list[[idx]][['gene_list']]
+      genep_list <- dat_list[[idx]][['genep_list']]
+      genep_list <- dat_list[[idx]][['genet_list']]
+      message("starting gene2pairwiseLab")
       gene_lab <- gene2pairwiseLab(gene_list, info.obj)
       genep_lab <- gene2pairwiseLab(genep_list, info.obj)
       genet_lab <- gene2pairwiseLab(genet_list, info.obj)
+      message("done with gene2pairwiseLab")
+      message("making data.table")
       dat <- rbindlist(list(data.table(type = "Genuine", gene_lab),
         data.table(type = "Global Random", genep_lab),
         data.table(type = "In-TAD Random", genet_lab)), use.names = FALSE)
       dat <- dat[, .N, by = .(type, gene_lab)]
       dat[, pct := round(100*N/sum(N), digits = 2), by = type][, gene_lab := factor(gene_lab)]
-    }
+      dat[, connum := j]
+      message("done with data.table\n\n")
+      return(dat)
+    })
 
-    theme_set(theme_grey(base_size=15))
-    p1 <- ggplot(dat, aes(x = type, y = pct, fill = gene_lab))+
-    geom_bar(stat = "identity") +
-    labs(x = "",y = "%") +
-    theme(legend.title = element_blank(),panel.spacing = unit(2, "lines"), legend.position = "top", 
-      axis.text.x = element_text(angle = 45, hjust = 1)) +
-      guides(fill = guide_legend(reverse = TRUE), colour = guide_legend(reverse = TRUE))
+    glab <- rbindlist(glab_list, use.names = FALSE)
+    glab <- glab[gene_lab != '0']
+    con <- file(fout, "w")
+    idx_mat <- combn(glab[, unique(type)], 2)
+    for (num in glab[, unique(connum)]) {
+      dd <- dcast(glab[connum==num, c("type", "gene_lab", "N")], type ~ gene_lab, value.var = "N")
+      write.table(dd, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t", file = con, append = TRUE)
+      for (j in 1:ncol(idx_mat)) {
+        p_val <- fisher.test(as.matrix(dd[type %in% idx_mat[, j], !"type"]))$p.value
+      }
+      cat("p value: ", p_val, "\n\n", sep = "", file = con)
+    }
+    close(con)
+
+    p1 <- ggerrorplot(glab, x = "type", y = "pct", color = "gene_lab", palette = "jco", xlab = "", 
+      ylab = "%", legend.title = "") +
+      stat_compare_means(method = "kruskal.test")
+    p1 <- facet(p1, facet.by = c("connum"), nrow = 1) + rotate_x_text(45)
     ggsave(glabBarpdf, p1)
+
   }
 )

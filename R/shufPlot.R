@@ -67,30 +67,29 @@ setMethod(f = "shufPlot",
     ggsave(coregBoxpdf, p1)
 
     # correlation coefficients
-
-    gene_cor <- gene2pairwiseCor(gene_list, info.obj)
-    genep_cor <- gene2pairwiseCor(genep_list, info.obj)
-    genet_cor <- gene2pairwiseCor(genet_list, info.obj)
-    dat <- rbindlist(list(data.table(type = "Genuine", gene_cor),
-      data.table(type = "Global Random", genep_cor),
-      data.table(type = "In-TAD Random", genet_cor)), use.names = FALSE)
-    cmp <- data.table(combn(unique(dat[, type]), 2))
-    p1 <- ggboxplot(dat, x = "type", y = "gene_cor", color = "type", palette = "jco", add = "jitter",
-      xlab = "", ylab = "Spearman Correlation", legend.title = "") +
-      stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
-    ggsave(gcorBoxpdf, p1)
+    if (!is.null(info.obj@gcor)) {
+      gene_cor <- gene2pairwiseCor(gene_list, info.obj)
+      genep_cor <- gene2pairwiseCor(genep_list, info.obj)
+      genet_cor <- gene2pairwiseCor(genet_list, info.obj)
+      dat <- rbindlist(list(data.table(type = "Genuine", gene_cor),
+        data.table(type = "Global Random", genep_cor),
+        data.table(type = "In-TAD Random", genet_cor)), use.names = FALSE)
+      cmp <- data.table(combn(unique(dat[, type]), 2))
+      p1 <- ggboxplot(dat, x = "type", y = "gene_cor", color = "type", palette = "jco", add = "jitter",
+        xlab = "", ylab = "Spearman Correlation", legend.title = "") +
+        stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
+      ggsave(gcorBoxpdf, p1)
+    }
 
     # pariwise lab plots
-    if (!is.null(info.obj@gcor)) {
-      gene_lab <- gene2pairwiseLab(gene_list, info.obj)
-      genep_lab <- gene2pairwiseLab(genep_list, info.obj)
-      genet_lab <- gene2pairwiseLab(genet_list, info.obj)
-      dat <- rbindlist(list(data.table(type = "Genuine", gene_lab),
-        data.table(type = "Global Random", genep_lab),
-        data.table(type = "In-TAD Random", genet_lab)), use.names = FALSE)
-      dat <- dat[, .N, by = .(type, gene_lab)]
-      dat[, pct := round(100*N/sum(N), digits = 2), by = type][, gene_lab := factor(gene_lab)]
-    }
+    gene_lab <- gene2pairwiseLab(gene_list, info.obj)
+    genep_lab <- gene2pairwiseLab(genep_list, info.obj)
+    genet_lab <- gene2pairwiseLab(genet_list, info.obj)
+    dat <- rbindlist(list(data.table(type = "Genuine", gene_lab),
+      data.table(type = "Global Random", genep_lab),
+      data.table(type = "In-TAD Random", genet_lab)), use.names = FALSE)
+    dat <- dat[, .N, by = .(type, gene_lab)]
+    dat[, pct := round(100*N/sum(N), digits = 2), by = type][, gene_lab := factor(gene_lab)]
 
     theme_set(theme_grey(base_size=15))
     p1 <- ggplot(dat, aes(x = type, y = pct, fill = gene_lab))+
