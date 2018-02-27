@@ -53,7 +53,7 @@ setMethod(f = "mViolinPlot",
       dat_list[[length(dat_list) + 1]] <- lapply(seq_along(chip_loc1_idx), function(k){
           rbind(fet.obj@dat_list[[chip_loc1_idx[k]]][loc1_idxv], fet.obj@dat_list[[chip_loc2_idx[k]]][loc2_idxv])
         })
-      
+
     }
     stopifnot(nrow(dat_list[[1]]) == sum(vec <= thresh[1] | vec >= thresh[2]))
     # merge low and high into one data.table
@@ -61,6 +61,7 @@ setMethod(f = "mViolinPlot",
       d1 <- data.table(split = "lowCon", dat_list[[1]][[j]][, ncol(dat_list[[1]][[j]]), with = FALSE])
       d2 <- data.table(split = "hiCon", dat_list[[2]][[j]][, ncol(dat_list[[2]][[j]]), with = FALSE])
       nsize <- min(nrow(d1), nrow(d2))
+      set.seed(888)
       rbind(d1[if(nrow(d1) > nsize){sample(1:nrow(d1), nsize)} else {1:nrow(d1)}, ], 
         d2[if(nrow(d2) > nsize){sample(1:nrow(d2), nsize)} else {1:nrow(d2)}, ])
     })
