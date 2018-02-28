@@ -3,7 +3,7 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
   # g slot: vertex: name, vtype
   # loop slot: data.table of loop, gene1, gene2 and rowid
   if (is.character(loop_f)) { 
-    dat <- fread(loop_f, header = TRUE)
+    dat <- fread(loop_f, header = TRUE, na.string = c("", "NA", "N/A"))
   } else if ("data.table" %in% class(loop_f)) {
     dat <- loop_f
   }

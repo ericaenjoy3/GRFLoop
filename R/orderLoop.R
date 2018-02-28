@@ -13,7 +13,7 @@ setMethod(f = "orderLoop",
   definition = function(loop.obj, fet.obj, sm_nm, order_method){
     order_method <- match.arg(order_method)
     stopifnot(all(sm_nm %in% fet.obj@hash[["sms"]]))
-    order2 <- function(..., decreasing = TRUE){ order(..., decreasing=decreasing) }
+    order2 <- function(..., decreasing = TRUE){ order(..., decreasing = decreasing) }
     idx <- which(grepl(sm_nm, fet.obj@hash[["sms"]], ignore.case = TRUE) & grepl("Enh", fet.obj@hash[["grps"]], ignore.case = TRUE))
     if (order_method == "last_column") {
       row_idx <- order(fet.obj@dat_list[[idx]][[ncol(fet.obj@dat_list[[idx]])]], decreasing = TRUE)
