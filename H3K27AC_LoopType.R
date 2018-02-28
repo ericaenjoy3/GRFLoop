@@ -16,7 +16,7 @@ parser <- ArgumentParser()
 parser$add_argument("--hichip", type = "character", required = FALSE,
   help = "A query loop file with columns being locus 1 and 2, genes 1 and 2 and optional columns.")
 parser$add_argument("--vchip", type = "character", nargs='+', required = FALSE,
-  help = "h3k27ac chip file to determine enhancers.")
+  help = "h3k27ac chip file to filter loop validity.")
 parser$add_argument("--echip", type = "character", required = FALSE,
   help = "enhancers coordinate file to overlap anhcors for determining enhancers.")
 parser$add_argument("--intsec", action="store_true",
@@ -42,9 +42,11 @@ dat <- dat %>% separate(
 # (1) Remove duplicated loops
 stopifnot(all(dat[, loc1Chr == loc2Chr]))
 idx <- dat[loc1Chr == loc2Chr & loc1Start > loc2Start, which = TRUE]
+n_before <- nrow(dat)
 if (length(idx) > 0) {
 	dat <- dat[idx, c("loc1Start", "loc1End", "loc2Start", "loc2End", "gene1", "gene2") := .(loc2Start, loc2End, loc1Start, loc1End, gene2, gene1)] %>% unique()
-	message(length(idx), " duplicated loops removed.")
+	n_after <- nrow(dat)
+	message(n_after - n_before, " duplicated loops removed.")
 }
 
 # (2) Gene1 and 2 contains observations with multiple delimited values, this separates the values and places each one in its own row.
