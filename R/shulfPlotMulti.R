@@ -55,7 +55,7 @@ setMethod(f = "shufPlotMulti",
       stopifnot(length(idx) == 1)
       gene_list <- dat_list[[idx]][['gene_list']]
       genep_list <- dat_list[[idx]][['genep_list']]
-      genep_list <- dat_list[[idx]][['genet_list']]
+      genet_list <- dat_list[[idx]][['genet_list']]
       message("starting gene2pairwiseLab")
       gene_lab <- gene2pairwiseLab(gene_list, info.obj)
       genep_lab <- gene2pairwiseLab(genep_list, info.obj)
@@ -87,10 +87,9 @@ setMethod(f = "shufPlotMulti",
     close(con)
 
     p1 <- ggerrorplot(glab, x = "type", y = "pct", color = "gene_lab", palette = "jco", xlab = "", 
-      ylab = "%", legend.title = "") +
-      stat_compare_means(method = "kruskal.test")
-    p1 <- facet(p1, facet.by = c("connum"), nrow = 1) + rotate_x_text(45)
-    ggsave(glabBarpdf, p1)
+      ylab = "%", legend.title = "", add = "mean_se") +
+      rotate_x_text(45)
+    ggsave(pdffout, p1)
 
   }
 )
