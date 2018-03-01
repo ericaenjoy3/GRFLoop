@@ -64,12 +64,10 @@ g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
 vp_rowid <- V(g)$rowid[which(!is.na(V(g)$rowid))]
 v_list <- lapply(adjacent_vertices(g, which(!is.na(V(g)$rowid))), function(v)v$rowid)
 lab <- sapply(v_list, function(vec){
-	if(any(is.na(vec)) & any(!is.na(vec))) {
-		return("Mixed")
+	if(any(!is.na(vec))) {
+		return("Bi-anchor")
 	} else if (all(is.na(vec))) {
 		return("One-anchor")
-	} else if (all(!is.na(vec))) {
-		return("Bi-anchor")
 	}
 })
 ndat <- unique(data.table(rowid = vp_rowid, lab = lab))

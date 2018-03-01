@@ -19,7 +19,7 @@ setMethod(f = "mViolinPlot",
 
     # highly and lowly connected vertex
     g <- loop.obj@g
-    vec <- igraph::degree(g)
+    vec <- igraph::degree(g, which(V(g)$vtype == "Enh"))
 
     thresh <- c(1, 4)
     # match vertex to loc1 or loc2 and retrieve the first occurance of rowid
