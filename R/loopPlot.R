@@ -112,7 +112,7 @@ hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE)
       setnames(dat, "V1", "degree")
     }
     cmp <- data.table(combn(dat[, unique(cluster)], 2))
-    p1 <- ggerrorplot(dat, x = "cluster", y = "degree", color = "cluster", palette = c("red", "darkorange", "grey"), binwidth=0.02, add="jitter", 
+    p1 <- ggerrorplot(dat, x = "cluster", y = "degree", color = "cluster", palette = c("red", "grey", "darkorange"), binwidth=0.02, add="jitter", 
       xlab = "", ylab = "Connectivity", legend = 'none', font.x = c(20, "bold", "black"), font.y = c(20, "bold", "black"), font.tickslab = c(20, "bold", "black"))
     # stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")
     ggsave(pdffout, p1)
