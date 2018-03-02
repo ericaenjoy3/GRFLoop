@@ -12,7 +12,7 @@ setMethod(f = "TPMInfo",
   signature = c("info"),
   definition = function(info.obj) {
     # genes with TPM >= 1 at any stage during reprogramming
-    col_nm <- colnames(info.obj@gene)[grep("^tpm", colnames(info.obj@gene))]
+    col_nm <- colnames(info.obj@gene)[grep("^tpm_(MEF|ESC)", colnames(info.obj@gene))]
     idx <- info.obj@gene[, apply(.SD, 1, function(vec)any(vec>1)), .SDcols = col_nm]
     stopifnot(all(!idx) == FALSE)
     # update info.obj

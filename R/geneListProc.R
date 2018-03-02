@@ -40,7 +40,7 @@ setMethod(f = "geneListProc",
       return(gs)
     }, loop_hash = loop_hash)
     if (uniqueLoopGene) {
-      gene_list <- unique(gene_list)
+      gene_list <- gene_list[!duplicated(gene_list)]
     }
     if (type == "Enh") {
     	idx <- which(sapply(gene_list, function(vec)length(unique(vec))) >= nmin)
