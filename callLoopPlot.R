@@ -92,6 +92,12 @@ if (coreg) {
   #     glabBarpdf = file.path(root, paste0("Enh_nmin", k, "_nmax", k, "_glabBar.pdf")),
   #     uniqueLoopGene = TRUE)
   # }
+  nmax <- maxCoreg(loop.obj, coregfout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_gene.txt", hichip)), uniqueLoopGene = TRUE)
+  message("maximum contacts in coreg: ", nmax)
+  shufPlotMulti(loop.obj, info.obj, nmin = 2, nmax = nmax, dout = root, 
+    pdffout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_Enh_glabBar.pdf", hichip)), 
+    fout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_pval.txt", hichip)), 
+    uniqueLoopGene = TRUE)
 }
 
 

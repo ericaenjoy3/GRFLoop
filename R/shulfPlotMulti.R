@@ -22,8 +22,7 @@ setMethod(f = "shufPlotMulti",
     # retrieve genes contacted by the same enhancer hub
     for (j in seq(nmin, nmax)) {
 
-      message("initalizing elements of dat_list")
-
+      message("initalizing elements of dat_list ", j, " th iteration")
 
       message("retrieve genes for enhancer hubs")
       gene_list <- geneListProc(loop.obj, info.obj, nmin = j, nmax = j, type = "Enh", uniqueLoopGene = uniqueLoopGene)

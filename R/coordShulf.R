@@ -14,7 +14,7 @@ setMethod(f = "coordShulf",
     stopifnot(file.exists(dout))
     genomef <- "/home/liuyiyua/athena/Gencode/mm10/sequence/autosome.genome"
     exclf <- path.expand("~/athena/blacklist/mm10-blacklist.bed")
-    nd = file.path(dout, "tmp")
+    nd <- file.path(dout, "tmp")
     dir.create(nd, showWarnings = FALSE, recursive = TRUE)
     coord <- coord[mixedorder(coord[["chr"]], coord[["start"]], decreasing = FALSE)]
     f0 <- file.path(nd, paste0("b", 0, ".bed"))

@@ -11,18 +11,6 @@ setGeneric(name = "geneListProc",
 setMethod(f = "geneListProc",
   signature = c("loop", "info"),
   definition = function(loop.obj, info.obj, nmin, nmax, type, uniqueLoopGene) {
-    # subgraph based on vertex type
-    V(loop.obj)$vtype == type
-    # incident edges counts per vertex
-    # genes
-  }
-)
-
-
-#' @rdname geneList-methods
-setMethod(f = "geneListProc",
-  signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, nmin, nmax, type, uniqueLoopGene) {
     # dedup loop in the loop slot of loop.obj
     kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
     loop_hash <- loop.obj@loop[kpt.idx]
