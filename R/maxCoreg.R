@@ -35,6 +35,7 @@ setMethod(f = "maxCoreg",
     # max connection for which the number of hub > 1
     maxco <- data.table(connum = sapply(ed, length))
     maxco <- maxco[, .N, by = connum]
-    return(maxco[N>1, which.max(connum)])
+
+    return(maxco[N>1, max(connum)])
   }
 )

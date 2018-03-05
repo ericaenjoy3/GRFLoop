@@ -79,6 +79,7 @@ setMethod(f = "shufPlotMulti",
     con <- file(fout, "w")
     idx_mat <- combn(glab[, unique(type)], 2)
     dd <- dcast(glab[, c("type", "gene_lab", "N")], type ~ gene_lab, value.var = "N")
+    dd[is.na(dd)] <- 0
     write.table(dd, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t", file = con, append = TRUE)
     cat("\n\n", sep = "", file = con)
     for (j in 1:ncol(idx_mat)) {
