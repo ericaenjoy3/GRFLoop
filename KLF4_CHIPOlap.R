@@ -58,7 +58,7 @@ v_dat <- rbind(dat[, .(loc1, loc1Chr, loc1Start, loc1End)], dat[, .(loc2, loc2Ch
 setnames(v_dat, gsub("1", "", colnames(v_dat)))
 setkeyv(v_dat, c("locChr", "locStart", "locEnd"))
 idx_dat <- foverlaps(v_dat, chip_dat, nomatch = 0, which = TRUE)
-idx_dat <- idx_dat[, paste(yid, collapse=";"), by = xid]
+idx_dat <- idx_dat[, paste(yid, collapse = ";"), by = xid]
 v_dat[idx_dat[["xid"]], rowid := idx_dat[["V1"]]]
 g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
 vp_rowid <- V(g)$rowid[which(!is.na(V(g)$rowid))]
@@ -77,4 +77,4 @@ setnames(ndat, "V1", "lab")
 
 res_dat <- merge(chip_dat, ndat, by.x = "rowid", by.y= "rowid", sort = FALSE, all.x = TRUE)
 res_dat[is.na(lab), lab := "No-anchor"]
-write.table(res_dat[lab != "Mixed",!"rowid"], file = fout, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(res_dat[, !"rowid"], file = fout, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
