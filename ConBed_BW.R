@@ -77,7 +77,7 @@ mat_dat <- rbindlist(lapply(1:nrow(c_dat), function(i){
 
 write.table(mat_dat, file = matf, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
 
-unlink(tmp_pint)
+unlink(dout)
 
 
 
