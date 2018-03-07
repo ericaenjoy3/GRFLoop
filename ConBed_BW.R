@@ -22,6 +22,7 @@ parser$add_argument("--config", type = "character", required = FALSE,
 parser$add_argument("--matf", type = "character", required = FALSE,
   help = "Output signal matrix file.")
 args <- parser$parse_args()
+attach(args)
 
 # create temporary directory
 dout <- file.path(dirname(config), "tmp")
