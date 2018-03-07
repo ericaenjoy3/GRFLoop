@@ -54,7 +54,7 @@ idx <- pint_dat[V2==V3, which = TRUE]
 pint_dat <- pint_dat[!1:nrow(pint_dat) %in% idx]
 idx_tbl <- idx_tbl[!1:nrow(idx_tbl) %in% idx]
 
-tmp_pint <- file.path(dout, "tmp_pint.bed")
+tmp_pint <- paste0(tempfile(tmpdir = dout), ".bed")
 write.table(pint_dat[, 1:3, with = FALSE], file = tmp_pint, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 
 # average signals under intersected peaks
