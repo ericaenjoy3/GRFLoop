@@ -5,7 +5,7 @@
 # Filters:
 # (1) Remove duplicated loops
 # (2) Filter hichip chr by chr in chip-seq peaks
-# (3) 
+# (3) igraph
 ###
 
 libfs <- c("data.table", "tidyverse", "gtools", "igraph", "RJSONIO", "ggplot2", "argparse")
