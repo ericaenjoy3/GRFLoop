@@ -70,7 +70,7 @@ mat_dat <- rbindlist(lapply(1:nrow(c_dat), function(i){
 	nd <- dd[, sum(V1*w_width)/sum(w_width), by = yid]
 	nd <- merge(ow2w_tbl, nd, by.x = "yid", by.y = "yid", all.x = TRUE, sort = FALSE)[, !"yid"]
 	nd[is.na(V1), V1:=0]
-	write.table(nd[,!"xid"], file = f, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+	write.table(nd[,!"xid"], file = c_dat[i, V3], row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 	setnames(nd, 2, c_dat[i, V2])
 	return(nd[,!"xid"])
 }))
