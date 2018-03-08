@@ -2,15 +2,16 @@
 
 #' @export maxCoreg
 setGeneric(name = "maxCoreg",
-  def = function(loop.obj, coregfout, uniqueLoopGene = FALSE){
+  def = function(loop.obj, info.obj, coregfout){
     standardGeneric("maxCoreg")
   }
 )
 
 #' @rdname geneList-methods
 setMethod(f = "maxCoreg",
-  signature = c("loop"),
-  definition = function(loop.obj, coregfout, uniqueLoopGene) {
+  signature = c("loop", "info"),
+  definition = function(loop.obj, info.obj, coregfout) {
+
     type <- "Enh"
 
     # dedup loop in the loop slot of loop.obj
@@ -28,9 +29,11 @@ setMethod(f = "maxCoreg",
       data.table(hub = names(ed)[i],
         partner = gsub(paste0("\\|{0,1}", names(ed)[i], "\\|{0,1}"), "", as_ids(ed[[i]])),
         connum = length(ed[[i]]), 
-        genes = loop_hash[chmatch(as_ids(ed[[i]]), loop), gene1])
+        gene = loop_hash[chmatch(as_ids(ed[[i]]), loop), gene1])
     }))
-    write.table(dd, file = coregfout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
+    idx <- chmatch(dd[, genes], info.obj@gene[, gene])
+    nd <- cbind(dd, info.obj@gene[idx, grep("tpm", colnames(info.obj@gene)), with = FALSE])
+    write.table(nd, file = coregfout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
 
     # max connection for which the number of hub > 1
     maxco <- data.table(connum = sapply(ed, length))
