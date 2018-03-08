@@ -71,8 +71,8 @@ lab <- sapply(v_list, function(vec){
 	}
 })
 ndat <- unique(data.table(rowid = vp_rowid, lab = lab))
-ndat <- ndat[, ifelse(length(lab) >1, "Mixed", lab), by = rowid] # rowid =58 mixed lab
 ndat <- separate_rows(ndat, rowid, sep = ";", convert = TRUE)
+ndat <- ndat[, ifelse(length(lab) >1, "Mixed", lab), by = rowid] # rowid =58 mixed lab
 setnames(ndat, "V1", "lab")
 
 res_dat <- merge(chip_dat, ndat, by.x = "rowid", by.y= "rowid", sort = FALSE, all.x = TRUE)
