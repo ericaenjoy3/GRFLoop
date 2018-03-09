@@ -45,7 +45,7 @@ chrlenf <- "/home/liuyiyua/athena/Gencode/mm10/sequence/chrNameLengthKnownChr.si
 chrlen_dat <- fread(chrlenf, header = FALSE)
 seqlengths <- chrlen_dat[, V2]
 names(seqlengths) <- chrlen_dat[, V1]
-userUniverse <- tileGenome(seqlengths, tilewidth = 1000, cut.last.tile.in.chrom = TRUE)
+userUniverse <- tileGenome(seqlengths, tilewidth = 10000, cut.last.tile.in.chrom = TRUE)
 
 dbPath <- file.path("~/athena/LOLA/mm10")
 regionDB <- loadRegionDB(dbPath)
