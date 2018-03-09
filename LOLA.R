@@ -55,4 +55,4 @@ class(res$userSet) <- "character"
 res[, userSet := gsub(".bed", "", basename(bedin))]
 res <- res[order(pValueLog, decreasing=TRUE),]
 #res <- res[pValueLog!="Inf"]
-fwrite(locResults, file = fout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
+fwrite(res, file = fout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
