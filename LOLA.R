@@ -55,4 +55,5 @@ class(res$userSet) <- "character"
 res[, userSet := gsub(".bed", "", basename(bedin))]
 res <- res[order(pValueLog, decreasing=TRUE),]
 #res <- res[pValueLog!="Inf"]
+dir.create(dirname(fout), showWarnings = FALSE, recursive = TRUE)
 fwrite(res, file = fout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
