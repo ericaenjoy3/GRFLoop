@@ -22,7 +22,6 @@ parser$add_argument("--fout", type = "character", required = FALSE,
 args <- parser$parse_args()
 attach(args)
 
-bedin <- file.path("/athena/apostoloulab/scratch/liuyiyua/Andreas_KLF4_HICHIP/doc", "Spec_KLF4_EARLY.bed")
 bedin_dat <- fread(bedin, header = FALSE)
 bedin_dat[, V2 := V2 + 1]
 userSets <- makeGRangesFromDataFrame(bedin_dat,
