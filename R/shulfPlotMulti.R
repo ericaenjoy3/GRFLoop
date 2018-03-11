@@ -75,6 +75,8 @@ setMethod(f = "shufPlotMulti",
       dd[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
       return(dd)
     }))
+    glab <- glab[gene_lab !=0]
+    glab[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
 
     con <- file(fout, "w")
     idx_mat <- combn(glab[, unique(type)], 2)
@@ -88,7 +90,7 @@ setMethod(f = "shufPlotMulti",
     }
     close(con)
 
-    ndat<- glab[gene_lab != '0']
+    ndat<- glab
     ndat[, gene_lab := factor(gene_lab, levels = sort(unique(gene_lab)))]
 
     theme_set(theme_grey(base_size=15))
