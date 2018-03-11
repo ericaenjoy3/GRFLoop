@@ -38,7 +38,7 @@ setMethod(f = "coordShulf",
         genep_list[[j]] <- NA
       }
     }
-    unlink(nd, recursive=TRUE)
+    unlink(nd, recursive = TRUE)
     idx <- sapply(genep_list, length) >= nmin & sapply(genep_list, length) <= nmax
     stopifnot(sum(idx) > 0)
     genep_list <- genep_list[idx]

@@ -37,7 +37,7 @@ setMethod(f = "shufPlotMulti",
 
       # global permutations of windows
       message("global permutations of windows")
-      genep_list <- coordShulf(coord, info.obj, dout, nshulf = 20, nmin = j, nmax = j)
+      genep_list <- coordShulf(coord, info.obj, dout, nshulf = 100, nmin = j, nmax = j)
 
       # permutations within TADs
       message("permutations within TADs")      
