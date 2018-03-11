@@ -1,4 +1,4 @@
-loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
+loopConst <- function(loop_f, score_col, filterUnknown = TRUE, filterDist = FALSE) {
   # g slot: edge: loop, etype, dist, score, cluster
   # g slot: vertex: name, vtype
   # loop slot: data.table of loop, gene1, gene2 and rowid
@@ -27,6 +27,10 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE) {
   dat[, c("loc2") := paste0(loc2Chr, ":", loc2Start, "-", loc2End)]
   dat[, c("rowid") := seq_len(nrow(dat))]
   dat[, c("dist") := ifelse(loc1Chr == loc2Chr, floor(abs(loc2End-loc1End)), NA)]
+  # fileter loops by distance of 1 MB
+  if (filterDist) {
+    dat <- dat[which(dist <= 1e6)]
+  }  
   # filter columns
   dat[, c("loop", "etype") := list(paste0(loc1, "|", loc2), paste0(loc1type, "|", loc2type))]
   # filter 'Unknown' in loc1type or loc2type
