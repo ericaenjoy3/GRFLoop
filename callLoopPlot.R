@@ -29,7 +29,7 @@ attach(args)
 
 if (length(hichip) == 1 & !splithichip) {
   message("constructing loop and fet objects")
-  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE))
+  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE), filterDist = TRUE)
 }
 
 if (length(hichip) >1) {
@@ -70,7 +70,7 @@ if (conHub & length(hichip) > 1) {
 }
 
 if (coreg) {
-  root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/coreg"
+  root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/coreg_distMax1MB"
   info.obj <- infoConst()
   info.obj <- ProteinCodingInfo(info.obj)
   info.obj <- TPMInfo(info.obj)

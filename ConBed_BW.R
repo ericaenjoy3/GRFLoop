@@ -2,14 +2,10 @@
 
 ###
 # Bigwig signals under peaks that overlapped with large windows
-# Process:
-# (1) 
-# (2) 
-# (3) 
 ###
 
 libfs <- c("data.table", "tidyverse", "gtools", "argparse")
-invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, character.only = T))))
+invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, character.only = TRUE))))
 options(scipen = 999)
 
 parser <- ArgumentParser()
@@ -37,7 +33,7 @@ ow2w_tbl <- data.table(xid = 1:nrow(ow_dat), yid = chmatch(ow_dat[, paste(V1, ":
 p_dat <- fread(peak, header = FALSE)[, 1:3, with = FALSE]
 setkeyv(p_dat, paste0("V", 1:3))
 
-stopifnot(all(w_dat[['V1']] %in% p_dat[['V1']]) & all(p_dat[['V1']] %in% w_dat[['V1']]))
+# stopifnot(all(w_dat[['V1']] %in% p_dat[['V1']]) & all(p_dat[['V1']] %in% w_dat[['V1']]))
 
 # overlap intersected peaks files by windows
 idx_tbl <- foverlaps(p_dat, w_dat, which = TRUE, nomatch = 0)
