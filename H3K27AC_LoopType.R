@@ -68,9 +68,9 @@ dat <- dat %>%
 	unique()
 
 dat[, loop := paste0(loc1Chr, ":", loc1Start, "-", loc1End, "_", loc2Chr, ":", loc2Start, "-", loc2End)]
-n_before <- dat[, length(unique(loop))]	
+n_before <- dat[, length(unique(loop))]
 dat <- dat[!((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2)))]
-n_after <- dat[, length(unique(loop))]	
+n_after <- dat[, length(unique(loop))]
 message(n_before - n_after, 
 	" loops removed due to missing translation in gencode")
 set(dat, j = c("gene1", "gene2"), value = NULL)
@@ -87,9 +87,9 @@ anchorOlap <- function(dat, fs) {
 	})
 	matchloc_list <- lapply(chip_list, function(chip){
 		setkeyv(dat, c("loc1Chr", "loc1Start", "loc1End"))
-		matchLoc1Loop <- dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop]
+		matchLoc1Loop <- copy(dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop])
 		setkeyv(dat, c("loc2Chr", "loc2Start", "loc2End"))
-		matchLoc2Loop <- dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop]
+		matchLoc2Loop <- copy(dat[unique(foverlaps(dat, chip, nomatch = 0, which = TRUE)$xid), loop])
 		return(list(matchLoc1Loop = matchLoc1Loop, matchLoc2Loop = matchLoc2Loop)) 
 	})
 	return(matchloc_list)
@@ -116,7 +116,7 @@ ematchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
 	ematchloc_list[[1]]
 }
 
-dat <- dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ifelse(loop %in% ematchloc_spec[[1]], "Enh", "Unknown")),
+dat[, c("loc1type", "loc2type") := list(ifelse(!is.na(gene1), "Prom", ifelse(loop %in% ematchloc_spec[[1]], "Enh", "Unknown")),
 	ifelse(!is.na(gene2), "Prom", ifelse(loop %in% ematchloc_spec[[2]], "Enh", "Unknown")))] 
 # %>% subset(subset = !(is.na(loc1type) | is.na(loc2type)))
 
@@ -124,7 +124,8 @@ dat[(loc1type == "Enh" & loc2type == "Prom") | (loc1type == "Unknown" & loc2type
 	c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type") := 
 	.(loc2Chr, loc2Start, loc2End, loc1Chr, loc1Start, loc1End, gene2, gene1, loc2type, loc1type)]
 dat <- dat[, c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")]
-dat[, `:=`(loc1Start=loc1Start-1, loc2Start=loc2Start-1)]
+dat[, `:=`(loc1Start = loc1Start - 1, loc2Start = loc2Start - 1)]
+
 write.table(dat, 
 	file = bedout, 
 	sep = "\t", 

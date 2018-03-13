@@ -6,9 +6,13 @@
 # (1) Filter hichip chr by chr in chip-seq peaks
 ###
 
-libfs <- c("data.table", "tidyverse", "gtools", "igraph", "RJSONIO", "ggplot2", "argparse")
+libfs <- c("data.table", "tidyverse", "argparse")
 invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, character.only = T))))
 options(scipen = 999)
+
+# hichip ("_LoopType.txt"): 0-based coordinate
+# chip: 0-based coordinate
+# bed: 0-based coordinate
 
 parser <- ArgumentParser()
 parser$add_argument("--hichip", type = "character", required = FALSE,
@@ -21,11 +25,13 @@ args <- parser$parse_args()
 attach(args)
 
 dat <- fread(hichip, header = TRUE, sep = "\t", na.strings=c("N/A", ""))
+dat[, `:=`(loc1Start = loc1Start + 1, loc2Start = loc2Start + 1)]
 dat <- rbindlist(list(dat[, .(loc1Chr, loc1Start, loc1End)], dat[, .(loc2Chr, loc2Start, loc2End)]), use.names = FALSE) %>% unique()
 
 # Chip-seq peaks
 chip_dat <- fread(chip, header = FALSE)[, 1:3, with = FALSE]
 setnames(chip_dat, c("chr", "start", "end"))
+chip_dat[, start := start + 1]
 setkeyv(chip_dat, c("chr", "start", "end"))
 chip_dat[, rowid := 1:nrow(chip_dat)]
 
@@ -38,5 +44,6 @@ idx <- foverlaps(dat, chip_dat, which = TRUE, nomatch = 0)$xid
 dat[idx, status := "With_KLF4"]
 dat[is.na(status), status := "No_KLF4"]
 
+dat[, loc1Start := loc1Start - 1]
 write.table(dat, file = bed, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 

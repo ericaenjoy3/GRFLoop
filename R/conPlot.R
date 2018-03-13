@@ -13,8 +13,8 @@ setMethod(f = "conPlot",
   signature = c("loop", "fet"),
   definition = function(loop.obj, fet.obj, dout){
     # dedup loop in the loop slot of loop.obj
-    kpt_idx <- !duplicated(loop.obj@loop[["loop"]])
-    loop_hash <- loop.obj@loop[kpt_idx]
+    kpt_idx <- copy(!duplicated(loop.obj@loop[["loop"]]))
+    loop_hash <- copy(loop.obj@loop[kpt_idx])
     setkeyv(loop_hash, "loop")
     # loop through promoter/enhancer vertices
     type <- c("Prom", "Enh")
@@ -122,7 +122,7 @@ setMethod(f = "conPlot",
       # boxplot of connectivites
       pdffout <- file.path(dout, 
         paste(type[j], "conBarPlot.pdf", sep = "_"))
-      theme_set(theme_grey(base_size=15))
+      theme_set(theme_grey(base_size = 15))
       p1 <- ggplot(tabulate, aes(x = variable, y = value)) +
       geom_bar(stat = "identity", fill = "#FF9999") +
       labs(x = "", y = "Counts") +

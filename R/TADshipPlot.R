@@ -23,7 +23,7 @@ setMethod(f = "TADshipPlot",
     #
     tadhom_list <- lapply(gene_list_list, function(gene_list){sapply(
       gene_list, function(gid) {
-        tadid <- info.obj@gene[gene %in% gid, tadid]
+        tadid <- copy(info.obj@gene[gene %in% gid, tadid])
         freq_tadid <- as.numeric(tail(names(sort(table(tadid))), 1))
         tadhom <- 100 * sum(tadid == freq_tadid)/length(tadid)
         return(tadhom)

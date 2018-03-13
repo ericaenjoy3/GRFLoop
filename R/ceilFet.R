@@ -22,7 +22,7 @@ setMethod(f = "ceilFet",
         names(vec) <- NULL
       }
       invisible(sapply(idx_vec, function(idx){
-        col_nm <- colnames(fet.obj@dat_list[[idx]])
+        col_nm <- copy(colnames(fet.obj@dat_list[[idx]]))
         fet.obj@dat_list[[idx]][, (col_nm) := lapply(.SD, function(x){x[x > vec[2] ] <- vec[2]; return(x)}), .SDcols = col_nm]}))
       return(rbind(vec))}, idx_list = idx_list, fet.obj = fet.obj)
     names(rng_list) <- names(idx_list)

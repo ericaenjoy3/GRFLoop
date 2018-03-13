@@ -12,10 +12,10 @@ setMethod(f = "ProteinCodingInfo",
   signature = c("info"),
   definition = function(info.obj) {
     # genes of protein coding
-    gid <- info.obj@gene[type == "protein_coding", gene]
+    gid <- copy(info.obj@gene[type == "protein_coding", gene])
     # update info.obj
     message(sum(!info.obj@gene[, gene] %in% gid), " non-protein-coding genes were filtered.")
-    info.obj@gene <- info.obj@gene[gene %in% gid]
+    info.obj@gene <- copy(info.obj@gene[gene %in% gid])
     validObject(info.obj)
     return(info.obj = info.obj)
   }

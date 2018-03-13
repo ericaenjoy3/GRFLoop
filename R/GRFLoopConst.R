@@ -1,3 +1,5 @@
+# hichip (*_LoopType_*.txt): 0-based coordinates
+
 loopConst <- function(loop_f, score_col, filterUnknown = TRUE, filterDist = FALSE) {
   # g slot: edge: loop, etype, dist, score, cluster
   # g slot: vertex: name, vtype
@@ -5,7 +7,7 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE, filterDist = FALS
   if (is.character(loop_f)) { 
     dat <- fread(loop_f, header = TRUE, na.string = c("", "NA", "N/A"))
   } else if ("data.table" %in% class(loop_f)) {
-    dat <- loop_f
+    dat <- copy(loop_f)
   }
   if (!is.null(score_col)) {
     score_nm <- colnames(dat)[score_col]
@@ -22,6 +24,7 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE, filterDist = FALS
   # filter columns
   mCols <- c("loc1Chr", "loc1Start", "loc1End", "loc2Chr", "loc2Start", "loc2End", "gene1", "gene2", "loc1type", "loc2type")
   setnames(dat, colnames(dat)[1 : length(mCols)], mCols)
+
   dat <- dat[, c(mCols, nscore_nm, cluster_nm), with = FALSE]
   dat[, c("loc1") := paste0(loc1Chr, ":", loc1Start, "-", loc1End)]
   dat[, c("loc2") := paste0(loc2Chr, ":", loc2Start, "-", loc2End)]
@@ -42,10 +45,13 @@ loopConst <- function(loop_f, score_col, filterUnknown = TRUE, filterDist = FALS
   v_dat <- rbind(data.table(name = dat[["loc1"]], vtype = dat[["loc1type"]]),
     data.table(name = dat[["loc2"]], vtype = dat[["loc2type"]])) %>% unique()
   g <- graph_from_data_frame(e_dat, directed = FALSE, vertices = v_dat)
-  loop_slot <- dat[, c("loop", "loc1", "loc2", "gene1", "gene2", "rowid"), with = FALSE]
+  loop_slot <- copy(dat[, c("loop", "loc1", "loc2", "gene1", "gene2", "rowid"), with = FALSE])
   loop.obj <- new("loop", g = g, loop = loop_slot)
   return(loop.obj)
 }
+
+# genef: 0-based coordinates
+# tadf: 0-based coordinates
 
 infoConst <- function(
   genef = path.expand("~/athena/Gencode/mm10/annotation/gencode.vM6.annotation.gene.bed"),
@@ -57,13 +63,14 @@ infoConst <- function(
     stopifnot(all(file.exists(c(genef))))
     gene <- fread(genef, header = FALSE)
     setnames(gene, c("chr", "start", "end", "gene"))
+    gene[, start := start + 1]
     setkeyv(gene, c("gene"))
     gene <- gene[which(chr %in% paste0("chr", c(1:19)))]
     gene[, c("type") := gsub("[^|]+\\|[^|]+\\|([^|]+)", "\\1", gene)]
     # add DEG columns to gene data.table
     fc <- fread(fcf, header = TRUE)
     fc[, c("gene") := paste(gid, gname, gtype, sep = "|")]
-    col_nm <- colnames(fc)[grep("^DEG", colnames(fc))]
+    col_nm <- copy(colnames(fc)[grep("^DEG", colnames(fc))])
     for (j in grep("^DEG", colnames(fc))) {
       set(fc, 1:nrow(fc), j, "NDiff")
       up_idx <- which(fc[[j-3]] > fc_num & fc[[j-2]] < p_val)
@@ -71,10 +78,10 @@ infoConst <- function(
       set(fc, up_idx, j, "Up")
       set(fc, dn_idx, j, "Down")    
     }
-    ridx <- fc[["gene"]] %in% gene[["gene"]]
+    ridx <- copy(fc[["gene"]] %in% gene[["gene"]])
     fc <- fc[ridx]
     for (col in col_nm) {
-      nfc <- fc[fc[[col]] != "NDiff"]
+      nfc <- copy(fc[fc[[col]] != "NDiff"])
       gene[nfc[["gene"]], c(col) := nfc[[col]]]
       message(col)
       print(table(gene[[col]]))
@@ -84,6 +91,7 @@ infoConst <- function(
     # add tadid column to gene data.table
     tad <- fread(tadf, header = FALSE)
     setnames(tad, c("chr", "start", "end"))
+    tad[, start := start + 1]
     setkeyv(tad, c("chr", "start", "end"))
     tad <- tad[chr %in% paste0("chr", c(1:19))]
     tad[, c("mstart", "mend") := list(as.integer(start - floor((start - shift(end, 1L, type="lag"))/2)),
@@ -92,7 +100,9 @@ infoConst <- function(
     tad[is.na(mend), `:=`(mend = end)]
     tad[, `:=`(start = NULL, end = NULL)]
     setnames(tad, c("mstart", "mend"), c("start", "end"))
-    fwrite(tad, file = gsub(".bed", "_nogap.bed", tadf), quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+    ntad <- copy(tad)
+    ntad[, start := start - 1]
+    write.table(ntad, file = gsub(".bed", "_nogap.bed", tadf), quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
     setkeyv(tad, c("chr", "start", "end"))
     # filter gene and tad based on common chr
     tad <- tad[chr %in% gene[["chr"]]]
@@ -107,8 +117,8 @@ infoConst <- function(
     # add TPM columns to gene data.table
     tpm <- SepTPMCnt(tpmf)$tpm.grp
     tpm <- data.table(gene = rownames(tpm), tpm, key = "gene")
-    gid <- gene[["gene"]]
-    tpm <- tpm[gid, nomatch = 0]
+    gid <- copy(gene[["gene"]])
+    tpm <- copy(tpm[gid, nomatch = 0])
     setnames(tpm, colnames(tpm)[colnames(tpm) != "gene"], paste0("tpm_", colnames(tpm)[colnames(tpm) != "gene"]))
     stopifnot(identical(tpm[,gene], gene[,gene]))
     gene <- data.table(gene, tpm[, -grep("gene", colnames(tpm)), with = FALSE])
@@ -130,7 +140,7 @@ fetConst <- function(fet_fs, small = 0.05) {
     }
     return(dat)
   }, fet_fs = fet_fs, chip = hash[["chip"]], small = small)
-  names(dat_list) <- hash[["chip"]]
+  names(dat_list) <- copy(hash[["chip"]])
   fet.obj <- new("fet", dat_list = dat_list, hash = hash)
   return(fet.obj)
 }

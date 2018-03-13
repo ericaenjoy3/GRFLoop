@@ -8,9 +8,13 @@
 # (3) igraph
 ###
 
-libfs <- c("data.table", "tidyverse", "gtools", "igraph", "RJSONIO", "ggplot2", "argparse")
+libfs <- c("data.table", "tidyverse", "igraph", "argparse")
 invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, character.only = T))))
 options(scipen = 999)
+
+# hichip: 1-based coordinate
+# chip: 0-based coordinate
+# fout: 0-based coordinate
 
 parser <- ArgumentParser()
 parser$add_argument("--hichip", type = "character", required = FALSE,
@@ -28,7 +32,7 @@ setnames(dat, colnames(dat), c("loc1", "loc2"))
 dat <- dat %>% separate(
 	loc1, c("loc1Chr", "loc1Start", "loc1End"), sep = "[:-]", remove = TRUE, convert = TRUE) %>% separate(
 	loc2, c("loc2Chr", "loc2Start", "loc2End"), sep = "[:-]", remove = TRUE, convert = TRUE)
-dat[, `:=`(loc1Start = loc1Start - 1, loc2Start = loc2Start -1)]
+# dat[, `:=`(loc1Start = loc1Start - 1, loc2Start = loc2Start -1)]
 dat[, loc1 := paste0(loc1Chr, ":", loc1Start, "-", loc1End)]
 dat[, loc2 := paste0(loc2Chr, ":", loc2Start, "-", loc2End)]
 
@@ -45,6 +49,7 @@ if (length(idx) > 0) {
 # Chip-seq peaks
 chip_dat <- fread(chip, header = FALSE)[, 1:3, with = FALSE]
 setnames(chip_dat, c("chr", "start", "end"))
+chip_dat[, start := start + 1]
 setkeyv(chip_dat, c("chr", "start", "end"))
 chip_dat[, rowid := 1:nrow(chip_dat)]
 
@@ -77,4 +82,5 @@ setnames(ndat, "V1", "lab")
 
 res_dat <- merge(chip_dat, ndat, by.x = "rowid", by.y= "rowid", sort = FALSE, all.x = TRUE)
 res_dat[is.na(lab), lab := "No-anchor"]
+res_dat[, start :=  start -1]
 write.table(res_dat[, !"rowid"], file = fout, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
