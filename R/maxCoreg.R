@@ -32,7 +32,9 @@ setMethod(f = "maxCoreg",
         gene = loop_hash[chmatch(as_ids(ed[[i]]), loop), gene1])
     }))
     idx <- chmatch(dd[, gene], info.obj@gene[, gene])
-    nd <- cbind(dd, info.obj@gene[idx, grep("tpm", colnames(info.obj@gene)), with = FALSE])
+    nd <- cbind(dd, info.obj@gene[idx, grep("tpm|DEG_ESC.MEF", colnames(info.obj@gene)), with = FALSE])
+   	nd <- nd[which(DEG_ESC.MEF %in% c("Up", "Down") & connum >1)]
+   	nd <- nd[, .SD[.N > 1],  by = hub]
     write.table(nd, file = coregfout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
 
     # max connection for which the number of hub > 1
