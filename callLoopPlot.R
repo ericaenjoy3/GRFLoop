@@ -70,15 +70,17 @@ if (conHub & length(hichip) > 1) {
 }
 
 if (coreg) {
+  message("coreg")
   root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/coreg_distMax1MB"
   info.obj <- infoConst()
   info.obj <- ProteinCodingInfo(info.obj)
   info.obj <- TPMInfo(info.obj)
   obj.list <- infoFilter(loop.obj, info.obj = info.obj)
   loop.obj <- obj.list[["loop.obj"]]
+  message("linePlot")
   for (vtype in c("Prom", "Enh")) {
     linePlot(loop.obj, info.obj, 
-      pdffout = file.path("/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/linePlot" 
+      pdffout = file.path("/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/linePlot",
         gsub("PromEnh.txt", paste0(vtype, "_Line.pdf"), hichip)), 
       vtype = vtype, uniqueLoopGene = TRUE)
   }
