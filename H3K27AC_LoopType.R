@@ -52,29 +52,7 @@ if (length(idx) > 0) {
 # (2) Gene1 and 2 contains observations with multiple delimited values, this separates the values and places each one in its own row.
 dat <- separate_rows(dat, gene1, sep = ",", convert = TRUE) %>% separate_rows(gene2, sep = ",", convert = TRUE)
 
-# (3) Transform gene id into gencode IDs
-gencodef <- "/home/liuyiyua/athena/Gencode/mm10/annotation/gencode.vM6.annotation.gene.bed"
-
-gencode <- fread(gencodef, header = FALSE, sep = "\t")[, 4, with = FALSE] %>% 
-	setnames(c("gid")) %>%
-	separate(gid, c("id", "gname", "type"), sep = "\\|", remove = FALSE, convert = TRUE) %>%
-	select(gid, gname)
-
-dat <- dat %>% 
-	merge(gencode, by.x = "gene1", by.y = "gname", all.x = TRUE, sort = FALSE) %>% 
-	setnames("gid", "g1") %>%
-	merge(gencode, by.x = "gene2", by.y = "gname", all.x = TRUE, sort = FALSE) %>%
-	setnames("gid", "g2") %>%  
-	unique()
-
 dat[, loop := paste0(loc1Chr, ":", loc1Start, "-", loc1End, "_", loc2Chr, ":", loc2Start, "-", loc2End)]
-n_before <- dat[, length(unique(loop))]
-dat <- dat[!((!is.na(gene1) & is.na(g1)) | (!is.na(gene2) & is.na(g2)))]
-n_after <- dat[, length(unique(loop))]
-message(n_before - n_after, 
-	" loops removed due to missing translation in gencode")
-set(dat, j = c("gene1", "gene2"), value = NULL)
-setnames(dat, c("g1", "g2"), c("gene1", "gene2"))
 
 # (4) Filter by at least one of the two anchor overlapped by H3K27AC ChIP-seq
 anchorOlap <- function(dat, fs) {
@@ -98,7 +76,7 @@ anchorOlap <- function(dat, fs) {
 vmatchloc_list <- anchorOlap(dat, vchip)
 matchloc <- unlist(vmatchloc_list, use.names = FALSE)
 message(dat[, sum(!loop %in% matchloc)], " loops removed from chip peak overlapping at anchors.")
-dat <- dat[loop %in% matchloc]
+dat <- copy(dat[loop %in% matchloc])
 
 # (4) Prom-Prom, Prom-Enh Looping, Enh-Enh Looping
 if ("echip" %in% names(args) & !is.null(args[["echip"]])) {
@@ -106,13 +84,14 @@ if ("echip" %in% names(args) & !is.null(args[["echip"]])) {
 } else {
 	ematchloc_list <- vmatchloc_list
 }
-ematchloc_spec <- if (intsec & length(ematchloc_list) > 1) {
+ematchloc_spec <- if (length(ematchloc_list) > 1) {
 	func <-ifelse(intsec & length(ematchloc_list) >1, "intersect", "union")
 	message(func, " on ematchloc_list")
 	maxlen <- max(sapply(ematchloc_list, length))
-	lapply(seq(maxlen),function(i) Reduce(func,lapply(ematchloc, "[[", i))) %>% 
+	lapply(seq(maxlen),function(i)Reduce(func, lapply(ematchloc_list, "[[", i))) %>% 
 		unlist()
 } else {
+	message("directly taking the 1st element from ematchloc_list.")
 	ematchloc_list[[1]]
 }
 

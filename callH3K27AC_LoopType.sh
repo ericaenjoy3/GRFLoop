@@ -39,7 +39,7 @@ cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --hichip $DIN/Spec_H3K27AC_${sm}.txt \
 --vchip ${vchip[@]} \
 --bedout $DIN/Spec_H3K27AC_${sm}_LoopType.txt"
-eval $cmd
+echo $cmd
 
 
 
