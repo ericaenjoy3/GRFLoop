@@ -88,8 +88,7 @@ ematchloc_spec <- if (length(ematchloc_list) > 1) {
 	func <-ifelse(intsec & length(ematchloc_list) >1, "intersect", "union")
 	message(func, " on ematchloc_list")
 	maxlen <- max(sapply(ematchloc_list, length))
-	lapply(seq(maxlen),function(i)Reduce(func, lapply(ematchloc_list, "[[", i))) %>% 
-		unlist()
+	lapply(seq(maxlen),function(i)Reduce(func, lapply(ematchloc_list, "[[", i)))
 } else {
 	message("directly taking the 1st element from ematchloc_list.")
 	ematchloc_list[[1]]
