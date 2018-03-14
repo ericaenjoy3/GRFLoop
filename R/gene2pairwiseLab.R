@@ -12,7 +12,7 @@ setMethod(f = "gene2pairwiseLab",
   signature = c("list", "info"),
   definition = function(gpair_list, info.obj){
     # deg labels for these genes
-    col_nm <- colnames(info.obj@gene)[grep("^DEG", colnames(info.obj@gene))]
+    col_nm <- copy(colnames(info.obj@gene)[grep("^DEG", colnames(info.obj@gene))])
 
     deg_list <- lapply(gpair_list, function(dd){
       dd <- as.matrix(dd)
@@ -28,7 +28,7 @@ setMethod(f = "gene2pairwiseLab",
 
     lab_list <- lapply(deg_list, function(g_list){
       sapply(g_list, function(dd){
-        vec <- dd[[ncol(dd)]]
+        vec <- copy(dd[[ncol(dd)]])
         if (any(is.na(vec))) {
           return(0)
         } else if (all(vec == "Up")) {

@@ -24,13 +24,16 @@ setMethod(f = "shufPlot",
     coord <- rbindlist(lapply(gene_list, function(gs, info.obj){
       idx <- chmatch(gs, info.obj@gene[["gene"]])
       stopifnot(all(!is.na(idx)))
-      unique(info.obj@gene[idx][, list(chr = chr, start = min(start), end = max(end))])
+      copy(unique(info.obj@gene[idx][, list(chr = chr, start = min(start), end = max(end))]))
     }, info.obj = info.obj))
+
     # global permutations of windows
     genep_list <- coordShulf(coord, info.obj, dout, nshulf = 20, nmin = nmin, nmax = nmax)
+
     # deg labels for global permutations
     degp_pct_list <- gene2direction(genep_list, info.obj) # use gene2direction
     degp_pct <- melt(rbindlist(degp_pct_list), id.vars = "direction")
+
     # permutations within TADs
     genet_list <- inTADShulf(gene_list, info.obj)
     degt_pct_list <- gene2direction(genet_list, info.obj) # use gene2direction
@@ -46,17 +49,21 @@ setMethod(f = "shufPlot",
     # boxplot of co-regulation labels
     theme_set(theme_grey(base_size = 15))
     if (nmin != nmax) {
+
       p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = direction, y = value, fill = type)) +
         geom_boxplot(position = position_dodge(width = 0.9)) +
         labs(x = "", y = "%") +
         theme(legend.title = element_blank(), panel.spacing = unit(2, "lines"),
           legend.position = "top")
+
     } else {
+
       dat[value <50, cate := "<50"]
       dat[value >= 50, cate := ">= 50"]
       dat[, value := NULL]
       dat <- dat[, N := .N, by = .(type, direction, variable, cate)] %>% unique()
       dat[, pct :=  100*N/sum(N), by = .(type, direction, variable)]
+      
       p1 <- ggplot(subset(dat, dat[["variable"]] == "DEG_MEF.ESC"), aes(x = cate, y = pct, fill = type)) +
         geom_bar(stat="identity", position = position_dodge(width = 0.9)) +
         labs(x = "", y = "%") +
@@ -68,13 +75,17 @@ setMethod(f = "shufPlot",
 
     # correlation coefficients
     if (!is.null(info.obj@gcor)) {
+      
       gene_cor <- gene2pairwiseCor(gene_list, info.obj)
       genep_cor <- gene2pairwiseCor(genep_list, info.obj)
       genet_cor <- gene2pairwiseCor(genet_list, info.obj)
+      
       dat <- rbindlist(list(data.table(type = "Genuine", gene_cor),
         data.table(type = "Global Random", genep_cor),
         data.table(type = "In-TAD Random", genet_cor)), use.names = FALSE)
+      
       cmp <- data.table(combn(unique(dat[, type]), 2))
+      
       p1 <- ggboxplot(dat, x = "type", y = "gene_cor", color = "type", palette = "jco", add = "jitter",
         xlab = "", ylab = "Spearman Correlation", legend.title = "") +
         stat_compare_means(comparison = cmp, method = "wilcox.test", label = "p.format")

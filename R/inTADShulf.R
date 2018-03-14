@@ -14,16 +14,16 @@ setMethod(f = "inTADShulf",
     message("beginning inTADShulf")
     genep_list <- lapply(seq_along(gene_list), function(j){
       gid <- gene_list[[j]]
-      tads <- unique(info.obj@gene[gene %in% gid, tadid])
+      tads <- copy(info.obj@gene[gene %in% gid, unique(tadid)])
       set.seed(j)
       rand_gid <- if (nrow(info.obj@gene[tadid %in% tads & !gene %in% gid]) < length(gid)) {
         if (nrow(info.obj@gene[tadid %in% tads]) < length(gid)) {
-          info.obj@gene[tadid %in% tads, gene]
+          copy(info.obj@gene[tadid %in% tads, gene])
         } else {
-          info.obj@gene[tadid %in% tads, sample(gene, size = length(gid), replace = FALSE)]
+          copy(info.obj@gene[tadid %in% tads, sample(gene, size = length(gid), replace = FALSE)])
         }
       } else {
-        info.obj@gene[tadid %in% tads & !gene %in% gid, sample(gene, size = length(gid), replace = FALSE)]
+        copy(info.obj@gene[tadid %in% tads & !gene %in% gid, sample(gene, size = length(gid), replace = FALSE)])
       }  
       return(rand_gid)
     })

@@ -12,8 +12,8 @@ setMethod(f = "geneListProc",
   signature = c("loop", "info"),
   definition = function(loop.obj, info.obj, nmin, nmax, type, uniqueLoopGene) {
     # dedup loop in the loop slot of loop.obj
-    kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
-    loop_hash <- loop.obj@loop[kpt.idx]
+    kpt.idx <- copy(!duplicated(loop.obj@loop[["loop"]]))
+    loop_hash <- copy(loop.obj@loop[kpt.idx])
     setkeyv(loop_hash, "loop")
     # identify incident loop
     stopifnot(sum(V(loop.obj@g)$vtype == type) > 0)
@@ -23,7 +23,7 @@ setMethod(f = "geneListProc",
     # extract PromGene from loop slot of loop.obj
     gene_list <- lapply(ed[idx], function(es, loop_hash){
       lp <- as_ids(es)
-      gs <- loop_hash[loop %in% lp, gene1]
+      gs <- copy(loop_hash[loop %in% lp, gene1])
       stopifnot(all(!is.na(gs)))
       return(gs)
     }, loop_hash = loop_hash)

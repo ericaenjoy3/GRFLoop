@@ -11,11 +11,11 @@ setGeneric(name = "geneCor",
 setMethod(f = "geneCor",
   signature = c("info"),
   definition = function(info.obj) {
-  	col_nm <- colnames(info.obj@gene)[grep("tpm_", colnames(info.obj@gene))]
+  	col_nm <- copy(colnames(info.obj@gene)[grep("tpm_", colnames(info.obj@gene))])
   	stopifnot(length(col_nm) > 1) 
   	stopifnot(all(info.obj@gene[, apply(.SD, 1, var), .SDcols = col_nm] > 0)) 
   	gcor_mat <- dcast(melt(info.obj@gene[, c("gene", col_nm), with = FALSE], id.vars = "gene"), variable ~ gene)[, !"variable"] %>% cor(method = "spearman") 
-    info.obj@gcor <- gcor_mat
+    info.obj@gcor <- copy(gcor_mat)
     validObject(info.obj)
     return(info.obj = info.obj)
   }

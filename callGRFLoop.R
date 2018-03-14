@@ -7,6 +7,7 @@ for (j in seq_along(libfs)) {
   message("source file ", j, " ",libfs[j])
   source(libfs[j])
 }
+
 # OP either connect, heatmap, or promgene
 OP <- "heatmap"
 enhs <- c("SuperEnh", "NormalEnh") #

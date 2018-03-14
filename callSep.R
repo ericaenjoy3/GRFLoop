@@ -7,6 +7,7 @@ for (j in seq_along(libfs)) {
   message("source file ", j, " ",libfs[j])
   source(libfs[j])
 }
+
 # OP either connect or heatmap
 OP <- "connect"
 type <- c("MEF", "ESC", "CONSTANT") #
@@ -15,6 +16,7 @@ score_col <- NULL
 info.obj <- infoConst()
 info.obj <- ProteinCodingInfo(info.obj)
 info.obj <- TPMInfo(info.obj)
+
 for (i in seq_along(type)) {
   loop_f <- dir(file.path(root, "doc"), paste0("Spec_", type[i], ".txt"), recur = TRUE, full = TRUE)
   # constructing loop and fet objects

@@ -73,24 +73,28 @@ setMethod(f = "shufPlotMulti",
       dd <- data.table(type = type, gene_lab = glab_list[[i]])
       dd <- dd[, .N, by = .(gene_lab, type)]
       dd[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
-      return(dd)
+      return(copy(dd))
     }))
-    glab <- glab[gene_lab !=0]
+    glab <- copy(glab[gene_lab !=0])
     glab[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
 
     con <- file(fout, "w")
     idx_mat <- combn(glab[, unique(type)], 2)
-    dd <- dcast(glab[, c("type", "gene_lab", "N")], type ~ gene_lab, value.var = "N")
+    dd <- copy(dcast(glab[, c("type", "gene_lab", "N")], type ~ gene_lab, value.var = "N"))
     dd[is.na(dd)] <- 0
+
     write.table(dd, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t", file = con, append = TRUE)
     cat("\n\n", sep = "", file = con)
+
     for (j in 1:ncol(idx_mat)) {
+
       p_val <- fisher.test(as.matrix(dd[type %in% idx_mat[, j], !"type"]))$p.value
       cat("comparing ", dd[type %in% idx_mat[,j], paste(type, collapse = " vs ")], " p value: ", p_val, "\n\n", sep = "", file = con)
+
     }
     close(con)
 
-    ndat<- glab
+    ndat<- copy(glab)
     ndat[, gene_lab := factor(gene_lab, levels = sort(unique(gene_lab)))]
 
     theme_set(theme_grey(base_size=15))

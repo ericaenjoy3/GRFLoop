@@ -14,8 +14,8 @@ setMethod(f = "mViolinPlot",
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
     # dedup loop slot based on loop, loc1, loc2 and the first occurance of rowid
-    dat <- loop.obj@loop[, c("loop", "loc1", "loc2", "rowid"), with = FALSE]
-    dat <- dat[,.SD[1], by = c("loop", "loc1", "loc2")]
+    dat <- copy(loop.obj@loop[, c("loop", "loc1", "loc2", "rowid"), with = FALSE])
+    dat <- copy(dat[,.SD[1], by = c("loop", "loc1", "loc2")])
 
     # highly and lowly connected vertex
     g <- loop.obj@g
@@ -36,8 +36,8 @@ setMethod(f = "mViolinPlot",
       loc1_idxv <- loc2_idxv <- c()
       for (i in seq_along(v)) {
         if (i %%100 ==0 ) {message(i)}
-        loc1_idx <-dat[loc1 %in% v[i], rowid]
-        loc2_idx <-dat[loc2 %in% v[i], rowid]
+        loc1_idx <- copy(dat[loc1 %in% v[i], rowid])
+        loc2_idx <- copy(dat[loc2 %in% v[i], rowid])
         if (length(loc1_idx) > 0) {
           loc1_idxv <- c(loc1_idxv, loc1_idx[1])
         } else if (length(loc2_idx) > 0) {
@@ -47,25 +47,25 @@ setMethod(f = "mViolinPlot",
         }       
       }
 
-      chip_loc1_idx <- fet.obj@hash[loc == "Loc1", which = TRUE]
-      chip_loc2_idx <- fet.obj@hash[loc == "Loc1", which = TRUE]
+      chip_loc1_idx <- copy(fet.obj@hash[loc == "Loc1", which = TRUE])
+      chip_loc2_idx <- copy(fet.obj@hash[loc == "Loc1", which = TRUE])
 
       dat_list[[length(dat_list) + 1]] <- lapply(seq_along(chip_loc1_idx), function(k){
-          rbind(fet.obj@dat_list[[chip_loc1_idx[k]]][loc1_idxv], fet.obj@dat_list[[chip_loc2_idx[k]]][loc2_idxv])
+          rbind(copy(fet.obj@dat_list[[chip_loc1_idx[k]]][loc1_idxv], fet.obj@dat_list[[chip_loc2_idx[k]]][loc2_idxv]))
         })
 
     }
     stopifnot(nrow(dat_list[[1]]) == sum(vec <= thresh[1] | vec >= thresh[2]))
     # merge low and high into one data.table
     ndat_list <- lapply(seq_along(dat_list[[1]]), function(j) {
-      d1 <- data.table(split = "lowCon", dat_list[[1]][[j]][, ncol(dat_list[[1]][[j]]), with = FALSE])
-      d2 <- data.table(split = "hiCon", dat_list[[2]][[j]][, ncol(dat_list[[2]][[j]]), with = FALSE])
+      d1 <- data.table(split = "lowCon", copy(dat_list[[1]][[j]][, ncol(dat_list[[1]][[j]]), with = FALSE]))
+      d2 <- data.table(split = "hiCon", copy(dat_list[[2]][[j]][, ncol(dat_list[[2]][[j]]), with = FALSE]))
       nsize <- min(nrow(d1), nrow(d2))
       set.seed(888)
       rbind(d1[if(nrow(d1) > nsize){sample(1:nrow(d1), nsize)} else {1:nrow(d1)}, ], 
         d2[if(nrow(d2) > nsize){sample(1:nrow(d2), nsize)} else {1:nrow(d2)}, ])
     })
-    names(ndat_list) <- fet.obj@hash[loc == "Loc1", chip]
+    names(ndat_list) <- copy(fet.obj@hash[loc == "Loc1", chip])
 
     cmp <- data.table(combn(c("lowCon", "hiCon"), 2))
 

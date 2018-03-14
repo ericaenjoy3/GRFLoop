@@ -15,8 +15,8 @@ setMethod(f = "maxCoreg",
     type <- "Enh"
 
     # dedup loop in the loop slot of loop.obj
-    kpt.idx <- !duplicated(loop.obj@loop[["loop"]])
-    loop_hash <- loop.obj@loop[kpt.idx]
+    kpt.idx <- copy(!duplicated(loop.obj@loop[["loop"]]))
+    loop_hash <- copy(loop.obj@loop[kpt.idx])
     setkeyv(loop_hash, "loop")
 
     # identify incident loop
@@ -32,7 +32,7 @@ setMethod(f = "maxCoreg",
         gene = loop_hash[chmatch(as_ids(ed[[i]]), loop), gene1])
     }))
     idx <- chmatch(dd[, gene], info.obj@gene[, gene])
-    nd <- cbind(dd, info.obj@gene[idx, grep("tpm|DEG_ESC.MEF", colnames(info.obj@gene)), with = FALSE])
+    nd <- cbind(dd, copy(info.obj@gene[idx, grep("tpm|DEG_ESC.MEF", colnames(info.obj@gene)), with = FALSE]))
    	nd <- nd[which(DEG_ESC.MEF %in% c("Up", "Down") & connum >1)]
    	nd <- nd[, .SD[.N > 1],  by = hub]
     write.table(nd, file = coregfout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")

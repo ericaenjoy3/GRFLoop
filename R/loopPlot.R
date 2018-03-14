@@ -71,7 +71,7 @@ hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE)
     dat_list <- lapply(seq_along(loop.obj.list), function(i, loop.obj.list) {
       g <- loop.obj.list[[i]]@g
       type <- if (is.null(names(loop.obj.list))) {
-          stopifnot(!is.null(E(loop.obj.list[[i]]@g)$cluster))
+          stopifnot(!is.null(E(g)$cluster))
         } else {
           names(loop.obj.list)[i]
         }
@@ -84,8 +84,8 @@ hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE)
     dat <- rbindlist(lapply(dat_list, rbindlist, use.names = FALSE), use.names = FALSE)
     if (minSampling) {
       set.seed(888)
-      sampling_size <- dat[, .N, by = .(cluster, et)][, min(N)]
-      dat <- dat[, sample(degree, sampling_size), by = .(cluster, et)]
+      sampling_size <- copy(dat[, .N, by = .(cluster, et)][, min(N)])
+      dat <- copy(dat[, sample(degree, sampling_size), by = .(cluster, et)])
       setnames(dat, "V1", "degree")
     }
     cmp <- data.table(combn(dat[, unique(cluster)], 2))
@@ -98,7 +98,7 @@ hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE)
     dat_list <- lapply(seq_along(loop.obj.list), function(i, loop.obj.list) {
       g <- loop.obj.list[[i]]@g
       type <- if (is.null(names(loop.obj.list))) {
-          stopifnot(!is.null(E(loop.obj.list[[i]]@g)$cluster))
+          stopifnot(!is.null(E(g)$cluster))
         } else {
           names(loop.obj.list)[i]
         }
@@ -108,7 +108,7 @@ hubPlot <- function(loop.obj.list, pdffout, minSampling = TRUE, subType = FALSE)
     if (minSampling) {
       set.seed(888)
       sampling_size <- dat[, .N, by = cluster][, min(N)]
-      dat <- dat[, sample(degree, sampling_size), by = cluster]
+      dat <- copy(dat[, sample(degree, sampling_size), by = cluster])
       setnames(dat, "V1", "degree")
     }
     cmp <- data.table(combn(dat[, unique(cluster)], 2))

@@ -31,23 +31,23 @@ setMethod(f = "linePlot",
       })
 
     rna_list <- lapply(dat_list, function(gid){
-        dd <- info.obj@gene[chmatch(gid, gene), grep("tpm", colnames(info.obj@gene)), with = FALSE]
+        dd <- copy(info.obj@gene[chmatch(gid, gene), grep("tpm", colnames(info.obj@gene)), with = FALSE])
         return(dd)
       })
 
     rna_dat <- rbindlist(lapply(seq_along(rna_list), function(j){
        data.table(grp = con_num[j], rna_list[[j]])
       }))
-    col_nm <- colnames(rna_dat)[grep("tpm", colnames(rna_dat))]
+    col_nm <- copy(colnames(rna_dat)[grep("tpm", colnames(rna_dat))])
     ncol_nm <- gsub("tpm_", "", col_nm)
     setnames(rna_dat, col_nm, ncol_nm)
     setcolorder(rna_dat, c("grp", "MEF", "D3", "D6", "D9", "ESC"))
-    ncol_nm <- colnames(rna_dat)[-1]
+    ncol_nm <- copy(colnames(rna_dat)[-1])
     rna_dat[, (ncol_nm) := lapply(.SD, function(x)log2(x + 0.05)), .SD = ncol_nm]
     mat <- combn(ncol_nm, 2)
     diff_dat <- copy(rna_dat[, .(grp)])
     for (j in 1:ncol(mat)) {
-      sms <- ncol_nm[ncol_nm %in% mat[, j]]
+      sms <- copy(ncol_nm[ncol_nm %in% mat[, j]])
       psm <- paste(sms, collapse="_")
       set(diff_dat, i = 1:nrow(rna_dat), j = psm, value = rna_dat[[sms[2]]] - rna_dat[[sms[1]]])
     }

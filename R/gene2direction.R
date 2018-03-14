@@ -16,7 +16,7 @@ setMethod(f = "gene2direction",
     message(sum(!idx), " intervals do not overlap with genes")
     gene_list <- gene_list[idx]
     # deg labels for these genes
-    col_nm <- colnames(info.obj@gene)[grep("^DEG", colnames(info.obj@gene))]
+    col_nm <- copy(colnames(info.obj@gene)[grep("^DEG", colnames(info.obj@gene))])
     deg_list <- lapply(gene_list, function(gs, info.obj, col_nm){
       idx <- chmatch(gs, info.obj@gene[["gene"]])
       stopifnot(all(!is.na(idx)))
