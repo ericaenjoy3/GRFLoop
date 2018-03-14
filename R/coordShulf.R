@@ -19,7 +19,8 @@ setMethod(f = "coordShulf",
     coord <- coord[mixedorder(coord[["chr"]], coord[["start"]], decreasing = FALSE)]
     f0 <- file.path(nd, paste0("b", 0, ".bed"))
     ncoord <- copy(coord)
-    set(ncoord, i = 1:nrow(ncoord), j = 2L, value = as.numeric(ncoord[[2]] - 1))
+    ncoord[, `:=`(start = as.integer(start), end = as.integer(end))]
+    set(ncoord, i = 1:nrow(ncoord), j = 2L, value = as.integer(ncoord[[2]] - 1))
     write.table(ncoord, file = f0, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
     coordp <- rbindlist(lapply(1:nshulf, function(j, coord, f0, dout, genomef, exclf){
       fp <- file.path(nd, paste0("b", j, ".bed"))
@@ -28,7 +29,7 @@ setMethod(f = "coordShulf",
       message(cmd)
       system(cmd)
       dat <- fread(fp, header = FALSE)
-      set(dat, i = 1:nrow(dat), j = 2, value = as.numeric(dat[[2]] + 1))
+      set(dat, i = 1:nrow(dat), j = 2L, value = as.integer(dat[[2]] + 1))
       stopifnot(nrow(dat) == nrow(coord))
       return(dat)
     }, coord = coord, f0 = f0, dout = dout, genomef = genomef, exclf = exclf))

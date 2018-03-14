@@ -29,7 +29,7 @@ attach(args)
 
 if (length(hichip) == 1 & !splithichip) {
   message("constructing loop and fet objects")
-  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE), filterDist = TRUE)
+  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE), filterDist = FALSE)
 }
 
 if (length(hichip) >1) {
@@ -71,7 +71,7 @@ if (conHub & length(hichip) > 1) {
 
 if (coreg) {
   message("coreg")
-  root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/coreg_distMax1MB"
+  root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/coreg"
   info.obj <- infoConst()
   info.obj <- ProteinCodingInfo(info.obj)
   info.obj <- TPMInfo(info.obj)
@@ -96,6 +96,7 @@ if (coreg) {
   # }
   nmax <- maxCoreg(loop.obj, info.obj, coregfout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_gene.txt", basename(hichip))))
   message("maximum contacts in coreg: ", nmax)
+  nmax <- as.numeric(readline("enter nmax: "))
   shufPlotMulti(loop.obj, info.obj, nmin = 2, nmax = nmax, dout = root, 
     pdffout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_Enh_glabBar.pdf", hichip)), 
     fout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_pval.txt", hichip)), 
