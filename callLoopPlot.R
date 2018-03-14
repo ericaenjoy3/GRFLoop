@@ -29,7 +29,7 @@ attach(args)
 
 if (length(hichip) == 1 & !splithichip) {
   message("constructing loop and fet objects")
-  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE), filterDist = FALSE)
+  loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = ifelse(loopType|conHub, FALSE, TRUE), filterDist = TRUE)
 }
 
 if (length(hichip) >1) {
