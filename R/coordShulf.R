@@ -19,8 +19,8 @@ setMethod(f = "coordShulf",
     coord <- coord[mixedorder(coord[["chr"]], coord[["start"]], decreasing = FALSE)]
     f0 <- file.path(nd, paste0("b", 0, ".bed"))
     ncoord <- copy(coord)
-    set(ncoord, i = 1:nrow(ncoord), j = 2, value = as.numeric(ncoord[[2]] - 1))
-    write.table(coord, file = f0, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+    set(ncoord, i = 1:nrow(ncoord), j = 2L, value = as.numeric(ncoord[[2]] - 1))
+    write.table(ncoord, file = f0, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
     coordp <- rbindlist(lapply(1:nshulf, function(j, coord, f0, dout, genomef, exclf){
       fp <- file.path(nd, paste0("b", j, ".bed"))
       cmd <- paste("bedtools shuffle -seed", j, "-excl", exclf, "-i", f0,

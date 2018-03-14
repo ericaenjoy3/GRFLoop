@@ -27,11 +27,14 @@ setMethod(f = "geneListProc",
       stopifnot(all(!is.na(gs)))
       return(gs)
     }, loop_hash = loop_hash)
+    # unique genes for contacted promoter fragments
+    gene_list <- lapply(gene_list, unique)
     if (uniqueLoopGene) {
       gene_list <- gene_list[!duplicated(gene_list)]
     }
     if (type == "Enh") {
-    	idx <- which(sapply(gene_list, function(vec)length(unique(vec))) >= nmin)
+    	idx <- which(sapply(gene_list, function(vec)length(unique(vec))) >= 2)
+      stopifnot(length(idx) > 0)
     	gene_list <- gene_list[idx]
     }
     if (type == "Prom") {

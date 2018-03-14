@@ -91,7 +91,7 @@ infoConst <- function(
     # add tadid column to gene data.table
     tad <- fread(tadf, header = FALSE)
     setnames(tad, c("chr", "start", "end"))
-    tad[, start := start + 1]
+    tad[, start := start + 1L]
     setkeyv(tad, c("chr", "start", "end"))
     tad <- tad[chr %in% paste0("chr", c(1:19))]
     tad[, c("mstart", "mend") := list(as.integer(start - floor((start - shift(end, 1L, type="lag"))/2)),
