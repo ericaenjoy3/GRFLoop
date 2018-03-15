@@ -33,7 +33,7 @@ setMethod(f = "maxCoreg",
     }))
     idx <- chmatch(dd[, gene], info.obj@gene[, gene])
     nd <- cbind(dd, copy(info.obj@gene[idx, grep("tpm|DEG_ESC.MEF", colnames(info.obj@gene)), with = FALSE]))
-   	nd <- nd[which(DEG_ESC.MEF %in% c("Up", "Down") & connum >1)]
+   	nd <- nd[which(DEG_ESC.MEF %in% c("Up") & connum >1)]
    	nd <- nd[, .SD[.N > 1],  by = hub]
     write.table(nd, file = coregfout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
 
