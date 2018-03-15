@@ -51,7 +51,7 @@ setMethod(f = "mViolinPlot",
       chip_loc2_idx <- copy(fet.obj@hash[loc == "Loc1", which = TRUE])
 
       dat_list[[length(dat_list) + 1]] <- lapply(seq_along(chip_loc1_idx), function(k){
-          rbind(copy(fet.obj@dat_list[[chip_loc1_idx[k]]][loc1_idxv], fet.obj@dat_list[[chip_loc2_idx[k]]][loc2_idxv]))
+          copy(rbind(fet.obj@dat_list[[chip_loc1_idx[k]]][loc1_idxv], fet.obj@dat_list[[chip_loc2_idx[k]]][loc2_idxv]))
         })
 
     }

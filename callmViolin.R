@@ -26,4 +26,4 @@ din <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/Spec_H3K27A
 loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = FALSE)
 fet_fs <- dir(din, "*_heatmap.mat", recursive = TRUE, full.names = TRUE)
 fet.obj <- fetConst(fet_fs, small = 0.05) 
-mViolinPlot(loop.obj, fet.obj, dout = din)
+mViolinPlot(loop.obj, fet.obj, dout = gsub("Spec_H3K27AC_ESC", "conFet", din))
