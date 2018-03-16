@@ -14,36 +14,17 @@ setMethod(f = "shufPlotMulti",
 
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
+    Tpair_list <- list()
+    invisilbe(sapply(1:3, function(j)Tpair_list[[j]] <<- list()))
     # retrieve genes contacted by the same enhancer hub
     for (j in seq(nmin, nmax)) {
 
       message("initalizing elements of dat_list ", j, " th iteration")
 
-      message("retrieve genes for enhancer hubs")
-      gene_list <- geneListProc(loop.obj, info.obj, nmin = j, nmax = j, type = "Enh", uniqueLoopGene = uniqueLoopGene)
-    
-      # coordinates for max interval
-      message("coordinate for max interval")
-      coord <- rbindlist(lapply(gene_list, function(gs, info.obj){
-        idx <- chmatch(gs, info.obj@gene[["gene"]])
-        stopifnot(all(!is.na(idx)))
-        unique(info.obj@gene[idx][, list(chr = chr, start = min(start), end = max(end))])
-      }, info.obj = info.obj))
-
-      # global permutations of windows
-      message("global permutations of windows")
-      genep_list <- coordShulf(coord, info.obj, dout, nshulf = 100, nmin = j, nmax = j)
-
-      # permutations within TADs
-      message("permutations within TADs")      
-      genet_list <- inTADShulf(gene_list, info.obj)
-
-      message("assigning gene_list, genep_list and genet_list to dat_list elements\n")  
-      dat_list[['gene_list']][[length(dat_list[['gene_list']]) + 1]] <- gene_list
-      dat_list[['genep_list']][[length(dat_list[['genep_list']]) + 1]] <- genep_list
-      dat_list[['genet_list']][[length(dat_list[['genet_list']]) + 1 ]] <- genet_list
-      for (s in c('gene_list', 'genep_list', 'genet_list')) {
-        names(dat_list[[s]])[length(dat_list[[s]])] <- j
+      message("genePair")
+      gpair_list <- genePair(loop.obj, info.obj, type = "Enh", nmin = j, nmax = j)
+      for (i in seq(gpair_list)) {
+        Tpair_list[[i]] <- rbind(Tpair_list[[i]], gpair_list[[i]])
       }
     }
 
