@@ -2,7 +2,7 @@
 
 #' @export genuineGpair
 setGeneric(name = "genuineGpair",
-  def = function(loop.obj, info.obj, dout){
+  def = function(loop.obj, info.obj, type, nmin, nmax, dout){
     standardGeneric("genuineGpair")
   }
 )
