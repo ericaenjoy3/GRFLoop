@@ -14,6 +14,11 @@ setMethod(f = "shufPlotMulti",
 
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
+    dat_list <- list()
+    dat_list[['gene_list']] <- list()
+    dat_list[['genep_list']] <- list()
+    dat_list[['genet_list']] <- list()
+
     # retrieve genes contacted by the same enhancer hub
     for (j in seq(nmin, nmax)) {
 
