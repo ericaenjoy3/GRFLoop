@@ -11,6 +11,7 @@ hichipfs <- c("ESC", "MEF", "CONSTANT")
 hichipfs <- file.path("~/athena/Andreas_H3K27AC_HICHIP/doc", paste0("Spec_H3K27AC_", hichipfs, "_LoopType_PromEnh.txt"))
 
 for (hichip in hichipfs) {
+	cat("\n\n")
 	message(hichip)
 	loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = TRUE, filterDist = FALSE)
 	info.obj <- infoConst()
@@ -22,7 +23,7 @@ for (hichip in hichipfs) {
 	message("maximum contacts in coreg: ", nmax)
 	nmax <- as.numeric(readline("enter nmax: "))
 	shufPlotMulti(loop.obj, info.obj, nmin = 2, nmax = nmax, dout = root, 
-		pdffout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_Enh_glabBar.pdf", hichip)), 
-		fout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_pval.txt", hichip)), 
+		pdffout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_Enh_glabBar.pdf", basename(hichip))), 
+		fout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_pval.txt", basename(hichip))), 
 		uniqueLoopGene = TRUE)
 }
