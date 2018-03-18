@@ -15,7 +15,7 @@ setMethod(f = "shufPlotMulti",
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
     Tpair_list <- list()
-    invisilbe(sapply(1:3, function(j)Tpair_list[[j]] <<- list()))
+    invisible(sapply(1:3, function(j)Tpair_list[[j]] <<- list()))
     # retrieve genes contacted by the same enhancer hub
     for (j in seq(nmin, nmax)) {
 
@@ -24,7 +24,11 @@ setMethod(f = "shufPlotMulti",
       message("genePair")
       gpair_list <- genePair(loop.obj, info.obj, type = "Enh", nmin = j, nmax = j)
       for (i in seq(gpair_list)) {
-        Tpair_list[[i]] <- rbind(Tpair_list[[i]], gpair_list[[i]]) %>% unique()
+      	if (length(Tpair_list[[i]]) == 0) {
+      		Tpair_list[[i]] <- gpair_list[[i]]
+      	} else {
+        	Tpair_list[[i]] <- rbind(Tpair_list[[i]], gpair_list[[i]])
+        }
       }
     }
 

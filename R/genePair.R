@@ -75,8 +75,8 @@ setMethod(f = "genePair",
 
     # (genunine) final gene_list
     gene_list[[1]] <- gene_list[[1]][which(kpt_agset & kpt_wgset)]
-    ve <- ve[which(kpt_num)][which(kpt_agset & kpt_gset)]
-    ed <- ed[which(kpt_num)][which(kpt_agset & kpt_gset)]
+    ve <- ve[which(kpt_num)][which(kpt_agset & kpt_wgset)]
+    ed <- ed[which(kpt_num)][which(kpt_agset & kpt_wgset)]
 
     # (genuine) gene pairs
     gpair_list <- list()
