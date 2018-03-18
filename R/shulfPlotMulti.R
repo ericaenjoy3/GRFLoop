@@ -24,6 +24,8 @@ setMethod(f = "shufPlotMulti",
       message("genePair")
       gpair_list <- genePair(loop.obj, info.obj, type = "Enh", nmin = j, nmax = j)
       for (i in seq(gpair_list)) {
+      	stopifnot(ncol(gpair_list[[i]]) == 2)
+      	stopifnot(nrow(gpair_list[[i]]) > 1)
       	if (length(Tpair_list[[i]]) == 0) {
       		Tpair_list[[i]] <- gpair_list[[i]]
       	} else {
