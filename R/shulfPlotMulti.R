@@ -31,40 +31,34 @@ setMethod(f = "shufPlotMulti",
         }
       }
     }
+    sapply(seq(Tpair_list), function(j)Tpair_list[[j]] <<- unique(Tpair_list[[j]]))
 
-    # gene list to gene pairs
-    # unpack gene_list, genep_list and genet_list
-    # unpack enhancer hub classes (contacts 2, 3, ...)
-    # unpack genes regulated by the same enhancer.
-    gpair_list <- lapply(dat_list, function(num_list){
-      dd_list <- lapply(num_list, function(g_list) {
-        dd <- rbindlist(lapply(g_list, function(gs) {
-          data.table(t(combn(gs, 2)))
-        }))
-        return(dd)
-      })
-      nd <-rbindlist(dd_list) %>% unique()
-      return(nd)
-    })
+    # gene pair to DEG labels
+    Tlab_list <- list()
+    for (j in seq(Tpair_list)) {
+    	Tlab_list[[j]] <- gene2pairwiseLab(Tpair_list[[j]], info.obj)
+    }
 
-    glab_list <- gene2pairwiseLab(gpair_list, info.obj)
-    glab <- rbindlist(lapply(seq_along(glab_list), function(i){
-      type <- switch(names(glab_list)[i], gene_list = "Genuine", genep_list = "Global random", genet_list = "TAD-matched random", "NA")
-      dd <- data.table(type = type, gene_lab = glab_list[[i]])
+    glab <- rbindlist(lapply(seq_along(Tlab_list), function(i){
+      type <- switch(i, '1' = "Genuine", '2' = "Global random", '3' = "TAD-matched random", "NA")
+      dd <- data.table(type = type, gene_lab = Tlab_list[[i]])
       dd <- dd[, .N, by = .(gene_lab, type)]
       dd[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
       return(copy(dd))
     }))
-    glab <- copy(glab[gene_lab !=0])
-    glab[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
 
     con <- file(fout, "w")
-    idx_mat <- combn(glab[, unique(type)], 2)
+
     dd <- copy(dcast(glab[, c("type", "gene_lab", "N")], type ~ gene_lab, value.var = "N"))
     dd[is.na(dd)] <- 0
 
     write.table(dd, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t", file = con, append = TRUE)
     cat("\n\n", sep = "", file = con)
+
+    ndat <- copy(glab[gene_lab !=0])
+    idx_mat <- combn(ndat[, unique(type)], 2)	
+    ndat[, pct := round(100*N/sum(N), digits = 2), by = .(type)]
+    dd <- copy(dd[, !'0', with = FALSE])
 
     for (j in 1:ncol(idx_mat)) {
 
@@ -74,7 +68,6 @@ setMethod(f = "shufPlotMulti",
     }
     close(con)
 
-    ndat<- copy(glab)
     ndat[, gene_lab := factor(gene_lab, levels = sort(unique(gene_lab)))]
 
     theme_set(theme_grey(base_size=15))

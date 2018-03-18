@@ -27,7 +27,6 @@ setMethod(f = "gene2pairwiseLab",
         }
     }) 
 
-
-    return(lab_list)
+    return(lab_vec)
   }
 )
