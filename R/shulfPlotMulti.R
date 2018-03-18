@@ -24,7 +24,7 @@ setMethod(f = "shufPlotMulti",
       message("genePair")
       gpair_list <- genePair(loop.obj, info.obj, type = "Enh", nmin = j, nmax = j)
       for (i in seq(gpair_list)) {
-        Tpair_list[[i]] <- rbind(Tpair_list[[i]], gpair_list[[i]])
+        Tpair_list[[i]] <- rbind(Tpair_list[[i]], gpair_list[[i]]) %>% unique()
       }
     }
 

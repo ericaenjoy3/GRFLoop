@@ -30,7 +30,10 @@ setMethod(f = "genePair",
 	    # filter for unique gene pairs
 	    rm_pairs <- duplicated(gpair_dat)
 
-	    stopifnot(sum(rm_ends | rm_pairs) < nrow(gpair_dat))
+	    if (sum(rm_ends | rm_pairs) == nrow(gpair_dat)) {
+        return(NA)
+      }
+
 	    gpair_dat <- gpair_dat[!(rm_ends|rm_pairs)]
 
 	    return(gpair_dat)
@@ -42,34 +45,38 @@ setMethod(f = "genePair",
     ed <- incident_edges(loop.obj@g, ve)
     kpt_num <- sapply(ed, length) >= nmin & sapply(ed, length) <= nmax
 
-    # (genunine) testing for more than 1 gene pair
-
     # (genunine) extract PromGene from loop slot of loop.obj
     gene_list <- list()
     gene_list[[1]] <- lapply(ed[which(kpt_num)], function(es, loop_hash){
+      # potentially multiple loops => mutiple fragments
       lp <- as_ids(es)
-      gs <- copy(loop_hash[loop %in% lp, unique(gene1)])
-      stopifnot(all(!is.na(gs)))
+      dd <- loop_hash[loop %in% lp]
+      stopifnot(all(dd[, all(!is.na(gene1)), by = loop][, V1]))
+      dd <- dd[, unique(gene1), by = loop]
+      gs <- split(dd[, V1], dd[, loop])
+      names(gs) <- NULL
       return(gs)
     }, loop_hash = loop.obj@loop)
+    names(gene_list[[1]]) <- NULL
 
     # (genunine) unique gene sets for connectomes
     kpt_gset <- !duplicated(gene_list[[1]])
+    message(sum(kpt_gset, " hubs removed due to duplication in idnetical genes contacted overall.")
 
     # (genunine) final gene_list
     gene_list[[1]] <- gene_list[[1]][kpt_gset]
     ve <- ve[which(kpt_num)][which(kpt_gset)]
     ed <- ed[which(kpt_num)][which(kpt_gset)]
 
+    # (genuine) unique 
     gpair_list <- list()
-    gpair_list[[1]] <- rbindlist(lapply(ed, function(es, loop_hash){
-      lp <- as_ids(es)
-      message(lp)
-      dd <- loop_hash[loop %in% lp, .(loop, gene1)]
-      glist <- split(dd[, gene1], dd[, loop])
+    g1_list <- lapply(gene_list[[1]], function(glist) {
       gpair <- glist2gpair(glist)
       return(gpair)
-    }, loop_hash = loop.obj@loop))
+    })
+    g1_list <- g1_list[!is.na(g1_list)]
+    gpair_list[[1]] <- rbindlist(g1_list)
+
 
     if (!random.it) {
       return(gene_list)
@@ -77,6 +84,7 @@ setMethod(f = "genePair",
 
     # coordinates of genes
     coord <- rbindlist(lapply(gene_list[[1]], function(gs, info.obj){
+        gs <- unique(unlist(gs))
         idx <- chmatch(gs, info.obj@gene[["gene"]])
         stopifnot(all(!is.na(idx)))
         unique(info.obj@gene[idx][, list(chr = chr, start = min(start), end = max(end))])
