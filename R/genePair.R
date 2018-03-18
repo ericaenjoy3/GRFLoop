@@ -81,7 +81,6 @@ setMethod(f = "genePair",
     # (genuine) gene pairs
     gpair_list <- list()
     gpair_list[[1]] <- rbindlist(lapply(gene_list[[1]], function(glist) {
-      browser()
       gpair <- glist2gpair(glist)
       return(gpair)
     }))
