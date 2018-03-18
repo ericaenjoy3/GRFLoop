@@ -61,7 +61,7 @@ setMethod(f = "genePair",
 
     # (genunine) unique gene sets for connectomes
     kpt_gset <- !duplicated(gene_list[[1]])
-    message(sum(kpt_gset, " hubs removed due to duplication in idnetical genes contacted overall.")
+    message(sum(kpt_gset), " hubs removed due to duplication in idnetical genes contacted overall.")
 
     # (genunine) final gene_list
     gene_list[[1]] <- gene_list[[1]][kpt_gset]
