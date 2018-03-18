@@ -2,7 +2,7 @@
 
 #' @export genePair
 setGeneric(name = "genePair",
-  def = function(loop.obj, info.obj, type, nmin, nmax, random.it = FALSE){
+  def = function(loop.obj, info.obj, dout, type, nmin, nmax, random.it = TRUE){
     standardGeneric("genePair")
   }
 )
@@ -10,9 +10,7 @@ setGeneric(name = "genePair",
 #' @rdname genePair-methods
 setMethod(f = "genePair",
   signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, type, nmin, nmax, random.it = TRUE) {
-
-
+  definition = function(loop.obj, info.obj, dout, type, nmin, nmax, random.it) {
 
     # identify incident loop
     stopifnot(sum(V(loop.obj@g)$vtype == type) > 0)

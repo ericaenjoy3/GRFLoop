@@ -22,7 +22,7 @@ setMethod(f = "shufPlotMulti",
       message("initalizing elements of dat_list ", j, " th iteration")
 
       message("genePair")
-      gpair_list <- genePair(loop.obj, info.obj, type = "Enh", nmin = j, nmax = j)
+      gpair_list <- genePair(loop.obj, info.obj, dout, type = "Enh", nmin = j, nmax = j)
       for (i in seq(gpair_list)) {
       	if (length(Tpair_list[[i]]) == 0) {
       		Tpair_list[[i]] <- gpair_list[[i]]
