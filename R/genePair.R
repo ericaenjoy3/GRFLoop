@@ -30,9 +30,7 @@ setMethod(f = "genePair",
 	    # filter for unique gene pairs
 	    rm_pairs <- duplicated(gpair_dat)
 
-	    if (sum(rm_ends | rm_pairs) == nrow(gpair_dat)) {
-        return(NA)
-      }
+	    stopifnot(sum(rm_ends | rm_pairs) < nrow(gpair_dat))
 
 	    gpair_dat <- gpair_dat[!(rm_ends|rm_pairs)]
 
@@ -59,24 +57,33 @@ setMethod(f = "genePair",
     }, loop_hash = loop.obj@loop)
     names(gene_list[[1]]) <- NULL
 
-    # (genunine) unique gene sets for connectomes
-    kpt_gset <- !duplicated(gene_list[[1]])
-    message(sum(kpt_gset), " hubs removed due to duplication in idnetical genes contacted overall.")
+    # (genunine) unique gene sets across connectomes
+    kpt_agset <- !duplicated(gene_list[[1]])
+
+    # (genuine) remove duplicated gene sets within connectomes
+    kpt_wgset <- sapply(gene_list[[1]], function(v_list){
+      nv_list <- unique(v_list);
+      if (length(nv_list) ==1 ) {
+        return(FALSE)
+      } else {
+        return(TRUE)
+      }
+    })
+
+    stopifnot(length(kpt_agset) == length(kpt_wgset))
+    message(sum(!(kpt_agset & kpt_wgset)), " hubs removed due to duplication in idnetical genes contacted within or across hubs.")
 
     # (genunine) final gene_list
-    gene_list[[1]] <- gene_list[[1]][kpt_gset]
-    ve <- ve[which(kpt_num)][which(kpt_gset)]
-    ed <- ed[which(kpt_num)][which(kpt_gset)]
+    gene_list[[1]] <- gene_list[[1]][which(kpt_agset & kpt_wgset)]
+    ve <- ve[which(kpt_num)][which(kpt_agset & kpt_gset)]
+    ed <- ed[which(kpt_num)][which(kpt_agset & kpt_gset)]
 
-    # (genuine) unique 
+    # (genuine) gene pairs
     gpair_list <- list()
-    g1_list <- lapply(gene_list[[1]], function(glist) {
+    gpair_list[[1]] <- lapply(gene_list[[1]], function(glist) {
       gpair <- glist2gpair(glist)
       return(gpair)
     })
-    g1_list <- g1_list[!is.na(g1_list)]
-    gpair_list[[1]] <- rbindlist(g1_list)
-
 
     if (!random.it) {
       return(gene_list)
@@ -98,7 +105,9 @@ setMethod(f = "genePair",
 
     for (i in 2:3) {
     	message(ifelse(i==2, "Global random", "TAD matched random"))
-    	gpair_list[[i]] <- rbindlist(lapply(gene_list[[i]], function(vec)glist2gpair(as.list(vec))))
+    	gpair_list[[i]] <- rbindlist(lapply(gene_list[[i]], function(vec){
+        glist2gpair(as.list(vec))
+      }))
     }
 
     return(gpair_list)
