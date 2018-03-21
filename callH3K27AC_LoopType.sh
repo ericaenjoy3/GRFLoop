@@ -41,5 +41,23 @@ cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --bedout $DIN/Spec_H3K27AC_${sm}_LoopType.txt"
 eval $cmd
 
+SDR=~/athena/ComScripts/RPack/GRFLoop
+DIN=~/athena/Andreas_KLF4_HICHIP/doc
+vchip=()
+echip=()
+sm=DAY6
+
+sm_grp=($sm)
+for type in ${sm_grp[@]}; do
+	vchip+=(~/athena/CHIP/CHIP_seq/MergeRep/mergepeak/ReProgram/KLF4_${type}/KLF4_${type}_common.bed) 
+	echip+=(~/athena/CHIP/CHIP_seq/MergeRep/mergepeak/ReProgram/H3K27AC_${type}/H3K27AC_${type}_common.bed)
+done
+
+cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
+--hichip $DIN/${sm}_KLF4.txt \
+--vchip ${vchip[@]} \
+--bedout $DIN/${sm}_KLF4_50K_H3K27AC_LoopType.txt \
+--echip ${echip[@]}"
+eval $cmd
 
 
