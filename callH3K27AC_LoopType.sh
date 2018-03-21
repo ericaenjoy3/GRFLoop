@@ -45,7 +45,7 @@ SDR=~/athena/ComScripts/RPack/GRFLoop
 DIN=~/athena/Andreas_KLF4_HICHIP/doc
 vchip=()
 echip=()
-sm=DAY6
+sm=ESC
 
 sm_grp=($sm)
 for type in ${sm_grp[@]}; do
