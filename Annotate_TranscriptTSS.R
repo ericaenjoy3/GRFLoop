@@ -70,11 +70,15 @@ dat <- dat[idx]
 if (loc_stand == "two") {
 	dat[, `:=`(locus.1 = paste0(loc1Chr, ":", loc1Start, "-", loc1End), 
 		locus.2 = paste0(loc2Chr, ":", loc2Start, "-", loc2End))]
+	ess_colmn <- c("locus.1", "locus.2", "locus1.genes", "locus2.genes")
 } else if (loc_stand == "one") {
 	dat[, `:=`(locus = loop)]
+	ess_colmn <- c("locus", "locus1.genes", "locus2.genes") 
+
 }
 
 # select and order columns
+ori_colmn <- c(ess_colmn, ori_colmn[!ori_colmn %in% ess_colmn])
 dat <- dat[, ori_colmn, with = FALSE]
 setcolorder(dat, ori_colmn)
 
