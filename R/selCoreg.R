@@ -104,7 +104,7 @@ setMethod(f = "selCoreg",
     })
     kpt_coreg <- !is.na(ed_list)
     eid <- ed_list[kpt_coreg][[1]]
-    for(i in 2:length(ned_list)) {
+    for(i in 2:length(ed_list[kpt_coreg])) {
       eid <- c(eid, ed_list[kpt_coreg][[i]])
     }
     
