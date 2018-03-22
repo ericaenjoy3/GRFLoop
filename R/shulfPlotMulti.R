@@ -41,7 +41,7 @@ setMethod(f = "shufPlotMulti",
       rm_idx <- gpair_str %in% gpair_revstr
       stopifnot(sum(rm_idx) < length(gpair_str))
       Tpair_list[[j]] <<- Tpair_list[[j]][!rm_idx]
-    ))
+    })
 
     # gene pair to DEG labels
     Tlab_list <- list()
