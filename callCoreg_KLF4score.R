@@ -30,6 +30,7 @@ sortlabs <- function(string) {
 	paste(mixedsort(vec), collapse = "|")
 }
 
+dat_list <- list()
 dat_list[[1]] <- data.table(loop = sapply(as_ids(E(loop.obj@g)), sortlabs), key = "loop")
 
 fs <- file.path(root, "doc", paste0(c("DAY3", "DAY6", "ESC"), "_KLF4_50K_H3K27AC_LoopType.txt"))
