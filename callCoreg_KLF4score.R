@@ -43,8 +43,10 @@ for (f in fs) {
 	dat_list[[counter]] <- data.table(loop = sapply(as_ids(E(ng)), sortlabs), score = E(ng)$score, key = "loop")
 }
 dat <- Reduce(function(...) merge(..., all = TRUE), dat_list)
-dat[is.na(dat)] <- 0
 setnames(dat, colnames(dat)[-1], c("DAY3", "DAY6", "ESC"))
+
+dat[is.na(dat)] <- 0
+
 ndat <- copy(dat)
 ndat[ndat>0] <- 1
 
