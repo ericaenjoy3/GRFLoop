@@ -31,9 +31,10 @@ setMethod(f = "genePair",
       return(gs)
     }, loop_hash = loop.obj@loop)
     names(gene_list[[1]]) <- NULL
+    shadow_gen_list <- lapply(gene_list[[1]], function(glist)sapply(glist, function(vec)mixedsort(vec)))
 
     # (genunine) unique gene sets across connectomes
-    kpt_agset <- !duplicated(gene_list[[1]])
+    kpt_agset <- !duplicated(shadow_gen_list)
 
     # (genuine) remove duplicated gene sets within connectomes
     kpt_wgset <- sapply(gene_list[[1]], function(v_list){
@@ -56,7 +57,7 @@ setMethod(f = "genePair",
     # (genuine) gene pairs
     gpair_list <- list()
     gpair_list[[1]] <- rbindlist(lapply(gene_list[[1]], function(glist) {
-      gpair <- glist2gpair(glist)
+      gpair <- glist2gpair(glist)$gpair_dat
       return(gpair)
     }))
 
@@ -81,7 +82,7 @@ setMethod(f = "genePair",
     for (i in 2:3) {
     	message(ifelse(i==2, "Global random", "TAD matched random"))
     	gpair_list[[i]] <- rbindlist(lapply(gene_list[[i]], function(vec){
-        glist2gpair(as.list(vec))
+        glist2gpair(as.list(vec))$gpair_dat
       }))
     }
 

@@ -34,13 +34,16 @@ setMethod(f = "maxCoreg",
       stopifnot(all(dd[, all(!is.na(gene1)), by = loop][, V1]))
       dd <- dd[, unique(gene1), by = loop]
       gs <- split(dd[, V1], dd[, loop])
+      # keep gene names the same order as loop names
+      gs <- gs[lp]
       names(gs) <- NULL
       return(gs)
     }, loop_hash = loop.obj@loop)
     names(gene_list[[1]]) <- NULL
+    shadow_gen_list <- lapply(gene_list[[1]], function(glist)sapply(glist, function(vec)mixedsort(vec)))
 
     # (genunine) unique gene sets across connectomes
-    kpt_agset <- !duplicated(gene_list[[1]])
+    kpt_agset <- !duplicated(shadow_gen_list)
 
     # (genuine) remove duplicated gene sets within connectomes
     kpt_wgset <- sapply(gene_list[[1]], function(v_list){
@@ -63,7 +66,7 @@ setMethod(f = "maxCoreg",
     # (genuine) gene pairs
     gpair_list <- list()
     gpair_list[[1]] <- lapply(gene_list[[1]], function(glist) {
-      gpair <- glist2gpair(glist)
+      gpair <- glist2gpair(glist)$gpair_dat
       return(gpair)
     })
 

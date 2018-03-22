@@ -31,7 +31,17 @@ setMethod(f = "shufPlotMulti",
         }
       }
     }
-    sapply(seq(Tpair_list), function(j)Tpair_list[[j]] <<- unique(Tpair_list[[j]]))
+    # unique gene pairs
+    sapply(seq(Tpair_list), function(j){
+      # duplication of gene pairs
+      Tpair_list[[j]] <<- unique(Tpair_list[[j]]
+      # remove swap of Var1, Var2 position in gene pairs
+      gpair_str <- Tpair_list[[j]][, paste(Var1, Var2, sep = "_")]
+      gpair_revstr <- Tpair_list[[j]][, paste(Var2, Var1, sep = "_")]
+      rm_idx <- gpair_str %in% gpair_revstr
+      stopifnot(sum(rm_idx) < length(gpair_str))
+      Tpair_list[[j]] <<- Tpair_list[[j]][!rm_idx]
+    ))
 
     # gene pair to DEG labels
     Tlab_list <- list()

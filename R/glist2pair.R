@@ -6,19 +6,32 @@
 
 	# cross connectom gene pairs
 	mat <- combn(1:length(glist), 2)
+
+	gidx_dat <- rbindlist(lapply(1:ncol(mat), function(j){
+		gvec1 <- glist[[mat[1, j]]]
+		gvec2 <- glist[[mat[2, j]]]
+		return(expand.grid(paste(mat[1,j], 1:length(gvec1), sep = "_"), paste(mat[2,j], 1:length(gvec2), sep = "_"), stringsAsFactors = FALSE))
+	}))
+
 	gpair_dat <- rbindlist(lapply(1:ncol(mat), function(j){
 		return(expand.grid(glist[[mat[1, j]]], glist[[mat[2, j]]], stringsAsFactors = FALSE))
 	}))
 	    
 	# remove identical gene at gene pair ends
-	rm_ends <- gpair_dat[, Var1 == Var2]
+	rm_ends <- copy(gpair_dat[, Var1 == Var2])
+
+	# filter for duplication of Var1 and Var2 swap
+	gpair_str <- gpair_dat[, paste(Var1, Var2, sep = "_")]
+	gpair_revstr <- gpair_dat[, paste(Var2, Var1, sep = "_")]
+	rm_swap <- gpair_str %in% gpair_revstr
 
 	# filter for unique gene pairs
-	rm_pairs <- duplicated(gpair_dat)
+	rm_pairs <- copy(duplicated(gair_dat))
 
-	stopifnot(sum(rm_ends | rm_pairs) < nrow(gpair_dat))
+	stopifnot(sum(rm_ends | rm_swap | rm_pairs) < nrow(gpair_dat))
 
-	gpair_dat <- gpair_dat[!(rm_ends|rm_pairs)]
+	gpair_dat <- gpair_dat[!(rm_ends|rm_swap|rm_pairs)]
+	gidx_dat <- gidx_dat[!(rm_ends|rm_swap|rm_pairs)]
 
-	return(gpair_dat)
+	return(list(gidx_dat = gidx_dat, gpair_dat = gpair_dat))
 }
