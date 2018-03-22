@@ -34,7 +34,7 @@ setMethod(f = "shufPlotMulti",
     # unique gene pairs
     sapply(seq(Tpair_list), function(j){
       # duplication of gene pairs
-      Tpair_list[[j]] <<- unique(Tpair_list[[j]]
+      Tpair_list[[j]] <<- unique(Tpair_list[[j]])
       # remove swap of Var1, Var2 position in gene pairs
       gpair_str <- Tpair_list[[j]][, paste(Var1, Var2, sep = "_")]
       gpair_revstr <- Tpair_list[[j]][, paste(Var2, Var1, sep = "_")]
