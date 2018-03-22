@@ -1,16 +1,16 @@
 #' @include GRFLoopClass.R GRFLoopGeneric.R
 
 #' @export maxCoreg
-setGeneric(name = "maxCoreg",
-  def = function(loop.obj, info.obj, coregfout){
-    standardGeneric("maxCoreg")
+setGeneric(name = "selCoreg",
+  def = function(loop.obj, info.obj){
+    standardGeneric("selCoreg")
   }
 )
 
 #' @rdname geneList-methods
-setMethod(f = "maxCoreg",
+setMethod(f = "selCoreg",
   signature = c("loop", "info"),
-  definition = function(loop.obj, info.obj, coregfout) {
+  definition = function(loop.obj, info.obj) {
 
     type <- "Enh"
 
@@ -81,7 +81,9 @@ setMethod(f = "maxCoreg",
       gene2pairwiseLab(dd, info.obj)
     })
 
-    dat_list <- lapply(seq(deg_list[[1]]), function(i){
+    # keep co-regulation edges
+    ed_list <- lapply(seq(deg_list[[1]]), function(i){
+      
       idx <- which(deg_list[[1]][[i]] == "2")
       if (length(idx) == 0) {
         return(NA)
@@ -93,35 +95,23 @@ setMethod(f = "maxCoreg",
           convert = TRUE, remove = TRUE) %>% separate("Var2", c("prom_idx2", "gene_idx2"), 
           convert = TRUE, remove = TRUE);
       dd <- dd[idx]
-      prom <- { ed_ids <- as_ids(ed[[i]])  
+      ed_vec <- { 
         ed_idx <- unique(c(dd[, prom_idx1], dd[, prom_idx2]))
         stopifnot(length(ed_idx) > 0)
-        gsub(paste0("\\|{0,1}", ve[i], "\\|{0,1}"), "", ed_ids[ed_idx])
+        ed[[i]][ed_idx]
       }
-      # genes
-      nd <- rbindlist(list(dd[, .(prom_idx1, gene_idx1)], dd[, .(prom_idx2, gene_idx2)])) %>% unique()
-      genes <- { a_list <- gene_list[[1]][[i]]
-        sapply(1:nrow(nd), function(j)a_list[[nd[j, prom_idx1]]][nd[j, gene_idx1]])
-      }
-
-      data.table(
-        enh = ve[i],
-        connum = length(ed[[i]]),
-        upESC_connum = length(prom),
-        prom = paste(prom, collapse = ","),
-        genes = paste(genes, collapse = ",")
-      )  
-
+      return(ed_vec)
     })
-    kpt_coreg <- !is.na(dat_list)
-    dat <- rbindlist(dat_list[kpt_coreg])
-    write.table(dat, file = coregfout, row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
-
-    # max connection for which the number of hub > 1
-    maxco <- data.table(connum = sapply(ed, length))
-    maxco <- maxco[, .N, by = connum]
-
-    return(maxco[N>1, max(connum)])
+    kpt_coreg <- !is.na(ed_list)
+    eid <- ed_list[kpt_coreg][[1]]
+    for(i in 2:length(ned_list)) {
+      eid <- c(eid, ed_list[kpt_coreg][[i]])
+    }
     
+    loop.obj@g <- subgraph.edges(loop.obj@g, eid = eid, delete.vertices = TRUE)
+    loop.obj@loop <- loop.obj@loop[loop %in% as_ids(E(loop.obj@g))]
+    validObject(loop.obj)
+    return(list(loop.obj = loop.obj))
+
   }
 )

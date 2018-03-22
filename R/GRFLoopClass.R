@@ -13,6 +13,7 @@
 #' @importFrom EnrichedHeatmap EnrichedHeatmap '+.AdditiveUnit'
 #' @importFrom circlize colorRamp2
 #' @importFrom utils read.table write.table setTxtProgressBar
+#' @importFrom tidyr separate
 
 #' @title An S4 class to represent loops.
 #' @name loop-class
@@ -20,7 +21,7 @@
 #' @description Store cluster sets in a bed object.
 #' @slot igraph data.frame object
 #' @exportClass fet
-inlibs <- c("data.table", "RColorBrewer", "ggplot2", "ComplexHeatmap", "circlize", "igraph", "multiplot", "gtools", "RNA", "ggpubr", "gridExtra")
+inlibs <- c("data.table", "RColorBrewer", "ggplot2", "ComplexHeatmap", "circlize", "igraph", "multiplot", "gtools", "RNA", "ggpubr", "tidyr", "gridExtra")
 invisible(sapply(inlibs, function(f)suppressPackageStartupMessages(require(f, character.only = TRUE))))
 setOldClass("igraph")
 

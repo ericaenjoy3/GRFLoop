@@ -1,4 +1,4 @@
- glist2gpair <- function(glist, mess = NULL) {
+glist2gpair <- function(glist, mess = NULL) {
 	# glist: split by promoter fragments
   	if (!is.null(mess)) {
 		message(mess, " from gene list to gene pair")
@@ -21,12 +21,14 @@
 	rm_ends <- copy(gpair_dat[, Var1 == Var2])
 
 	# filter for duplication of Var1 and Var2 swap
-	gpair_str <- gpair_dat[, paste(Var1, Var2, sep = "_")]
-	gpair_revstr <- gpair_dat[, paste(Var2, Var1, sep = "_")]
-	rm_swap <- gpair_str %in% gpair_revstr
+	rm_swap <- duplicated(lapply(1:nrow(gpair_dat),function(i){
+		vec <- as.vector(gpair_dat[i])
+		names(vec) <- NULL
+		mixedsort(vec)
+	}))
 
 	# filter for unique gene pairs
-	rm_pairs <- copy(duplicated(gair_dat))
+	rm_pairs <- copy(duplicated(gpair_dat))
 
 	stopifnot(sum(rm_ends | rm_swap | rm_pairs) < nrow(gpair_dat))
 

@@ -14,7 +14,7 @@ setMethod(f = "gene2pairwiseLab",
 
     stopifnot(ncol(gpair_dat) == 2)
 
-    lab_vec <- sapply(transpose(gpair_dat), function(vec){
+    lab_vec <- sapply(data.table(t(gpair_dat)), function(vec){
         glab <- info.obj@gene[chmatch(vec, info.obj@gene[, gene]), DEG_ESC.MEF]
         if (any(is.na(glab))) {
           return(0)

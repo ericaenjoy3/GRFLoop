@@ -6,7 +6,8 @@ for (j in seq_along(libfs)) {
   source(libfs[j])
 }
 
-root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_KLF4_HICHIP/coreg_KLF4score"
+root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_KLF4_HICHIP"
+dout <- file(root, "coreg_KLF4score")
 
 hichip <- file.path("~/athena/Andreas_H3K27AC_HICHIP/doc", "Spec_H3K27AC_ESC_LoopType_PromEnh.txt")
 
@@ -19,11 +20,13 @@ info.obj <- ProteinCodingInfo(info.obj)
 info.obj <- TPMInfo(info.obj)
 obj.list <- infoFilter(loop.obj, info.obj = info.obj)
 loop.obj <- obj.list[["loop.obj"]]
-# modified here
-nmax <- maxCoreg(loop.obj, info.obj, coregfout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_gene.txt", basename(hichip))))
-message("maximum contacts in coreg: ", nmax)
-nmax <- as.numeric(readline("enter nmax: "))
-shufPlotMulti(loop.obj, info.obj, nmin = 2, nmax = nmax, dout = root, 
-	pdffout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_Enh_glabBar.pdf", basename(hichip))), 
-	fout = file.path(root, gsub("(Spec_H3K27AC_[^_]+).+", "\\1_coreg_pval.txt", basename(hichip))), 
-	uniqueLoopGene = TRUE)
+# keep only co-regulation loop
+obj.list <- selCoreg(loop.obj, info.obj = info.obj)
+loop.obj <- obj.list[["loop.obj"]]
+
+fs <- file.path(root, paste0(c("DAY3", "DAY6", "ESC"), "_KLF4_50K_H3K27AC_LoopType.txt"))
+
+loop.obj.list <- list()
+for (f in fs) {
+	loop.obj.list[[length(loop.obj.list) + 1]] <- loopConst(f, score_col = 11, filterUnknown = TRUE, filterDist = FALSE)
+}
