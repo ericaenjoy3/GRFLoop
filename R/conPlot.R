@@ -20,7 +20,7 @@ setMethod(f = "conPlot",
       ed <- incident_edges(loop.obj@g, ve)
       # extract rowid from loop slot of loop.obj
       rowid_list <- lapply(ed, function(es, loop_hash){
-        lp <- gsub("|", "_", as_ids(es), fixed = TRUE)
+        lp <- gsub("|", "_", es$loop, fixed = TRUE)
         rowid <- loop_hash[lp][["rowid"]]
         stopifnot(all(!is.na(rowid)))
         return(rowid)

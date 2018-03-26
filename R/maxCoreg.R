@@ -29,7 +29,7 @@ setMethod(f = "maxCoreg",
     gene_list <- list()
     gene_list[[1]] <- lapply(ed[which(kpt_num)], function(es, loop_hash){
       # potentially multiple loops => mutiple fragments
-      lp <- as_ids(es)
+      lp <- es$loop
       dd <- loop_hash[loop %in% lp]
       stopifnot(all(dd[, all(!is.na(gene1)), by = loop][, V1]))
       dd <- dd[, unique(gene1), by = loop]
@@ -93,7 +93,7 @@ setMethod(f = "maxCoreg",
           convert = TRUE, remove = TRUE) %>% separate("Var2", c("prom_idx2", "gene_idx2"), 
           convert = TRUE, remove = TRUE);
       dd <- dd[idx]
-      prom <- { ed_ids <- as_ids(ed[[i]])  
+      prom <- { ed_ids <- ed[[i]]$loop  
         ed_idx <- unique(c(dd[, prom_idx1], dd[, prom_idx2]))
         stopifnot(length(ed_idx) > 0)
         gsub(paste0("\\|{0,1}", ve[i], "\\|{0,1}"), "", ed_ids[ed_idx])

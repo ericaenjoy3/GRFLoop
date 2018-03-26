@@ -22,7 +22,7 @@ setMethod(f = "genePair",
     gene_list <- list()
     gene_list[[1]] <- lapply(ed[which(kpt_num)], function(es, loop_hash){
       # potentially multiple loops => mutiple fragments
-      lp <- as_ids(es)
+      lp <- es$loop
       dd <- loop_hash[loop %in% lp]
       stopifnot(all(dd[, all(!is.na(gene1)), by = loop][, V1]))
       dd <- dd[, unique(gene1), by = loop]

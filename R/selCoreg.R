@@ -29,7 +29,7 @@ setMethod(f = "selCoreg",
     gene_list <- list()
     gene_list[[1]] <- lapply(ed[which(kpt_num)], function(es, loop_hash){
       # potentially multiple loops => mutiple fragments
-      lp <- as_ids(es)
+      lp <- es$loop
       dd <- loop_hash[loop %in% lp]
       stopifnot(all(dd[, all(!is.na(gene1)), by = loop][, V1]))
       dd <- dd[, unique(gene1), by = loop]
@@ -109,7 +109,7 @@ setMethod(f = "selCoreg",
     }
     
     loop.obj@g <- subgraph.edges(loop.obj@g, eid = eid, delete.vertices = TRUE)
-    loop.obj@loop <- loop.obj@loop[loop %in% as_ids(E(loop.obj@g))]
+    loop.obj@loop <- loop.obj@loop[loop %in% E(loop.obj@g)$loop]
     validObject(loop.obj)
     return(list(loop.obj = loop.obj))
 

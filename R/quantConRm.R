@@ -25,11 +25,11 @@ setMethod(f = "quantConRm",
     stopifnot(!identical(thresh[1], thresh[2]))
 
     bottom_loop <- unlist(lapply(ed[ed_num <= thresh[1]], function(e){
-    	vec<-gsub("\\|", "_", as_ids(e)); 
+    	vec<-gsub("\\|", "_", e$loop); 
     	return(vec)
     }))
     top_loop <- unlist(lapply(ed[ed_num >= thresh[2]], function(e){
-    	vec<-gsub("\\|", "_", as_ids(e)); 
+    	vec<-gsub("\\|", "_", e$loop); 
     	return(vec)
     }))
     names(bottom_loop) <- names(top_loop) <- NULL
