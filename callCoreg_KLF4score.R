@@ -31,7 +31,7 @@ sortlabs <- function(string) {
 }
 
 dat_list <- list()
-dat_list[[1]] <- data.table(loop = sapply(as_ids(E(loop.obj@g)), sortlabs), key = "loop")
+dat_list[[1]] <- data.table(loop = sapply(E(loop.obj@g)$loop, sortlabs), key = "loop")
 
 fs <- file.path(root, "doc", paste0(c("DAY3", "DAY6", "ESC"), "_KLF4_50K_H3K27AC_LoopType.txt"))
 
@@ -40,7 +40,7 @@ for (f in fs) {
 	counter <- counter + 1
 	tmp.loop.obj <- loopConst(f, score_col = 11, filterUnknown = FALSE, filterDist = FALSE)
 	ng <- intersection(tmp.loop.obj@g, loop.obj@g, keep.all.vertices = FALSE)
-	dat_list[[counter]] <- data.table(loop = sapply(as_ids(E(ng)), sortlabs), score = E(ng)$score, key = "loop")
+	dat_list[[counter]] <- data.table(loop = sapply(E(ng)$loop, sortlabs), score = E(ng)$score, key = "loop")
 }
 dat <- Reduce(function(...) merge(..., all = TRUE), dat_list)
 setnames(dat, colnames(dat)[-1], c("DAY3", "DAY6", "ESC"))

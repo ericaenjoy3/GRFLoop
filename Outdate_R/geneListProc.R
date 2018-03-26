@@ -22,7 +22,7 @@ setMethod(f = "geneListProc",
     idx <- sapply(ed, length) >= nmin & sapply(ed, length) <= nmax
     # extract PromGene from loop slot of loop.obj
     gene_list <- lapply(ed[idx], function(es, loop_hash){
-      lp <- as_ids(es)
+      lp <- es$loop
       gs <- copy(loop_hash[loop %in% lp, gene1])
       stopifnot(all(!is.na(gs)))
       return(gs)
