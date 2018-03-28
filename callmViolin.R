@@ -23,6 +23,7 @@ attach(args)
 
 message("constructing loop and fet objects")
 din <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/Spec_H3K27AC_ESC"
+hichip <- file.path(dirname(din), "doc", "Spec_H3K27AC_ESC_LoopType.txt")
 loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = FALSE)
 fet_fs <- dir(din, "*_heatmap.mat", recursive = TRUE, full.names = TRUE)
 fet.obj <- fetConst(fet_fs, small = 0.05) 

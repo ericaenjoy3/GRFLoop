@@ -6,12 +6,16 @@ for (j in seq_along(libfs)) {
   source(libfs[j])
 }
 
+sortlabs <- function(string) {
+    vec <- c(gsub("(.+)\\|(.+)", "\\1", string), gsub("(.+)\\|(.+)", "\\2", string))
+    paste(mixedsort(vec), collapse = "|")
+}
+
 root <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_KLF4_HICHIP"
 dout <- file.path(root, "coreg_KLF4score")
 dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
 hichip <- file.path("~/athena/Andreas_H3K27AC_HICHIP/doc", "Spec_H3K27AC_ESC_LoopType_PromEnh.txt")
-
 
 cat("\n\n")
 message(hichip)
@@ -24,11 +28,9 @@ loop.obj <- obj.list[["loop.obj"]]
 # keep only co-regulation loop
 obj.list <- selCoreg(loop.obj, info.obj = info.obj)
 loop.obj <- obj.list[["loop.obj"]]
-
-sortlabs <- function(string) {
-	vec <- c(gsub("(.+)\\|(.+)", "\\1", string), gsub("(.+)\\|(.+)", "\\2", string))
-	paste(mixedsort(vec), collapse = "|")
-}
+tmp.dat <- copy(loop.obj@loop[, !"rowid"])
+ori_loop <- sapply(tmp.dat[["loop"]], sortlabs)
+names(ori_loop) <- NULL
 
 dat_list <- list()
 dat_list[[1]] <- data.table(loop = sapply(E(loop.obj@g)$loop, sortlabs), key = "loop")
@@ -40,15 +42,25 @@ for (f in fs) {
 	counter <- counter + 1
 	tmp.loop.obj <- loopConst(f, score_col = 11, filterUnknown = FALSE, filterDist = FALSE)
 	ng <- intersection(tmp.loop.obj@g, loop.obj@g, keep.all.vertices = FALSE)
-	dat_list[[counter]] <- data.table(loop = sapply(E(ng)$loop, sortlabs), score = E(ng)$score, key = "loop")
+	dat_list[[counter]] <- data.table(loop = sapply(E(ng)$loop_2, sortlabs), score = E(ng)$score, key = "loop")
 }
 dat <- Reduce(function(...) merge(..., all = TRUE), dat_list)
 setnames(dat, colnames(dat)[-1], c("DAY3", "DAY6", "ESC"))
 
+
 dat[is.na(dat)] <- 0
 
+# output data file
+idx <- chmatch(ori_loop, dat[["loop"]])
+write.table(data.table(tmp.dat, dat[idx, !"loop"]), 
+    file = file.path(dout, "H3K27AC_Coreg_Loop_KLF4_Loop_Score_dupLoop4Genes.txt"),
+    row.names = FALSE,
+    col.names = TRUE,
+    quote = FALSE,
+    sep = "\t")
+
 ndat <- copy(dat)
-ndat[ndat>0] <- 1
+ndat[ , 2:ncol(ndat) ][ ndat[ , 2:ncol(ndat) ] > 0 ] <- 1
 
 order2 <- function(..., decreasing = TRUE){ order(..., decreasing = decreasing) }
 row_idx <- do.call(order2, ndat[,ncol(ndat):2, with = FALSE])
