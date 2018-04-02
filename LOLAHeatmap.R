@@ -10,7 +10,7 @@ invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, cha
 parser <- ArgumentParser()
 parser$add_argument("--din", type = "character", required = TRUE,
   help = "An input LOLA directory.")
-parser$add_argument("--pngfout", type = "character", required = TRUE,
+parser$add_argument("--pdffout", type = "character", required = TRUE,
   help = "Output heatmap.")
 args <- parser$parse_args()
 attach(args)
@@ -47,7 +47,7 @@ proc <- function(dat_list, col_nm, com_dat) {
 	}))
 }
 
-heatPlot <- function(or_dat, pv_dat, com_dat) {
+heatPlot <- function(or_dat, pv_dat, com_dat, pdffout, pcol) {
 	gen <- function(mat, com_dat, name) {
 		mat <- mat %>% t() %>% scale() %>% t()
 		rownames(mat) <- com_dat[, paste(cellType, antibody, sep = "_")]
@@ -64,9 +64,9 @@ heatPlot <- function(or_dat, pv_dat, com_dat) {
 			clustering_method_rows = "average")
 		return(ht_list)
 	}
-	ht_list <- gen(pv_dat, com_dat, name = "pValueLog")
-	ht_list <- ht_list + gen(or_dat, com_dat, name = "logOddsRatio")
-	pdf(pdffout, width = 7*2, height = 7*2)
+	ht_list <- gen(pv_dat, com_dat, name = paste("Scaled", pcol))
+	ht_list <- ht_list + gen(or_dat, com_dat, name = paste("Scaled", "logOddsRatio"))
+	pdf(pdffout, width = 7*2, height = 8*2)
 	draw(ht_list)
 	dev.off()
 }
@@ -74,4 +74,7 @@ heatPlot <- function(or_dat, pv_dat, com_dat) {
 
 or_dat <- proc(dat_list, col_nm = "logOddsRatio", com_dat = com_dat)
 pv_dat <- proc(dat_list, col_nm = "pValueLog", com_dat = com_dat)
+qv_dat <- proc(dat_list, col_nm = "qValue", com_dat = com_dat) 
+qv_dat <- qv_dat[, lapply(.SD, function(vec)-log10(vec + 10^(-100)))]
+heatPlot(or_dat, qv_dat, com_dat, pdffout, pcol = "-qValueLog")
 
