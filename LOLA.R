@@ -12,7 +12,7 @@ parser$add_argument("--bedin", type = "character", required = TRUE,
   help = "An input bed file.")
 parser$add_argument("--dout", type = "character", required = TRUE,
   help = "Output LOLA result directory.")
-parser$add_argument("--bgbed", type = "character", required = FALSE,
+parser$add_argument("--bedbg", type = "character", required = FALSE,
   help = "Background bed for LOLA (optional).")
 args <- parser$parse_args()
 attach(args)

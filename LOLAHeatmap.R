@@ -12,6 +12,8 @@ parser$add_argument("--din", type = "character", required = TRUE,
   help = "An input LOLA directory.")
 parser$add_argument("--pdffout", type = "character", required = TRUE,
   help = "Output heatmap.")
+parser$add_argument("--self", type = "character", required = FALSE,
+  help = "Select a subset of factors.")
 args <- parser$parse_args()
 attach(args)
 
@@ -32,6 +34,10 @@ tmp <- rbindlist(lapply(dat_list, function(dd){
 	return(dd)
 }))
 com_dat <- tmp %>% group_by(cellType, antibody) %>% top_n(1, pValueLog) %>% filter(grepl("Embryonic Stem Cell", cellType, ignore.case = TRUE))  %>%data.table()
+
+sel_vec <- fread(self, header = FALSE)[[1]]
+ridx <- com_dat[toupper(antibody) %in% sel_vec, which = TRUE]
+com_dat <- com_dat[ridx]
 
 # heatmap of qvalue and logOddsRatio
 stopifnot(identical(dat_list[[1]][chmatch(com_dat[, filename], filename), filename], com_dat[, filename]))
@@ -72,9 +78,23 @@ heatPlot <- function(or_dat, pv_dat, com_dat, pdffout, pcol) {
 }
 
 
+
 or_dat <- proc(dat_list, col_nm = "logOddsRatio", com_dat = com_dat)
+write.table(data.table(com_dat[, .(cellType, antibody)], or_dat), 
+	file = file.path(din, "logOddsRatio.txt"), 
+	row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
+
 pv_dat <- proc(dat_list, col_nm = "pValueLog", com_dat = com_dat)
-qv_dat <- proc(dat_list, col_nm = "qValue", com_dat = com_dat) 
+write.table(data.table(com_dat[, .(cellType, antibody)], pv_dat), 
+	file = file.path(din, "pValueLog.txt"), 
+	row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
+
+qv_dat <- proc(dat_list, col_nm = "qValue", com_dat = com_dat)
+write.table(data.table(com_dat[, .(cellType, antibody)], qv_dat), 
+	file = file.path(din, "qValue.txt"), 
+	row.names = FALSE, col.names = TRUE, quote = FALSE, sep = "\t")
+
 qv_dat <- qv_dat[, lapply(.SD, function(vec)-log10(vec + 10^(-100)))]
+
 heatPlot(or_dat, qv_dat, com_dat, pdffout, pcol = "-qValueLog")
 
