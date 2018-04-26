@@ -10,7 +10,7 @@ for type in ${sm_grp[@]}; do
 	vchip+=(~/athena/CHIP/CHIP_seq/MergeRep/mergepeak/ReProgram/H3K27AC_${type}/H3K27AC_${type}_common.bed)
 done
 
-enh_type=Super
+enh_type=Normal
 cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --hichip $DIN/Spec_H3K27AC_${sm}.txt \
 --vchip ${vchip[@]} \
@@ -87,7 +87,7 @@ for type in ${sm_grp[@]}; do
 	vchip+=(~/athena/CHIP/CHIP_seq/MergeRep/mergepeak/ReProgram/H3K27AC_${type}/H3K27AC_${type}_common.bed)
 done
 
-enh_type=TE
+enh_type=SE
 cmd="Rscript --no-save --no-restore $SDR/H3K27AC_LoopType.R \
 --hichip ${DIN/CMP/doc}/Spec_H3K27AC_${sm}.txt \
 --vchip ${vchip[@]} \
