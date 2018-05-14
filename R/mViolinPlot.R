@@ -54,7 +54,7 @@ setMethod(f = "mViolinPlot",
         } else {
 
           error("failed to find loc1 or loc2 match.")
-          
+
         }       
       }
 
@@ -66,7 +66,9 @@ setMethod(f = "mViolinPlot",
         })
 
     }
+
     stopifnot(nrow(dat_list[[1]]) == sum(vec <= thresh[1] | vec >= thresh[2]))
+    
     # merge low and high into one data.table
     ndat_list <- lapply(seq_along(dat_list[[1]]), function(j) {
       d1 <- data.table(split = "lowCon", copy(dat_list[[1]][[j]][, ncol(dat_list[[1]][[j]]), with = FALSE]))
