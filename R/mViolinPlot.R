@@ -11,6 +11,7 @@ setGeneric(name = "mViolinPlot",
 setMethod(f = "mViolinPlot",
   signature = c("loop", "fet"),
   definition = function(loop.obj, fet.obj, dout){
+
     dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
     # dedup loop slot based on loop, loc1, loc2 and the first occurance of rowid
@@ -34,21 +35,31 @@ setMethod(f = "mViolinPlot",
       }
 
       loc1_idxv <- loc2_idxv <- c()
+
       for (i in seq_along(v)) {
+
         if (i %%100 ==0 ) {message(i)}
+
         loc1_idx <- copy(dat[loc1 %in% v[i], rowid])
         loc2_idx <- copy(dat[loc2 %in% v[i], rowid])
+
         if (length(loc1_idx) > 0) {
+
           loc1_idxv <- c(loc1_idxv, loc1_idx[1])
+
         } else if (length(loc2_idx) > 0) {
+
           loc2_idxv <- c(loc2_idxv, loc2_idx[1])
+
         } else {
+
           error("failed to find loc1 or loc2 match.")
+          
         }       
       }
 
       chip_loc1_idx <- copy(fet.obj@hash[loc == "Loc1", which = TRUE])
-      chip_loc2_idx <- copy(fet.obj@hash[loc == "Loc1", which = TRUE])
+      chip_loc2_idx <- copy(fet.obj@hash[loc == "Loc2", which = TRUE]) # updated "Loc1" to "Loc2" (EL, May 15, 2018)
 
       dat_list[[length(dat_list) + 1]] <- lapply(seq_along(chip_loc1_idx), function(k){
           copy(rbind(fet.obj@dat_list[[chip_loc1_idx[k]]][loc1_idxv], fet.obj@dat_list[[chip_loc2_idx[k]]][loc2_idxv]))
