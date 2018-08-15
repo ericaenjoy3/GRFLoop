@@ -135,7 +135,7 @@ fetConst <- function(fet_fs, small = 0.05) {
   dat_list <- lapply(seq_along(fet_fs), function(i, fet_fs, chip, small){
     message("reading file ", fet_fs[i])
     dat <- fread(fet_fs[i], header = TRUE)
-    if (grepl("RNA|PROMOTER_GENE", chip[i])) {
+    if (grepl("RNA|TPM", chip[i], ignore.case = TRUE)) {
       dat[, c(colnames(dat)) := lapply(.SD, function(x){log2(x + small)}), .SDcols = colnames(dat)]
     }
     return(dat)

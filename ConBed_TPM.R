@@ -31,7 +31,8 @@ gid <- copy(dat[["gene"]])
 
 dat[, `:=`(ESC = tpm[gid, ESC])]
 
-if (!is.null(proteincoding)) {
+message("proteincoding: ", proteincoding)
+if (isTRUE(proteincoding)) {
 	dat[!grepl(".+\\|protein_coding$", gene), `:=`(ESC = as.numeric(NA))]
 }
 
