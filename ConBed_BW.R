@@ -9,7 +9,7 @@ invisible(sapply(libfs, function(f)suppressPackageStartupMessages(require(f, cha
 options(scipen = 999)
 
 parser <- ArgumentParser()
-parser$add_argument("--window", type = "character", required = FALSE,
+parser$add_argument("--windowf", type = "character", required = FALSE,
   help = "A bed file of large windows (> 1 kb).")
 parser$add_argument("--peak", type = "character", nargs='+', required = FALSE,
   help = "A peak file of peaks.")
@@ -25,7 +25,7 @@ dout <- file.path(dirname(config), "tmp")
 dir.create(dout, showWarnings = FALSE, recursive = TRUE)
 
 # intersect peak file by window
-ow_dat <- fread(window, header = FALSE)[, 1:4, with = FALSE]
+ow_dat <- fread(windowf, header = FALSE)[, 1:4, with = FALSE]
 ow_dat <- ow_dat[, V2 := V2 + 1]
 w_dat <- copy(ow_dat[!duplicated(ow_dat)])
 setkeyv(w_dat, paste0("V", 1:3))
