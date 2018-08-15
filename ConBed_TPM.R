@@ -12,7 +12,7 @@ options(scipen = 999)
 parser <- ArgumentParser()
 parser$add_argument("--windowf", type = "character", required = FALSE,
   help = "A bed file of large windows (> 1 kb) with the 6th column of gene id.")
-parser$add_argument("--proteincoding",
+parser$add_argument("--proteincoding", action="store_true",
   help = "Switch to use protein-coding genes only.")
 parser$add_argument("--matf", type = "character", required = FALSE,
   help = "Output signal matrix file.")
