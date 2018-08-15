@@ -49,7 +49,7 @@ message("constructing loop and fet objects")
 din <- "/athena/apostoloulab/scratch/liuyiyua/Andreas_H3K27AC_HICHIP/Spec_H3K27AC_ESC"
 hichip <- file.path(dirname(din), "doc", "Spec_H3K27AC_ESC_LoopType.txt")
 dout <- gsub("Spec_H3K27AC_ESC", "conFetProm", din)
-include <- 'PROMOTER_GENE_ProteinCoding' # 'PROMOTER_GENE' or 'POLA2_TransTSS'
+include <- 'POLA2_TransTSS_ProteinCoding' # 'PROMOTER_GENE' or 'POLA2_TransTSS'
 loop.obj <- loopConst(hichip, score_col = NULL, filterUnknown = FALSE)
 fet_fs <- dir(din, "*_heatmap.mat", recursive = TRUE, full.names = TRUE)
 if (!is.null(include)) {
