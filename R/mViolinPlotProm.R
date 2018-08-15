@@ -88,8 +88,8 @@ setMethod(f = "mViolinPlotProm",
 
     # merge low and high into one data.table
     ndat_list <- lapply(seq_along(dat_list[[1]]), function(j) {
-      d1 <- data.table(split = "lowCon", copy(dat_list[[1]][[j]][, ncol(dat_list[[1]][[j]]), with = FALSE]))
-      d2 <- data.table(split = "hiCon", copy(dat_list[[2]][[j]][, ncol(dat_list[[2]][[j]]), with = FALSE]))
+      d1 <- na.omit(data.table(split = "lowCon", copy(dat_list[[1]][[j]][, ncol(dat_list[[1]][[j]]), with = FALSE])))
+      d2 <- na.omit(data.table(split = "hiCon", copy(dat_list[[2]][[j]][, ncol(dat_list[[2]][[j]]), with = FALSE])))
       nsize <- min(nrow(d1), nrow(d2))
       set.seed(888)
       rbind(d1[if(nrow(d1) > nsize){sample(1:nrow(d1), nsize)} else {1:nrow(d1)}, ], 
