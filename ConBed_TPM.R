@@ -42,6 +42,6 @@ setkeyv(mean_tpm, c("chr", "start", "end"))
 # repeat output of gene expression and duplicate gene expression for the same window
 dat[, `:=`(mean_tpm = copy(mean_tpm[dat[, .(chr, start, end)], V1])) ]
 
-write.table(dat[, mean_tpm], file = file, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
+write.table(dat[, mean_tpm], file = matf, row.names = FALSE, col.names = FALSE, quote = FALSE, sep = "\t")
 
 
